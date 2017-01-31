@@ -70,8 +70,8 @@
     <Compile Include="Contract\IConfig.cs" />
     <Compile Include="Entity\ProcessorContstants.cs" />
     <Compile Include="Entity\Settings.cs" />
+    <Compile Include="Glue\Navigator.cs" />
     <Compile Include="Glue\ProcessorModule.cs" />
-    <Compile Include="Glue\ProjectGlue.cs" />
     <Compile Include="Services\ConfigService.cs" />
     <Compile Include="Services\FaceSmarts\FaceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

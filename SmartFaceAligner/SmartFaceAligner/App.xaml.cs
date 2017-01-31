@@ -16,7 +16,7 @@ namespace SmartFaceAligner
     {
         public App()
         {
-            new ProjectGlue().Init();
+            
         }
     }
 }

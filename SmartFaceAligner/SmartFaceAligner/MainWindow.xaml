@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SmartFaceAligner"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <DockPanel>
+        <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+    </DockPanel>
 </Window>

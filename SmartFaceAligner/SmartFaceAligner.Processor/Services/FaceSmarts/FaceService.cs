@@ -13,9 +13,9 @@ namespace SmartFaceAligner.Processor.FaceSmarts
         {
             
         }
-        public async Task<bool> CreateFaceGroup(string baseDirectory)
-        {
+        //public async Task<bool> CreateFaceGroup(string baseDirectory)
+        //{
             
-        }
+        //}
     }
 }

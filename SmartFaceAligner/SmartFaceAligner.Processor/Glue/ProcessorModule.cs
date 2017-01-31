@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Autofac;
 using Microsoft.ProjectOxford.Face;
 using SmartFaceAligner.Processor.Contract;
+using SmartFaceAligner.Processor.Entity;
 using SmartFaceAligner.Processor.Services;
+using XamlingCore.Portable.Contract.Config;
 
 namespace SmartFaceAligner.Processor.Glue
 {
@@ -21,7 +23,8 @@ namespace SmartFaceAligner.Processor.Glue
 
             builder.RegisterType<ConfigService>().AsImplementedInterfaces().SingleInstance();
 
-            builder.Register((c, r)=>new FaceServiceClient(c.Resolve<IConfig>()[""]))
+            builder.Register(
+                (c, r) => new FaceServiceClient(c.Resolve<IConfig>()[ProcessorContstants.Settings.SubsKeys]));
 
             base.Load(builder);
         }
