@@ -30,6 +30,7 @@ namespace SmartFaceAligner.Processor.Glue
             Builder.RegisterAssemblyTypes(typeof(ProjectGlue).Assembly)
                 .Where(t => t.Name.EndsWith("View") || t.Name.EndsWith("ViewModel"))
                 .AsSelf()
+                .PropertiesAutowired()
                 .InstancePerDependency();
 
 

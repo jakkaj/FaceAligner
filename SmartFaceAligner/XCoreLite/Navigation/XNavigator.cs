@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Navigation;
 using Autofac;
 using XCoreLite.Contract;
@@ -25,16 +26,29 @@ namespace XCoreLite.Navigation
             _navigationService = navigationService;
         }
 
-        public void NavigateBack()
+        public async Task NavigateBack()
         {
-            if(_navigationService.CurrentSource is IDisposable dispose)
+            if(_navigationService.Content is IDisposable dispose)
             {
                 dispose.Dispose();
+            }
+            
+            if (_navigationService.Content is FrameworkElement element)
+            {
+                if (element.DataContext is ViewModel vm)
+                {
+                    vm.Dispose();
+                }
             }
 
             if (_navigationService.CanGoBack)
             {
                 _navigationService.GoBack();
+
+                if (_navigationService.Content is ViewModel vm)
+                {
+                    await vm.NavigatedTo(true);
+                }
             }
         }
 
@@ -53,10 +67,12 @@ namespace XCoreLite.Navigation
                 await createdCallback(newViewModel);
             }
 
-            NavigateTo(newViewModel);
+            await newViewModel.Initialised();
+
+            await NavigateTo(newViewModel);
         }
 
-        public void NavigateTo<T>(T viewModel)
+        protected async Task NavigateTo<T>(T viewModel)
             where T: ViewModel
         {
             //find the view model's associated view
@@ -68,6 +84,8 @@ namespace XCoreLite.Navigation
             }
 
             _navigationService.Navigate(view);
+
+            await viewModel.NavigatedTo(false);
         }
     }
 }

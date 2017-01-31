@@ -6,12 +6,11 @@ namespace XCoreLite.Contract
 {
     public interface IXNavigator
     {
-        void NavigateBack();
+        Task NavigateBack();
 
         Task NavigateTo<T>(Func<T, Task> createdCallback = null)
             where T : ViewModel;
 
-        void NavigateTo<T>(T viewModel)
-            where T: ViewModel;
+       
     }
 }
