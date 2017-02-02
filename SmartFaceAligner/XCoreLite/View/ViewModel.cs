@@ -28,7 +28,19 @@ namespace XCoreLite.View
 
         }
 
+#pragma warning disable 1998
+        public virtual async Task NavigatingAway(bool isBack)
+#pragma warning restore 1998
+        {
+
+        }
+
         public ICommand BackCommand => new XCommand(NavigateBack);
+
+        public ICommand Command(Action action)
+        {
+            return new XCommand(action);
+        }
 
         public async Task NavigateTo<T>(Func<T, Task> createdCallback = null)
             where T : ViewModel

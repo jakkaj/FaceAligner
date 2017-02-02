@@ -13,9 +13,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using SmartFaceAligner.Processor.Glue;
 using SmartFaceAligner.Util;
 using SmartFaceAligner.View;
+using SmartFaceAligner.View.Setup;
 using XamlingCore.Portable.Data.Glue;
 using XCoreLite.Contract;
 
@@ -31,7 +33,7 @@ namespace SmartFaceAligner
         public MainWindow()
         {
             InitializeComponent();
-
+          
             new ProjectGlue(_mainFrame.NavigationService).Init();
 
             _container = ContainerHost.Container;
@@ -44,6 +46,11 @@ namespace SmartFaceAligner
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             await _container.Resolve<IXNavigator>().NavigateTo<HomeViewModel>();
+        }
+
+        private async void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            await _container.Resolve<IXNavigator>().NavigateTo<SetupViewModel>();
         }
     }
 }

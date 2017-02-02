@@ -12,6 +12,6 @@ namespace SmartFaceAligner.Processor.Contract
         string GetSavedSetting(string settingName);
         void SaveSetting(string settingName, string settingValue);
         bool NeedsConfig { get; }
-        string FaceApiSubscriptionKey { get; }
+        string FaceApiSubscriptionKey { get; set; }
     }
 }

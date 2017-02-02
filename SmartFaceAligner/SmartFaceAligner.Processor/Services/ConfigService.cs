@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,17 @@ namespace SmartFaceAligner.Processor.Services
         }
 
         public bool NeedsConfig => GetSavedSetting(ProcessorContstants.Settings.SubsKeys) == null;
-        public string FaceApiSubscriptionKey => GetSavedSetting(ProcessorContstants.Settings.SubsKeys);
+        public string FaceApiSubscriptionKey 
+        {
+            get
+            {
+                return GetSavedSetting(ProcessorContstants.Settings.SubsKeys);
+            }
+            set
+            {
+                SaveSetting(ProcessorContstants.Settings.SubsKeys, value);
+            }
+        }
 
         #region SaveSettings
 
@@ -69,7 +80,16 @@ namespace SmartFaceAligner.Processor.Services
         {
             var data = JsonConvert.SerializeObject(settings);
 
-            File.WriteAllText(_getSettingsFileName(), data);
+            var fn = _getSettingsFileName();
+
+            var d = new DirectoryInfo(Path.GetDirectoryName(fn));
+
+            if (!d.Exists)
+            {
+                d.Create();
+            }
+
+            File.WriteAllText(fn, data);
         }
 
         string _getSettingsFileName()

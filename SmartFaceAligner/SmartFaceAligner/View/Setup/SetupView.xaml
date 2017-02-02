@@ -6,12 +6,19 @@
       xmlns:local="clr-namespace:SmartFaceAligner.View.Setup"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-      Title="SetupView">
+      Title="SetupView" Style="{StaticResource PageStyle}">
 
     <Grid>
-        <StackPanel>
-            <TextBlock Text="Setup!" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-            <Button Content="Back" Command="{Binding BackCommand}"></Button>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+
+            <TextBlock Text="Please enter your subscription key" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+            <TextBox Text="{Binding Key, Mode=TwoWay}" Margin="0,10,0,0"></TextBox>
+            <Button Content="Save" Command="{Binding BackCommand}" Margin="0,10,0,0"></Button>
+
+            <TextBlock Text="No key? No Problem!" Margin="0,10,0,0"/>
+            <Button Command="{Binding AzureLinkCommand}" Content="Sign up on Azure" Margin="0,10,0,0"/>
+            <Button Command="{Binding CogServicesLinkCommand}" Content="Get a free account" Margin="0,10,0,0"/>
+
         </StackPanel>
         
     </Grid>

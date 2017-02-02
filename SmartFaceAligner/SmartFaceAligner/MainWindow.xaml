@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmartFaceAligner"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" >
     <DockPanel>
-        <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <Menu Width="Auto" Height="20" Background="Transparent" DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Edit Key" Click="MenuItem_OnClick" />
+            </MenuItem>
+        </Menu>
+        <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
     </DockPanel>
 </Window>

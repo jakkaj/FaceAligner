@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 using Autofac;
 using XCoreLite.Contract;
@@ -26,17 +27,15 @@ namespace XCoreLite.Navigation
             _navigationService = navigationService;
         }
 
+      
+      
         public async Task NavigateBack()
         {
-            if(_navigationService.Content is IDisposable dispose)
-            {
-                dispose.Dispose();
-            }
-            
             if (_navigationService.Content is FrameworkElement element)
             {
                 if (element.DataContext is ViewModel vm)
                 {
+                    await _navigatingAway(_navigationService.Content, true);
                     vm.Dispose();
                 }
             }
@@ -50,6 +49,18 @@ namespace XCoreLite.Navigation
                     await vm.NavigatedTo(true);
                 }
             }
+        }
+
+        async Task _navigatingAway(object content, bool isBack)
+        {
+            if (content is FrameworkElement element)
+            {
+                if (element.DataContext is ViewModel vm)
+                {
+                    await vm.NavigatingAway(true);
+                }
+            }
+
         }
 
         public async Task NavigateTo<T>(Func<T, Task> createdCallback = null)
@@ -82,6 +93,8 @@ namespace XCoreLite.Navigation
             {
                 throw new Exception("Could not find v");
             }
+
+            await _navigatingAway(_navigationService.Content, false);
 
             _navigationService.Navigate(view);
 

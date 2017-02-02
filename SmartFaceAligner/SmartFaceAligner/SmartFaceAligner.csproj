@@ -74,6 +74,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Glue\ProjectGlue.cs" />
+    <Compile Include="MainWindowView.model.cs" />
     <Compile Include="Util\XDispatcher.cs" />
     <Compile Include="View\HomeView.model.cs" />
     <Compile Include="View\HomeView.xaml.cs">

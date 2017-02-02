@@ -6,9 +6,14 @@
       xmlns:local="clr-namespace:SmartFaceAligner.View"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-      Title="HomeView">
+      Title="HomeView" Style="{StaticResource PageStyle}">
 
     <Grid>
-        <TextBlock Text="Hello!" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+        
+       <StackPanel>
+           <TextBlock Text="Welcome. Let's make some people age :)"></TextBlock>
+       </StackPanel>
+
+      
     </Grid>
 </Page>
