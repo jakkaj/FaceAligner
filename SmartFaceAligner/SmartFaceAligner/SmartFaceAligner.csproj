@@ -145,9 +145,9 @@
       <Project>{b48e8113-a201-43a1-ae34-56a14daeda33}</Project>
       <Name>Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SmartFaceAligner.Processor\SmartFaceAligner.Processor.csproj">
-      <Project>{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}</Project>
-      <Name>SmartFaceAligner.Processor</Name>
+    <ProjectReference Include="..\SmartFaceAligner.Model\SmartFaceAligner.Model.csproj">
+      <Project>{afa047fb-e6c6-42d0-a66b-ea53fcee1fc2}</Project>
+      <Name>SmartFaceAligner.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\XCoreLite\XCoreLite.csproj">
       <Project>{008F1D44-4143-4AFF-ACB5-35FB01EA0322}</Project>
