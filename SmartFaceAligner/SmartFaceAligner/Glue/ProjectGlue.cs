@@ -1,13 +1,14 @@
 ﻿using System.Windows.Navigation;
 using System.Windows.Threading;
 using Autofac;
+using SmartFaceAligner.Processor.Glue;
 using SmartFaceAligner.Util;
 using XamlingCore.NET.Glue;
+using XamlingCore.Portable.Contract.UI;
 using XamlingCore.Portable.Data.Glue;
 using XCoreLite.Glue;
-using XamlingCore.Portable.Contract.UI;
 
-namespace SmartFaceAligner.Processor.Glue
+namespace SmartFaceAligner.Glue
 {
     public class ProjectGlue : NETGlue
     {

@@ -11,6 +11,7 @@ namespace SmartFaceAligner.Processor.Entity
         public static class Settings
         {
             public const string SubsKeys = "SubsKeys";
+            public const string BingKeys = "BingKeys";
         }
     }
 }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Microsoft.ProjectOxford.Face;
-using SmartFaceAligner.Processor.Contract;
 using SmartFaceAligner.Processor.Entity;
 using SmartFaceAligner.Processor.Services;
 using XamlingCore.Portable.Contract.Config;

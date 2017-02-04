@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.ProjectOxford.Face;
+﻿using Microsoft.ProjectOxford.Face;
 
-namespace SmartFaceAligner.Processor.FaceSmarts
+namespace SmartFaceAligner.Processor.Services.FaceSmarts
 {
     public class FaceService
     {

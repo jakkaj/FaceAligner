@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Contracts;
+using Contracts.Interfaces;
 using Newtonsoft.Json;
-using SmartFaceAligner.Processor.Contract;
 using SmartFaceAligner.Processor.Entity;
-using XamlingCore.Portable.Contract.Config;
 
 namespace SmartFaceAligner.Processor.Services
 {
@@ -32,6 +29,19 @@ namespace SmartFaceAligner.Processor.Services
             set
             {
                 SaveSetting(ProcessorContstants.Settings.SubsKeys, value);
+            }
+        }
+
+
+        public string BingSearchSubscriptionKey
+        {
+            get
+            {
+                return GetSavedSetting(ProcessorContstants.Settings.BingKeys);
+            }
+            set
+            {
+                SaveSetting(ProcessorContstants.Settings.BingKeys, value);
             }
         }
 

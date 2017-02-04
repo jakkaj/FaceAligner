@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Contracts;
 using System.Windows.Input;
-using SmartFaceAligner.Processor.Contract;
+using Contracts.Interfaces;
 using XCoreLite.View;
 
 namespace SmartFaceAligner.View.Setup
@@ -16,9 +12,23 @@ namespace SmartFaceAligner.View.Setup
         public ICommand AzureLinkCommand => Command(_navToAzureSignup);
         public ICommand CogServicesLinkCommand => Command(_navToCogServicesPage);
 
+        public ICommand BingAzureLinkCommand => Command(_navToAzureBing);
+
+        public ICommand BingCogLinkCommand => Command(_navToCogServicesBing);
+
         public SetupViewModel(IConfigurationService confService)
         {
             _confService = confService;
+        }
+
+        void _navToAzureBing()
+        {
+            System.Diagnostics.Process.Start("https://ms.portal.azure.com/#create/Microsoft.CognitiveServices");
+        }
+
+        void _navToCogServicesBing()
+        {
+            System.Diagnostics.Process.Start("https://www.microsoft.com/cognitive-services/en-us/bing-image-search-api");
         }
 
         void _navToAzureSignup()
@@ -38,6 +48,16 @@ namespace SmartFaceAligner.View.Setup
             set
             {
                 _confService.FaceApiSubscriptionKey = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string BingKey
+        {
+            get { return _confService.BingSearchSubscriptionKey; }
+            set
+            {
+                _confService.BingSearchSubscriptionKey = value;
                 OnPropertyChanged();
             }
         }

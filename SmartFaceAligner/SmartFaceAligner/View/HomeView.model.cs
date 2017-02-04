@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartFaceAligner.Processor.Contract;
+﻿using System.Threading.Tasks;
 using SmartFaceAligner.View.Setup;
 using XCoreLite.View;
+using Contracts;
+using Contracts.Interfaces;
 
 namespace SmartFaceAligner.View
 {

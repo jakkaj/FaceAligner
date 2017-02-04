@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using SmartFaceAligner.Glue;
 using SmartFaceAligner.Processor.Glue;
 using SmartFaceAligner.Util;
 using SmartFaceAligner.View;

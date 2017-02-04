@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XamlingCore.Portable.Contract.Config;
+﻿using XamlingCore.Portable.Contract.Config;
 
-namespace SmartFaceAligner.Processor.Contract
+namespace Contracts.Interfaces
 {
     public interface IConfigurationService : IConfig
     {
@@ -13,5 +8,6 @@ namespace SmartFaceAligner.Processor.Contract
         void SaveSetting(string settingName, string settingValue);
         bool NeedsConfig { get; }
         string FaceApiSubscriptionKey { get; set; }
+        string BingSearchSubscriptionKey { get; set; }
     }
 }

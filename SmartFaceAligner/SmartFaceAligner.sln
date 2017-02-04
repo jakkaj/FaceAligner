@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.0
+VisualStudioVersion = 15.0.26127.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner", "SmartFaceAligner\SmartFaceAligner.csproj", "{08A057CE-9DF4-44FA-899F-06C1B2172FD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner.Processor", "SmartFaceAligner.Processor\SmartFaceAligner.Processor.csproj", "{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XCoreLite", "XCoreLite\XCoreLite.csproj", "{008F1D44-4143-4AFF-ACB5-35FB01EA0322}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingLibrary", "BingLibrary\BingLibrary.csproj", "{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{43688965-DA56-4FD1-82E1-341F042D6EDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{B48E8113-A201-43A1-AE34-56A14DAEDA33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +33,18 @@ Global
 		{008F1D44-4143-4AFF-ACB5-35FB01EA0322}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{008F1D44-4143-4AFF-ACB5-35FB01EA0322}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{008F1D44-4143-4AFF-ACB5-35FB01EA0322}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43688965-DA56-4FD1-82E1-341F042D6EDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43688965-DA56-4FD1-82E1-341F042D6EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43688965-DA56-4FD1-82E1-341F042D6EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43688965-DA56-4FD1-82E1-341F042D6EDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
