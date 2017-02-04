@@ -88,6 +88,10 @@
     <Compile Include="View\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\NewProject\NewProjectStartView.model.cs" />
+    <Compile Include="View\NewProject\NewProjectStartView.xaml.cs">
+      <DependentUpon>NewProjectStartView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setup\SetupView.model.cs" />
     <Compile Include="View\Setup\SetupView.xaml.cs">
       <DependentUpon>SetupView.xaml</DependentUpon>
@@ -105,6 +109,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\HomeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\NewProject\NewProjectStartView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
