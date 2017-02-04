@@ -74,6 +74,7 @@
     <Compile Include="Glue\ProjectGlue.cs" />
     <Compile Include="Glue\TestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\ProjectTests.cs" />
     <Compile Include="Tests\SearchTests.cs" />
   </ItemGroup>
   <ItemGroup>

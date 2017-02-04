@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CognitiveServices", "Cognit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner.Model", "SmartFaceAligner.Model\SmartFaceAligner.Model.csproj", "{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D7B708E4-242D-4628-B0CE-848BDDB1B4B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,5 +57,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A5C5B749-E2BA-4D26-85BD-645B8B6391A7} = {840B8760-E6F1-4684-A007-2CA02AE5504E}
+		{43688965-DA56-4FD1-82E1-341F042D6EDB} = {D7B708E4-242D-4628-B0CE-848BDDB1B4B3}
 	EndGlobalSection
 EndGlobal
