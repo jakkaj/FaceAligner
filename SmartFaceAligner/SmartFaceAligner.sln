@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26127.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner", "SmartFaceAligner\SmartFaceAligner.csproj", "{08A057CE-9DF4-44FA-899F-06C1B2172FD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner.Processor", "SmartFaceAligner.Processor\SmartFaceAligner.Processor.csproj", "{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XCoreLite", "XCoreLite\XCoreLite.csproj", "{008F1D44-4143-4AFF-ACB5-35FB01EA0322}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingLibrary", "BingLibrary\BingLibrary.csproj", "{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}"
@@ -14,6 +12,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{43688965-DA56-4FD1-82E1-341F042D6EDB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{B48E8113-A201-43A1-AE34-56A14DAEDA33}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DB0063D4-A8C0-4D43-B087-47F06839EF87}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CognitiveServices", "CognitiveServices", "{840B8760-E6F1-4684-A007-2CA02AE5504E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner.Model", "SmartFaceAligner.Model\SmartFaceAligner.Model.csproj", "{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +29,6 @@ Global
 		{08A057CE-9DF4-44FA-899F-06C1B2172FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08A057CE-9DF4-44FA-899F-06C1B2172FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08A057CE-9DF4-44FA-899F-06C1B2172FD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{008F1D44-4143-4AFF-ACB5-35FB01EA0322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{008F1D44-4143-4AFF-ACB5-35FB01EA0322}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{008F1D44-4143-4AFF-ACB5-35FB01EA0322}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,8 +45,15 @@ Global
 		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B48E8113-A201-43A1-AE34-56A14DAEDA33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5C5B749-E2BA-4D26-85BD-645B8B6391A7} = {840B8760-E6F1-4684-A007-2CA02AE5504E}
 	EndGlobalSection
 EndGlobal

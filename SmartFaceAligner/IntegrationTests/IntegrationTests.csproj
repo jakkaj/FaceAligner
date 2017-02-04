@@ -89,14 +89,17 @@
       <Project>{B48E8113-A201-43A1-AE34-56A14DAEDA33}</Project>
       <Name>Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SmartFaceAligner.Processor\SmartFaceAligner.Processor.csproj">
-      <Project>{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}</Project>
-      <Name>SmartFaceAligner.Processor</Name>
+    <ProjectReference Include="..\SmartFaceAligner.Model\SmartFaceAligner.Model.csproj">
+      <Project>{afa047fb-e6c6-42d0-a66b-ea53fcee1fc2}</Project>
+      <Name>SmartFaceAligner.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\XCoreLite\XCoreLite.csproj">
       <Project>{008F1D44-4143-4AFF-ACB5-35FB01EA0322}</Project>
       <Name>XCoreLite</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
