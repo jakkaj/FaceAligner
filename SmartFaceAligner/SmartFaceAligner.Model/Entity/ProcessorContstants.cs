@@ -11,6 +11,7 @@ namespace SmartFaceAligner.Processor.Entity
         public static class FileNames
         {
             public const string ProjectRoot = "faceProject.json";
+            public const string FolderRoot = "faceFolder.json";
         }
 
         public static class Settings

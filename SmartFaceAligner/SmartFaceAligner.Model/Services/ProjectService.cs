@@ -19,6 +19,31 @@ namespace SmartFaceAligner.Processor.Services
         {
             _fileRepo = fileRepo;
         }
+
+        public async Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType)
+        {
+            var projectPath = await _getProjectFile(p.Name);
+            
+            //This will create the directory if it doesnt already exist
+            var folder = await _fileRepo.GetOffsetFolder(projectPath, folderType.ToString(), ProcessorContstants.FileNames.FolderRoot);
+
+            var projectFolder = new ProjectFolder
+            {
+                ProjectFolderType = folderType,
+                Project = p,
+                FolderPath = folder
+            };
+
+            return projectFolder;
+
+        }
+
+        async Task<string> _getProjectFile(string projectName)
+        {
+            var projectPath = await _fileRepo.GetOffsetFile(projectName, ProcessorContstants.FileNames.ProjectRoot);
+            return projectPath;
+        }
+
         public async Task<Project>  GetProject(string projectName)
         {
             return await _getProject(projectName);
@@ -26,13 +51,13 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task SetProject(Project p)
         {
-            var projectPath = await _fileRepo.GetOffsetFile(p.Name, ProcessorContstants.FileNames.ProjectRoot);
+            var projectPath = await _getProjectFile(p.Name);
             await _fileRepo.Write(projectPath, JsonConvert.SerializeObject(p));
         }
 
         async Task<Project> _getProject(string projectName)
         {
-            var projectPath = await _fileRepo.GetOffsetFile(projectName,ProcessorContstants.FileNames.ProjectRoot);
+            var projectPath = await _getProjectFile(projectName);
             if (await _fileRepo.FileExists(projectPath))
             {
                 var projectData = await _fileRepo.ReadText(projectPath);

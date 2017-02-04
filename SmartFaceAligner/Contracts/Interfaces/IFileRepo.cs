@@ -14,5 +14,6 @@ namespace Contracts.Interfaces
         Task<bool> FileExists(string filePath);
         string GetPathSeparator();
         Task<string> GetOffsetFile(params string[] filePath);
+        Task<string> GetOffsetFolder(params string[] filePath);
     }
 }

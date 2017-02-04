@@ -80,6 +80,17 @@ namespace SmartFaceAligner.Processor.Repo
             return _getFile(fOffset).FullName;
         }
 
+        public async Task<string> GetOffsetFolder(params string[] filePath)
+        {
+            var fOffset = string.Join(GetPathSeparator(), filePath);
+            var d = new DirectoryInfo(fOffset);
+            if (!d.Exists)
+            {
+                d.Create();
+            }
+            return d.FullName;
+        }
+
         public async Task<string> GetOffsetFile(string filePath)
         {
             var f = _getFile(

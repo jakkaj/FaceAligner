@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Entity\BingSearchResult.cs" />
     <Compile Include="Entity\Project.cs" />
+    <Compile Include="Entity\ProjectFolder.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
     <Compile Include="Interfaces\IFileRepo.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />

@@ -7,5 +7,6 @@ namespace Contracts.Interfaces
     {
         Task<Project>  GetProject(string projectName);
         Task SetProject(Project p);
+        Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType);
     }
 }
