@@ -120,25 +120,13 @@ namespace SmartFaceAligner.Processor.Repo
             return d.FullName;
         }
 
-        public async Task<string> GetOffsetFile(string filePath)
+        public async Task<string> GetOffsetFile(string basePath, string filePath)
         {
             var f = _getFile(
-                Path.Combine((await GetBaseFolder()).FullName, filePath));
+                Path.Combine(basePath, filePath));
             return f.FullName;
         }
-
        
-        public async Task<DirectoryInfo> GetBaseFolder()
-        {
-            var d = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"SmartFaceAligner");
-            var directory = new DirectoryInfo(d);
-            if (!directory.Exists)
-            {
-                directory.Create();
-            }
-
-            return directory;
-        }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }
 }

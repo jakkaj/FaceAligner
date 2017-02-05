@@ -38,37 +38,47 @@ namespace SmartFaceAligner.Processor.Services
 
         }
 
-        async Task<string> _getProjectFile(string projectName)
+        async Task<string> _getProjectFile(string projectFile)
         {
-            var projectPath = await _fileRepo.GetOffsetFile(projectName, ProcessorContstants.FileNames.ProjectRoot);
+            var projectPath = await _fileRepo.GetOffsetFile(projectFile, ProcessorContstants.FileNames.ProjectRoot);
             return projectPath;
         }
 
-        public async Task<Project>  GetProject(string projectName)
+        public async Task<Project> CreateProject(string projectName, string projectDirectory)
         {
-            return await _getProject(projectName);
+            var p = await GetProject(projectDirectory);
+            p.Name = projectName;
+            await SetProject(p);
+            return p;
+        }
+
+        public async Task<Project>  GetProject(string projectDirectory)
+        {
+            return await _getProject(projectDirectory);
         }
 
         public async Task SetProject(Project p)
-        {
-            var projectPath = await _getProjectFile(p.Name);
-            await _fileRepo.Write(projectPath, JsonConvert.SerializeObject(p));
+        { 
+            await _fileRepo.Write(p.FilePath, JsonConvert.SerializeObject(p));
         }
 
-        async Task<Project> _getProject(string projectName)
+        async Task<Project> _getProject(string projectDirectory)
         {
-            var projectPath = await _getProjectFile(projectName);
+            var projectPath = await _getProjectFile(projectDirectory);
+
             if (await _fileRepo.FileExists(projectPath))
             {
                 var projectData = await _fileRepo.ReadText(projectPath);
+               
                 var project = JsonConvert.DeserializeObject<Project>(projectData);
+                project.FilePath = projectPath;
                 return project;
             }
 
             var newProject = new Project
             {
                 Id = Guid.NewGuid(),
-                Name = projectName
+                FilePath = projectPath
             };
 
             await SetProject(newProject);

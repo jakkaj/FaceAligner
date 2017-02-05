@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 namespace Contracts.Entity
 {
@@ -7,5 +8,8 @@ namespace Contracts.Entity
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+
+        [JsonIgnore]
+        public string FilePath { get; set; }
     }
 }

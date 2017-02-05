@@ -74,7 +74,8 @@ namespace SmartFaceAligner.View.Search
         async void _doSearch()
         {
             var result = await _searchService.SearchImages(SearchQuery, 25, 0);
-
+            
+            //Just trying out local functions. Seems pretty cool
             SearchItemViewModel Wrap(Value value)
             {
                 var searchResultVm = Scope.Resolve<SearchItemViewModel>();

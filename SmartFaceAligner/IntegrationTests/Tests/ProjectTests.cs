@@ -21,11 +21,11 @@ namespace IntegrationTests.Tests
             var pService = Resolve<IProjectService>();
             var fileRepo = Resolve<IFileRepo>();
 
-            var testProject = await pService.GetProject("TestProject");
+            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject");
 
             Assert.IsNotNull(testProject);
 
-            var pFile = await fileRepo.GetOffsetFile("TestProject", ProcessorContstants.FileNames.ProjectRoot);
+            var pFile = await fileRepo.GetOffsetFile("c:\\temp\\testproject", ProcessorContstants.FileNames.ProjectRoot);
 
             var fileInfo = new FileInfo(pFile);
 
@@ -38,11 +38,11 @@ namespace IntegrationTests.Tests
             var pService = Resolve<IProjectService>();
             var fileRepo = Resolve<IFileRepo>();
 
-            var testProject = await pService.GetProject("TestProject");
+            var testProject = await pService.GetProject("c:\\temp\\testproject");
 
             Assert.IsNotNull(testProject);
 
-            var pFile = await fileRepo.GetOffsetFile("TestProject", ProcessorContstants.FileNames.ProjectRoot);
+            var pFile = await fileRepo.GetOffsetFile("c:\\temp\\testproject", ProcessorContstants.FileNames.ProjectRoot);
 
             var fileInfo = new FileInfo(pFile);
 
