@@ -96,6 +96,10 @@
     <Compile Include="View\NewProject\NewProjectStartView.xaml.cs">
       <DependentUpon>NewProjectStartView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Project\ProjectView.model.cs" />
+    <Compile Include="View\Project\ProjectView.xaml.cs">
+      <DependentUpon>ProjectView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Search\SearchItemViewModel.cs" />
     <Compile Include="View\Search\SearchPreviewView.model.cs" />
     <Compile Include="View\Search\SearchPreviewView.xaml.cs">
@@ -126,6 +130,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\NewProject\NewProjectStartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Project\ProjectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

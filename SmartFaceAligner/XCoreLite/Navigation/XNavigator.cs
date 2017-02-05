@@ -77,7 +77,25 @@ namespace XCoreLite.Navigation
 
         }
 
-        public async Task NavigateTo<T>(Func<T, Task> createdCallback = null)
+        public async Task NavigateTo<T>()
+            where T : ViewModel
+        {
+            await _navigateTo<T>(null, null);
+        }
+
+        public async Task NavigateTo<T>(Action<T> createdCallback)
+            where T : ViewModel
+        {
+            await _navigateTo<T>(null, createdCallback);
+        }
+
+        public async Task NavigateTo<T>(Func<T, Task> createdCallback)
+            where T : ViewModel
+        {
+            await _navigateTo<T>(createdCallback, null);
+        }
+
+        private async Task _navigateTo<T>(Func<T, Task> createdCallback, Action<T> createdActionCallback)
             where T : ViewModel
         {
             var newViewModel = _scope.Resolve<T>();
@@ -91,6 +109,8 @@ namespace XCoreLite.Navigation
             {
                 await createdCallback(newViewModel);
             }
+
+            createdActionCallback?.Invoke(newViewModel);
 
             await newViewModel.Initialised();
 

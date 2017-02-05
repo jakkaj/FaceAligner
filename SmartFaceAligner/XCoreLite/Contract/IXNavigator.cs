@@ -8,10 +8,16 @@ namespace XCoreLite.Contract
     {
         Task NavigateBack();
 
-        Task NavigateTo<T>(Func<T, Task> createdCallback = null)
+        Task NavigateTo<T>(Func<T, Task> createdCallback)
+            where T : ViewModel;
+
+        Task NavigateTo<T>(Action<T> createdCallback)
             where T : ViewModel;
 
 
         Task NavigateBackTo<T>();
+
+        Task NavigateTo<T>()
+            where T : ViewModel;
     }
 }

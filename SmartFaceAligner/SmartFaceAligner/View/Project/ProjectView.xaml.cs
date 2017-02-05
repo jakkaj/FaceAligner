@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,21 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SmartFaceAligner.View
+namespace SmartFaceAligner.View.Project
 {
     /// <summary>
-    /// Interaction logic for HomeView.xaml
+    /// Interaction logic for ProjectView.xaml
     /// </summary>
-    public partial class HomeView : Page
+    public partial class ProjectView : Page
     {
-        public HomeView()
+        public ProjectView()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

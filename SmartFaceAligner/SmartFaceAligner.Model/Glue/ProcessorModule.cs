@@ -18,7 +18,7 @@ namespace SmartFaceAligner.Processor.Glue
             builder.RegisterType<ConfigService>().AsImplementedInterfaces().SingleInstance();
 
             builder.Register(
-                (c, r) => new FaceServiceClient(c.Resolve<IConfig>()[ProcessorContstants.Settings.SubsKeys]));
+                (c, r) => new FaceServiceClient(c.Resolve<IConfig>()[Constants.Settings.SubsKeys]));
 
             base.Load(builder);
         }

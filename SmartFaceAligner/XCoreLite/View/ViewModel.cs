@@ -48,7 +48,19 @@ namespace XCoreLite.View
             return Navigator.NavigateBackTo<T>();
         }
 
-        public Task NavigateTo<T>(Func<T, Task> createdCallback = null)
+        public Task NavigateTo<T>()
+            where T : ViewModel
+        {
+            return Navigator.NavigateTo<T>();
+        }
+
+        public Task NavigateTo<T>(Func<T, Task> createdCallback)
+            where T : ViewModel
+        {
+            return Navigator.NavigateTo<T>(createdCallback);
+        }
+
+        public Task NavigateTo<T>(Action<T> createdCallback)
             where T : ViewModel
         {
             return Navigator.NavigateTo<T>(createdCallback);

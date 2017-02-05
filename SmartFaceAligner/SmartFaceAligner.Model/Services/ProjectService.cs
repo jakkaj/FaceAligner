@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,12 +21,15 @@ namespace SmartFaceAligner.Processor.Services
             _fileRepo = fileRepo;
         }
 
+        public async Task<Project> OpenProject(string projectFile)
+        {
+            return await _getProject(projectFile);
+        }
+
         public async Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType)
         {
-            var projectPath = await _getProjectFile(p.Name);
-            
             //This will create the directory if it doesnt already exist
-            var folder = await _fileRepo.GetOffsetFolder(projectPath, folderType.ToString(), ProcessorContstants.FileNames.FolderRoot);
+            var folder = await _fileRepo.GetOffsetFolder(await _fileRepo.GetParentFolder(p.FilePath), folderType.ToString(), Constants.FileNames.FolderRoot);
 
             var projectFolder = new ProjectFolder
             {
@@ -40,21 +44,24 @@ namespace SmartFaceAligner.Processor.Services
 
         async Task<string> _getProjectFile(string projectFile)
         {
-            var projectPath = await _fileRepo.GetOffsetFile(projectFile, ProcessorContstants.FileNames.ProjectRoot);
-            return projectPath;
+            var attr = File.GetAttributes(projectFile);
+
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                var projectPath = await _fileRepo.GetOffsetFile(projectFile, Constants.FileNames.ProjectRoot);
+                return projectPath;
+            }
+
+            return projectFile;
+
         }
 
         public async Task<Project> CreateProject(string projectName, string projectDirectory)
         {
-            var p = await GetProject(projectDirectory);
+            var p = await _getProject(projectDirectory);
             p.Name = projectName;
             await SetProject(p);
             return p;
-        }
-
-        public async Task<Project>  GetProject(string projectDirectory)
-        {
-            return await _getProject(projectDirectory);
         }
 
         public async Task SetProject(Project p)

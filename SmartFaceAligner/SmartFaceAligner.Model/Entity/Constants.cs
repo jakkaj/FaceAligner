@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartFaceAligner.Processor.Entity
 {
-    public static class ProcessorContstants
+    public static class Constants
     {
         public static class FileNames
         {

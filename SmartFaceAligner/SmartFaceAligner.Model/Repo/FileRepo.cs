@@ -62,6 +62,11 @@ namespace SmartFaceAligner.Processor.Repo
             return f;
         }
 
+        public async Task<string> GetParentFolder(string path)
+        {
+            return Path.GetDirectoryName(path);
+        }
+
         public async Task<bool> FileExists(string filePath)
         {
             var f = new FileInfo(filePath);
@@ -70,7 +75,7 @@ namespace SmartFaceAligner.Processor.Repo
 
         public string GetPathSeparator()
         {
-            return Path.PathSeparator.ToString();
+            return Path.DirectorySeparatorChar.ToString();
         }
 
         public async Task<bool> DirectoryExists(string directory)

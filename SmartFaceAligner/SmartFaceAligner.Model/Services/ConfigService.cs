@@ -19,16 +19,16 @@ namespace SmartFaceAligner.Processor.Services
             _settings = _getSettings();
         }
 
-        public bool NeedsConfig => GetSavedSetting(ProcessorContstants.Settings.SubsKeys) == null;
+        public bool NeedsConfig => GetSavedSetting(Constants.Settings.SubsKeys) == null;
         public string FaceApiSubscriptionKey 
         {
             get
             {
-                return GetSavedSetting(ProcessorContstants.Settings.SubsKeys);
+                return GetSavedSetting(Constants.Settings.SubsKeys);
             }
             set
             {
-                SaveSetting(ProcessorContstants.Settings.SubsKeys, value);
+                SaveSetting(Constants.Settings.SubsKeys, value);
             }
         }
 
@@ -37,11 +37,11 @@ namespace SmartFaceAligner.Processor.Services
         {
             get
             {
-                return GetSavedSetting(ProcessorContstants.Settings.BingKeys);
+                return GetSavedSetting(Constants.Settings.BingKeys);
             }
             set
             {
-                SaveSetting(ProcessorContstants.Settings.BingKeys, value);
+                SaveSetting(Constants.Settings.BingKeys, value);
             }
         }
 

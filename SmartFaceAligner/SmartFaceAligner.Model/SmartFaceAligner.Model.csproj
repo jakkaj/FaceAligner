@@ -67,7 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entity\ProcessorContstants.cs" />
+    <Compile Include="Entity\Constants.cs" />
     <Compile Include="Entity\Settings.cs" />
     <Compile Include="Glue\Navigator.cs" />
     <Compile Include="Glue\ProcessorModule.cs" />

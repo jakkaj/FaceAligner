@@ -17,5 +17,6 @@ namespace Contracts.Interfaces
         Task<string> GetOffsetFolder(params string[] filePath);
         Task<int> CopyFolder(string source, string target);
         Task<bool> DirectoryExists(string directory);
+        Task<string> GetParentFolder(string path);
     }
 }
