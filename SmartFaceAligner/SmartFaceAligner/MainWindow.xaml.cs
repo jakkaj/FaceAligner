@@ -17,6 +17,7 @@ using SmartFaceAligner.Glue;
 using SmartFaceAligner.Processor.Glue;
 using SmartFaceAligner.Util;
 using SmartFaceAligner.View;
+using SmartFaceAligner.View.Search;
 using SmartFaceAligner.View.Setup;
 using XamlingCore.Portable.Data.Glue;
 using XCoreLite.Contract;
@@ -51,6 +52,11 @@ namespace SmartFaceAligner
         private async void MenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             await _container.Resolve<IXNavigator>().NavigateTo<SetupViewModel>();
+        }
+
+        private async void BingSearch_OnClick(object sender, RoutedEventArgs e)
+        {
+            await _container.Resolve<IXNavigator>().NavigateTo<SearchViewModel>();
         }
     }
 }

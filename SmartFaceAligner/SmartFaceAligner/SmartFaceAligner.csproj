@@ -40,6 +40,9 @@
     <Reference Include="Autofac, Version=4.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.3.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="ExtensionGoo.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtensionGoo.0.0.8\lib\netstandard1.2\ExtensionGoo.Standard.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.4\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
     </Reference>
@@ -92,6 +95,15 @@
     <Compile Include="View\NewProject\NewProjectStartView.xaml.cs">
       <DependentUpon>NewProjectStartView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Search\SearchItemViewModel.cs" />
+    <Compile Include="View\Search\SearchPreviewView.model.cs" />
+    <Compile Include="View\Search\SearchPreviewView.xaml.cs">
+      <DependentUpon>SearchPreviewView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Search\SearchView.model.cs" />
+    <Compile Include="View\Search\SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setup\SetupView.model.cs" />
     <Compile Include="View\Setup\SetupView.xaml.cs">
       <DependentUpon>SetupView.xaml</DependentUpon>
@@ -113,6 +125,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\NewProject\NewProjectStartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Search\SearchPreviewView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Search\SearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -149,6 +169,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BingLibrary\BingLibrary.csproj">
+      <Project>{A5C5B749-E2BA-4D26-85BD-645B8B6391A7}</Project>
+      <Name>BingLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Contracts\Contracts.csproj">
       <Project>{b48e8113-a201-43a1-ae34-56a14daeda33}</Project>
       <Name>Contracts</Name>

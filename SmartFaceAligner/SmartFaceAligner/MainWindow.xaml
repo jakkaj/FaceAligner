@@ -10,6 +10,7 @@
         <Menu Width="Auto" Height="20" Background="Transparent" DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="Edit Key" Click="MenuItem_OnClick" />
+                <MenuItem Header="Bing Search" Click="BingSearch_OnClick" />
             </MenuItem>
         </Menu>
         <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" NavigationUIVisibility="Hidden"/>

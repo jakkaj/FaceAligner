@@ -1,0 +1,18 @@
+﻿<Page x:Class="SmartFaceAligner.View.Search.SearchView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:SmartFaceAligner.View.Search"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="SearchView">
+
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Search Query"></TextBlock>
+            <TextBox Text="{Binding SearchQuery, Mode=TwoWay}"></TextBox>
+            <Button Command="{Binding SearchCommand}" Content="Search"></Button>
+        </StackPanel>
+    </Grid>
+</Page>

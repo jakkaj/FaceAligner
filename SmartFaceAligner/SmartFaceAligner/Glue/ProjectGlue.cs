@@ -1,6 +1,7 @@
 ﻿using System.Windows.Navigation;
 using System.Windows.Threading;
 using Autofac;
+using BingLibrary;
 using SmartFaceAligner.Processor.Glue;
 using SmartFaceAligner.Util;
 using XamlingCore.NET.Glue;
@@ -24,7 +25,7 @@ namespace SmartFaceAligner.Glue
 
             Builder.RegisterModule<XCoreLiteModule>();
             Builder.RegisterModule<ProcessorModule>();
-
+            Builder.RegisterModule<BingModule>();
             Builder.Register((c) => _navigationService);
             Builder.Register((c) => new XDispatcher(Dispatcher.CurrentDispatcher)).As<IDispatcher>();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Autofac;
 using XamlingCore.Portable.View;
 using XamlingCore.Portable.View.ViewModel.Base;
 using XCoreLite.Contract;
@@ -12,6 +13,7 @@ namespace XCoreLite.View
     public class ViewModel : NotifyBase, IDisposable
     {
         public IXNavigator Navigator { get; set; }
+        public ILifetimeScope Scope { get; set; }
 
 #pragma warning disable 1998
         public virtual async Task Initialised()
