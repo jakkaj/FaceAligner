@@ -73,6 +73,35 @@ namespace SmartFaceAligner.Processor.Repo
             return Path.PathSeparator.ToString();
         }
 
+        public async Task<bool> DirectoryExists(string directory)
+        {
+            var d = new DirectoryInfo(directory);
+            return d.Exists;
+        }
+
+        public async Task<int> CopyFolder(string source, string target)
+        {
+            var dSource = new DirectoryInfo(source);
+            var dTarget = new DirectoryInfo(target);
+
+            if (!dSource.Exists)
+            {
+                dSource.Create();
+            }
+            if (!dTarget.Exists)
+            {
+                dTarget.Create();
+            }
+
+            var sourceFiles = dSource.GetFiles();
+
+            foreach (var f in sourceFiles)
+            {
+                f.CopyTo(Path.Combine(dTarget.FullName, f.Name));
+            }
+            return sourceFiles.Length;
+        }
+
         public async Task<string> GetOffsetFile(params string[] filePath)
         {
             var fOffset = string.Join(GetPathSeparator(), filePath);
