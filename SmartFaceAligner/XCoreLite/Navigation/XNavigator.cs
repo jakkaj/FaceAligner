@@ -26,7 +26,22 @@ namespace XCoreLite.Navigation
             _navigationService = navigationService;
         }
 
-      
+        public async Task NavigateBackTo<T>()
+        {
+            do
+            {
+                if (_navigationService.Content is FrameworkElement element)
+                {
+                    if (element.DataContext.GetType() == typeof(T))
+                    {
+                        return;
+                    }
+                }
+                await NavigateBack();
+                await Task.Delay(500);
+            } while (true);
+
+        }
       
         public async Task NavigateBack()
         {

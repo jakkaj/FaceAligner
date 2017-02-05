@@ -13,6 +13,6 @@
                 <MenuItem Header="Bing Search" Click="BingSearch_OnClick" />
             </MenuItem>
         </Menu>
-        <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" NavigationUIVisibility="Visible"/>
     </DockPanel>
 </Window>

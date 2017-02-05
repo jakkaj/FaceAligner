@@ -9,7 +9,7 @@
       Title="SearchView">
 
     <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
             <TextBlock Text="Search Query"></TextBlock>
             <TextBox Text="{Binding SearchQuery, Mode=TwoWay}"></TextBox>
             <Button Command="{Binding SearchCommand}" Content="Search"></Button>

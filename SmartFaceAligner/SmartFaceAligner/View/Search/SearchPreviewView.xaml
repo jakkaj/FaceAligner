@@ -9,7 +9,15 @@
       Title="SearchPreviewView">
 
     <Grid>
+        
         <TextBlock Text="{Binding SearchQuery}" FontSize="28"></TextBlock>
+
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+            <TextBlock Text="Download count (max 2000)"></TextBlock>
+            <TextBox Text="{Binding DownloadCap, Mode=TwoWay}"/>
+            <Button Command="{Binding DownloadCommand}"  Content="Download"></Button>
+        </StackPanel>
+        
         <ListView Margin="0,50,0,0" ItemsSource="{Binding SearchResult}" 
                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"

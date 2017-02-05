@@ -43,10 +43,15 @@ namespace XCoreLite.View
             return new XCommand(action);
         }
 
-        public async Task NavigateTo<T>(Func<T, Task> createdCallback = null)
+        public Task NavigateBackTo<T>()
+        {
+            return Navigator.NavigateBackTo<T>();
+        }
+
+        public Task NavigateTo<T>(Func<T, Task> createdCallback = null)
             where T : ViewModel
         {
-            await Navigator.NavigateTo<T>(createdCallback);
+            return Navigator.NavigateTo<T>(createdCallback);
         }
 
         public void NavigateBack()
