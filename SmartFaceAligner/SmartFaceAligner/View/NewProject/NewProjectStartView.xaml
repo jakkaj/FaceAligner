@@ -10,8 +10,8 @@
 
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="600">
-            <TextBox Text="Enter a project name"/>
-            <TextBlock Text="{Binding ProjectName, Mode=TwoWay}"></TextBlock>
+            <TextBlock Text="Enter a project name"/>
+            <TextBox Text="{Binding ProjectName, Mode=TwoWay}"></TextBox>
             <Button Command="{Binding CreateCommand}" Content="Create"></Button>
         </StackPanel>
     </Grid>

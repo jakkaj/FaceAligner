@@ -34,7 +34,7 @@ namespace SmartFaceAligner.Processor.Services
             }
 
             var target = await _projectService.GetFolder(p, ProjectFolderTypes.Staging);
-            var result = await _fileRepo.CopyFolder(sourceFolder, target.FolderPath);
+            var result = await _fileRepo.CopyFolder(sourceFolder, target.FolderPath, new List<string>{".jpg", ".jpeg", ".png"});
 
             return result;
         }

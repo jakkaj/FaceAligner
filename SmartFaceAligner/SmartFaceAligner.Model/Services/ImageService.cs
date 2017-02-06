@@ -38,15 +38,26 @@ namespace SmartFaceAligner.Processor.Services
                 return await _cacheService.GetCacheFileName(fileName, Constants.Cache.Thumbnail);
             }
 
-            var image = Image.FromFile(fileName);
-            var thum = image.GetThumbnailImage(100, 100, () => false, IntPtr.Zero);
-            
-            using (var ms = new MemoryStream())
+            try
             {
-                thum.Save(ms, ImageFormat.Jpeg);
-                var b = ms.ToArray();
-                return await _cacheService.SaveCache(fileName, Constants.Cache.Thumbnail, b);
+
+                var image = Image.FromFile(fileName);
+                var thum = image.GetThumbnailImage(100, 100, () => false, IntPtr.Zero);
+
+                using (var ms = new MemoryStream())
+                {
+                    thum.Save(ms, ImageFormat.Jpeg);
+                    var b = ms.ToArray();
+                    return await _cacheService.SaveCache(fileName, Constants.Cache.Thumbnail, b);
+                }
             }
+            catch
+            {
+                
+            }
+
+            return "";
+
 
         }
     }

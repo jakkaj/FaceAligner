@@ -77,6 +77,10 @@ namespace SmartFaceAligner.Processor.Repo
 
         public async Task<bool> FileExists(string filePath)
         {
+            if (filePath == null)
+            {
+                return false;
+            }
             var f = new FileInfo(filePath);
             return f.Exists;
         }
@@ -92,7 +96,7 @@ namespace SmartFaceAligner.Processor.Repo
             return d.Exists;
         }
 
-        public async Task<int> CopyFolder(string source, string target)
+        public async Task<int> CopyFolder(string source, string target, List<string> allowedExtensions)
         {
             var dSource = new DirectoryInfo(source);
             var dTarget = new DirectoryInfo(target);
@@ -108,8 +112,14 @@ namespace SmartFaceAligner.Processor.Repo
 
             var sourceFiles = dSource.GetFiles();
 
+            var allowedLower = allowedExtensions.Select(_ => _.ToLower()).ToList();
+
             foreach (var f in sourceFiles)
             {
+                if (!allowedLower.Contains(f.Extension.ToLower()))
+                {
+                    continue;
+                }
                 f.CopyTo(Path.Combine(dTarget.FullName, f.Name));
             }
             return sourceFiles.Length;

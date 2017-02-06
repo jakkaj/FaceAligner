@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SmartFaceAligner.View.Project"
       xmlns:util="clr-namespace:SmartFaceAligner.Util"
+      xmlns:face="clr-namespace:SmartFaceAligner.View.Face"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="ProjectView">
@@ -21,9 +22,11 @@
             <Button Content="Align"></Button>
 
         </StackPanel>
-        <ListView ItemsSource="{Binding FaceItems}" 
+        <face:FaceView Width="500" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding SelectedFace}" Background="Green"/>
+        <ListView x:Name="ImageList" ItemsSource="{Binding FaceItems}"
                   VerticalAlignment="Bottom" 
                   HorizontalAlignment="Stretch" Height="120"
+                 
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -32,6 +35,7 @@
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
+          
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Horizontal"/>

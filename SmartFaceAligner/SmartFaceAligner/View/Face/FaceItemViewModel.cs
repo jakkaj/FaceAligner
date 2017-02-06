@@ -38,7 +38,7 @@ namespace SmartFaceAligner.View.Face
         {
             get
             {
-                if (_thumbnail == null)
+                if (_thumbnail == null && FileName != null)
                 {
                     _loadImage();
                     return null;
