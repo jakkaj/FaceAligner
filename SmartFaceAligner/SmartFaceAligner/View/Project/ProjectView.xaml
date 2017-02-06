@@ -4,11 +4,39 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SmartFaceAligner.View.Project"
+      xmlns:util="clr-namespace:SmartFaceAligner.Util"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="ProjectView">
-
+<Page.Resources>
+        <util:Bool2Vis x:Key="Bool2Vis"/>
+</Page.Resources>
     <Grid>
-        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Button Content="Import" Command="{Binding ImportCommand}" Visibility="{Binding HasImported, Converter={StaticResource Bool2Vis}}"></Button>
+            <TextBox Text="&#xE73E;" Foreground="Green" FontSize="30" FontFamily="Segoe MDL2 Assets"></TextBox>
+            <Button Content="Filter faces"></Button>
+            <Button Content="Filter person"></Button>
+            <Button Content="Sort by age"></Button>
+            <Button Content="Align"></Button>
+
+        </StackPanel>
+        <ListView ItemsSource="{Binding FaceItems}" 
+                  VerticalAlignment="Bottom" 
+                  HorizontalAlignment="Stretch" Height="120"
+                  ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="100">
+                        <Image Width="100" Height="100" Source="{Binding FileName}"></Image>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
     </Grid>
 </Page>

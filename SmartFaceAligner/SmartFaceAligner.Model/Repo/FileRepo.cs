@@ -131,6 +131,27 @@ namespace SmartFaceAligner.Processor.Repo
                 Path.Combine(basePath, filePath));
             return f.FullName;
         }
+
+        public async Task<bool> HasFiles(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            return dirInfo.GetFiles().Length > 0;
+        }
+
+        public async Task DeleteFiles(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            foreach (var fileInfo in dirInfo.GetFiles())
+            {
+                fileInfo.Delete();
+            }
+        }
+
+        public async Task<List<string>> GetFiles(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            return dirInfo.GetFiles().Select(_ => _.FullName).ToList();
+        }
        
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }

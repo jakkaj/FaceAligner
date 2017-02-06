@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Contracts.Interfaces
@@ -18,5 +19,8 @@ namespace Contracts.Interfaces
         Task<int> CopyFolder(string source, string target);
         Task<bool> DirectoryExists(string directory);
         Task<string> GetParentFolder(string path);
+        Task<bool> HasFiles(string path);
+        Task DeleteFiles(string path);
+        Task<List<string>> GetFiles(string path);
     }
 }

@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFaceAligner.Model", "S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D7B708E4-242D-4628-B0CE-848BDDB1B4B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartFaceAligner.FaceSmarts", "StartFaceAligner.FaceSmarts\StartFaceAligner.FaceSmarts.csproj", "{00A5E07B-A94A-45A2-AC7D-B3AF62BD417C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFA047FB-E6C6-42D0-A66B-EA53FCEE1FC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00A5E07B-A94A-45A2-AC7D-B3AF62BD417C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00A5E07B-A94A-45A2-AC7D-B3AF62BD417C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00A5E07B-A94A-45A2-AC7D-B3AF62BD417C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00A5E07B-A94A-45A2-AC7D-B3AF62BD417C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -29,7 +29,7 @@ namespace SmartFaceAligner.Processor.Services
         public async Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType)
         {
             //This will create the directory if it doesnt already exist
-            var folder = await _fileRepo.GetOffsetFolder(await _fileRepo.GetParentFolder(p.FilePath), folderType.ToString(), Constants.FileNames.FolderRoot);
+            var folder = await _fileRepo.GetOffsetFolder(await _fileRepo.GetParentFolder(p.FilePath), folderType.ToString());
 
             var projectFolder = new ProjectFolder
             {

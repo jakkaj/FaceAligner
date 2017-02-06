@@ -58,5 +58,18 @@ namespace IntegrationTests.Tests
             Assert.IsTrue(Directory.Exists(folderAligned.FolderPath));
 
         }
+
+        [TestMethod]
+        public async Task Import()
+        {
+            var startPath = @"C:\Users\jakka\Pictures\Obama";
+
+            var pService = Resolve<IProjectService>();
+            var fileServie = Resolve<IFileManagementService>();
+            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject");
+            var fCount = await fileServie.ImportFolder(testProject, startPath);
+
+            Assert.IsTrue(fCount > 0);
+        }
     }
 }
