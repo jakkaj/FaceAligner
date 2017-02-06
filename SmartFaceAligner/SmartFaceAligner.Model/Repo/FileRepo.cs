@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.Interfaces;
+using XamlingCore.NET.Implementations;
 
 namespace SmartFaceAligner.Processor.Repo
 {
@@ -12,6 +13,32 @@ namespace SmartFaceAligner.Processor.Repo
     {
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
+
+        Dictionary<string,string> _hashCache = new Dictionary<string, string>();
+
+        public async Task<string> GetHash(string fileName)
+        {
+            if (_hashCache.ContainsKey(fileName))
+            {
+                return _hashCache[fileName];
+            }
+
+            var f = _getFile(fileName);
+
+            if (!f.Exists)
+            {
+                return null;
+            }
+
+            var h = new HashHelper();
+
+            var d = await ReadBytes(fileName);
+
+            var hMade = h.Hash(d);
+            _hashCache.Add(fileName, hMade);
+
+            return hMade;
+        }
 
         public async Task<string> GetLocalStoragePath(string fileName)
         {

@@ -28,7 +28,7 @@ namespace SmartFaceAligner.Processor.Services
         {
             var folder = await _projectService.GetFolder(p, ProjectFolderTypes.Data);
 
-            return await _fileRepo.GetOffsetFile(folder.FolderPath, _getKey(fileName));
+            return await _fileRepo.GetOffsetFile(folder.FolderPath, await _getKey(fileName));
         }
 
         public async Task SetFaceData(FaceData f)
@@ -44,15 +44,17 @@ namespace SmartFaceAligner.Processor.Services
             if (await _fileRepo.FileExists(file))
             {
                 var data = await _fileRepo.ReadText(file);
-                return JsonConvert.DeserializeObject<FaceData>(data);
+                var fd = JsonConvert.DeserializeObject<FaceData>(data);
+                fd.Project = p;
+                return fd;
             }
 
             return new FaceData { FileName = fileName, Project = p };
         }
 
-        string _getKey(string fileName)
+        async Task<string> _getKey(string fileName)
         {
-            return HashHelper.CreateSHA1(fileName + Constants.Cache.FaceData);
+            return await _fileRepo.GetHash(fileName);
         }
     }
 }
