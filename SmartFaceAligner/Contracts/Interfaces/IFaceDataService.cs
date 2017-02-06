@@ -6,6 +6,6 @@ namespace Contracts.Interfaces
     public interface IFaceDataService
     {
         Task SetFaceData(FaceData f);
-        Task<FaceData> GetFaceData(string fileName);
+        Task<FaceData> GetFaceData(Project p, string fileName);
     }
 }

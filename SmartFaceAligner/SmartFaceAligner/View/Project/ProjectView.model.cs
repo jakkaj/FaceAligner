@@ -15,6 +15,7 @@ using ExtensionGoo.Standard.Extensions;
 using SmartFaceAligner.View.Face;
 using XCoreLite.View;
 using SmartFaceAligner.Messages;
+using SmartFaceAligner.Util;
 using XamlingCore.Portable.Messages.XamlingMessenger;
 using XamlingCore.Portable.Util.TaskUtils;
 
@@ -38,8 +39,9 @@ namespace SmartFaceAligner.View.Project
         public ICommand FilterFacesCommand => Command(_filterFaces);
         public ICommand FilterPersonCommand => Command(_filterPersonCommand);
         public ICommand RunFilterCommand => Command(_runFilter);
-
-  
+        public ICommand SortByAgeCommand => Command(_sortByAge);
+        public ICommand AlignCommand => Command(_align);
+       
 
         public FaceItemViewModel SelectedFace
         {
@@ -92,6 +94,35 @@ namespace SmartFaceAligner.View.Project
             }
         }
 
+        private async void _align()
+        {
+            await _faceService.PrepAlign(Project);
+            async Task FilterLocal(FaceData faceData)
+            {
+                await _faceService.Align(Project, FaceItems.First().FaceData, faceData);
+            }
+
+            var tasks = new Queue<Func<Task>>();
+
+            foreach (var f in FaceItems.Where(_ => _.FaceData.Face != null))
+            {
+                tasks.Enqueue(() => FilterLocal(f.FaceData));
+            }
+
+            await tasks.Parallel(4);
+        }
+
+        private void _sortByAge()
+        {
+            var fTemp = FaceItems.OrderBy(_ => _.FaceData.Face.FaceAttributes.Age);
+
+            var filtered = fTemp.Where(_ => _.FaceData.Face != null).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
         private void _runFilter()
         {
             var fTemp = FaceItems.ToList();
@@ -110,14 +141,14 @@ namespace SmartFaceAligner.View.Project
                 await _faceService.CognitiveDetectFace(Project, faceData);
             }
 
-            var tasks = new List<Task>();
+            var tasks = new Queue<Func<Task>>();
 
             foreach (var f in FaceItems.Where(_=>_.FaceData.Face == null))
             {
-                tasks.Add(TaskThrottler.Get("Faces", 8).Throttle(() => FilterLocal(f.FaceData)));
+                tasks.Enqueue(()=> FilterLocal(f.FaceData));
             }
 
-            await Task.WhenAll(tasks);
+            await tasks.Parallel(4);
 
 ;        }
 
@@ -154,7 +185,7 @@ namespace SmartFaceAligner.View.Project
             async Task Wrap(string f)
             {
                 var vm = Scope.Resolve<FaceItemViewModel>();
-                vm.FaceData = await _faceDataService.GetFaceData(f);
+                vm.FaceData = await _faceDataService.GetFaceData(Project, f);
                 FaceItems.Add(vm);
             }
 

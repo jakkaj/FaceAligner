@@ -39,6 +39,41 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             _logService = logService;
         }
 
+        public async Task PrepAlign(Project p)
+        {
+            await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.RecPerson);
+        }
+ 
+        public async Task Align(Project p, FaceData face1, FaceData face2)
+        {
+            if (face1.Face == null || face2.Face == null)
+            {
+                return;
+            }
+
+            if (!FaceFilter.SimpleCheck(face1.Face, face2.Face))
+            {
+                return;
+            }
+
+            var a = new ImageAligner();
+
+            var img1 = await _fileRepo.ReadBytes(face1.FileName);
+            var img2 = await _fileRepo.ReadBytes(face2.FileName);
+
+            var result = await a.AlignImages(img1, img2, face1.Face, face2.Face);
+
+            if (result == null)
+            {
+                return;
+            }
+
+            var folderSave = await _projectService.GetFolder(p, ProjectFolderTypes.Aligned);
+
+            await _fileRepo.Write(
+                await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(face2.FileName)), result);
+        }
+
         public async Task CognitiveDetectFace(Project p, FaceData face)
         {
             _logService.Log($"Parsing face: {face.FileName}");

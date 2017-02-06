@@ -20,8 +20,8 @@
             <Button Content="Select filter person" Click="ButtonBase_OnClick"></Button>
             <Button Content="Process faces" Command="{Binding FilterPersonCommand}"></Button>
             <Button Content="Run Filter" Command="{Binding RunFilterCommand}"></Button>
-            <Button Content="Sort by age"></Button>
-            <Button Content="Align"></Button>
+            <Button Content="Sort by age" Command="{Binding SortByAgeCommand}"></Button>
+            <Button Content="Align" Command="{Binding AlignCommand}"></Button>
 
         </StackPanel>
         

@@ -38,7 +38,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     FaceAttributeType.Age,
                     //FaceAttributeType.Smile,
                     //FaceAttributeType.Glasses,
-                    //FaceAttributeType.HeadPose,
+                    FaceAttributeType.HeadPose,
                     //FaceAttributeType.FacialHair,
                     
                 });

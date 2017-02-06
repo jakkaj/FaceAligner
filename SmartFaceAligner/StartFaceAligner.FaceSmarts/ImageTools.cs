@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//thanks to @Darkseal from SO http://stackoverflow.com/questions/27835064/get-image-orientation-and-rotate-as-per-orientation
 
 namespace StartFaceAligner.FaceSmarts
 {

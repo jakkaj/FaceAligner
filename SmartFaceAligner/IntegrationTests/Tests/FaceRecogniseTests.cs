@@ -47,12 +47,12 @@ namespace IntegrationTests.Tests
                 {
                     if (f.IndexOf(ff) != -1)
                     {
-                        var d = await faceDataService.GetFaceData(f);
+                        var d = await faceDataService.GetFaceData(p, f);
                         data.Add(d);
                     }
                     else
                     {
-                        dataAll.Add(await faceDataService.GetFaceData(f));
+                        dataAll.Add(await faceDataService.GetFaceData(p, f));
                     }
                 }
             }
@@ -89,7 +89,7 @@ namespace IntegrationTests.Tests
 
             foreach (var f in files)
             {
-                dataAll.Add(await faceDataService.GetFaceData(f));
+                dataAll.Add(await faceDataService.GetFaceData(p, f));
             }
 
             foreach (var faceData in dataAll)

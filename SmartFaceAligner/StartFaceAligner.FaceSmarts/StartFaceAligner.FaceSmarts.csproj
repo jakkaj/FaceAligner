@@ -33,6 +33,9 @@
     <Reference Include="Emgu.CV.World">
       <HintPath>..\..\..\..\..\..\..\Emgu\emgucv-windesktop 3.1.0.2504\bin\Emgu.CV.World.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ProjectOxford.Face">
+      <HintPath>..\packages\Microsoft.ProjectOxford.Face.1.2.1.2\lib\portable-net45+wp80+win8+wpa81+aspnetcore50\Microsoft.ProjectOxford.Face.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,13 +46,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FaceHomography.cs" />
+    <Compile Include="HomographyMatrix.cs" />
+    <Compile Include="ImageAligner.cs" />
     <Compile Include="ImageTools.cs" />
     <Compile Include="LocalFaceDetector.cs" />
+    <Compile Include="Matcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Magick.NET-Q16-AnyCPU">
       <Version>7.0.4.700</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectOxford.Face">
+      <Version>1.2.1.2</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.3.0</Version>

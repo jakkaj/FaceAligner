@@ -1,4 +1,5 @@
 ﻿using Microsoft.ProjectOxford.Face.Contract;
+using Newtonsoft.Json;
 
 namespace Contracts.Entity
 {
@@ -8,5 +9,8 @@ namespace Contracts.Entity
         public bool? HasFace { get; set; }
 
         public Face Face { get; set; }
+
+        [JsonIgnore]
+        public Project Project { get; set; }
     }
 }

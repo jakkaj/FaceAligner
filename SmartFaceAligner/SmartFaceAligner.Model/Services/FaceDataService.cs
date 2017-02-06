@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Contracts.Entity;
 using Contracts.Interfaces;
+using Newtonsoft.Json;
 using SmartFaceAligner.Processor.Entity;
 using XamlingCore.NET.Implementations;
 using XamlingCore.Portable.Contract.Entities;
@@ -13,27 +14,40 @@ namespace SmartFaceAligner.Processor.Services
 {
     public class FaceDataService : IFaceDataService
     {
-        private readonly IEntityCache _cache;
+        private IFileRepo _fileRepo { get; }
+        private readonly IProjectService _projectService;
+      
 
-        public FaceDataService(IEntityCache cache)
+        public FaceDataService(IProjectService projectService, IFileRepo fileRepo)
         {
-            _cache = cache;
+            _fileRepo = fileRepo;
+            _projectService = projectService;
+        }
+
+        async Task<string> _getFile(Project p, string fileName)
+        {
+            var folder = await _projectService.GetFolder(p, ProjectFolderTypes.Data);
+
+            return await _fileRepo.GetOffsetFile(folder.FolderPath, _getKey(fileName));
         }
 
         public async Task SetFaceData(FaceData f)
         {
-            await _cache.SetEntity(_getKey(f.FileName), f);
+            var data = JsonConvert.SerializeObject(f);
+            await _fileRepo.Write(await _getFile(f.Project, f.FileName), data);
         }
 
-        public async Task<FaceData> GetFaceData(string fileName)
+        public async Task<FaceData> GetFaceData(Project p, string fileName)
         {
-            var cache = await _cache.GetEntity<FaceData>(_getKey(fileName));
-            if (cache != null)
+            var file = await _getFile(p, fileName);
+
+            if (await _fileRepo.FileExists(file))
             {
-                return cache;
+                var data = await _fileRepo.ReadText(file);
+                return JsonConvert.DeserializeObject<FaceData>(data);
             }
 
-            return new FaceData { FileName = fileName };
+            return new FaceData { FileName = fileName, Project = p };
         }
 
         string _getKey(string fileName)
