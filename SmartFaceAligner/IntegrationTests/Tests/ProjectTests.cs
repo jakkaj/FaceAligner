@@ -21,7 +21,7 @@ namespace IntegrationTests.Tests
             var pService = Resolve<IProjectService>();
             var fileRepo = Resolve<IFileRepo>();
 
-            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject");
+            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject", @"E:\Pictures Archive\Tom's Wedding");
 
             Assert.IsNotNull(testProject);
 
@@ -38,7 +38,7 @@ namespace IntegrationTests.Tests
             var pService = Resolve<IProjectService>();
             var fileRepo = Resolve<IFileRepo>();
 
-            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject");
+            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject", @"E:\Pictures Archive\Tom's Wedding");
 
             Assert.IsNotNull(testProject);
 
@@ -66,7 +66,7 @@ namespace IntegrationTests.Tests
 
             var pService = Resolve<IProjectService>();
             var fileServie = Resolve<IFileManagementService>();
-            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject");
+            var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject", @"E:\Pictures Archive\Tom's Wedding");
             var fCount = await fileServie.ImportFolder(testProject, startPath);
 
             Assert.IsTrue(fCount > 0);

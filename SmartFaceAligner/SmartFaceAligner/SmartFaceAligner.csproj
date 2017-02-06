@@ -96,6 +96,7 @@
     <Compile Include="MainWindowView.model.cs" />
     <Compile Include="Messages\ViewItemMessage.cs" />
     <Compile Include="Util\Bool2Vis.cs" />
+    <Compile Include="Util\RotationFlipper.cs" />
     <Compile Include="Util\XDispatcher.cs" />
     <Compile Include="View\Face\FaceItemViewModel.cs" />
     <Compile Include="View\Face\FaceView.xaml.cs">

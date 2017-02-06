@@ -168,7 +168,16 @@ namespace SmartFaceAligner.Processor.Repo
         public async Task<List<string>> GetFiles(string path)
         {
             var dirInfo = new DirectoryInfo(path);
-            return dirInfo.GetFiles().Select(_ => _.FullName).ToList();
+           
+            var l = dirInfo.GetFiles().Select(_ => _.FullName).ToList();
+
+            foreach (var child in dirInfo.GetDirectories())
+            {
+                l.AddRange(await GetFiles(child.FullName));
+            }
+
+            return l;
+
         }
        
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously

@@ -12,6 +12,12 @@
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="600">
             <TextBlock Text="Enter a project name"/>
             <TextBox Text="{Binding ProjectName, Mode=TwoWay}"></TextBox>
+            <TextBlock Text="Source Path"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <TextBox Text="{Binding SourceDir, Mode=TwoWay}" Width="300" HorizontalAlignment="Right"></TextBox>
+                <Button Content="Set Source Directory" Command="{Binding SetSourceDirectoryCommand}"></Button>
+            </StackPanel>
+           
             <Button Command="{Binding CreateCommand}" Content="Create"></Button>
         </StackPanel>
     </Grid>

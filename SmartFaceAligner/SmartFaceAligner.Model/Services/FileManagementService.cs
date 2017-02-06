@@ -22,8 +22,14 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task<List<string>> GetFiles(Project p, ProjectFolderTypes folderType)
         {
-            var folder = await _projectService.GetFolder(p, ProjectFolderTypes.Staging);
-            return await _fileRepo.GetFiles(folder.FolderPath);
+            var folder = p.SourceDirectory;
+
+            if (!await _fileRepo.DirectoryExists(folder))
+            {
+                return null;
+            }
+
+            return await _fileRepo.GetFiles(p.SourceDirectory);
         }
 
         public async Task<int> ImportFolder(Project p, string sourceFolder)

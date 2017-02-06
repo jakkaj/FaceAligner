@@ -56,10 +56,11 @@ namespace SmartFaceAligner.Processor.Services
 
         }
 
-        public async Task<Project> CreateProject(string projectName, string projectDirectory)
+        public async Task<Project> CreateProject(string projectName, string projectDirectory, string sourceDirectory)
         {
             var p = await _getProject(projectDirectory);
             p.Name = projectName;
+            p.SourceDirectory = sourceDirectory;
             await SetProject(p);
             return p;
         }
