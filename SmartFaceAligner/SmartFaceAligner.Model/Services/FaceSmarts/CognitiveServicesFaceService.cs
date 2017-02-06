@@ -42,8 +42,23 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     //FaceAttributeType.FacialHair,
                     
                 });
-            var actualFace = parsedFace.FirstOrDefault(_ => _.FaceId == p.PersonId);
-            return actualFace;
+
+            if (parsedFace != null && parsedFace.Length > 0)
+            {
+                var groupId = string.Format(Constants.CogServices.PersonGroupPattern, p.Id);
+                var result = await _faceServiceClient.IdentifyAsync(groupId, parsedFace.Select(_ => _.FaceId).ToArray());
+                if (result != null && result.Length > 0)
+                {
+                    var resultThis = result.FirstOrDefault(_ => _.Candidates.Any(_2 => _2.PersonId == p.PersonId))?.FaceId;
+                    if (resultThis != null)
+                    {
+                        var parsedFaceMatch = parsedFace.FirstOrDefault(_ => _.FaceId == resultThis.Value);
+                        return parsedFaceMatch;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public async Task RegisterPersonGroup(Project p, List<FaceData> faces)

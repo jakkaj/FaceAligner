@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -41,27 +42,48 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         public async Task CognitiveDetectFace(Project p, FaceData face)
         {
             _logService.Log($"Parsing face: {face.FileName}");
-            using (var img = Image.FromFile(face.FileName))
+            try
             {
-                using (var imgResized = ImageTools.ResizeImage(img, img.Width / 4, img.Height / 4))
+                using (var img = Image.FromFile(face.FileName))
                 {
-                    var f = new FileInfo(Path.GetTempFileName());
-
-                    imgResized.Save(f.FullName);
-
-                    using (var stream = await _fileRepo.ReadStream(f.FullName))
+                
+                    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 4, img.Height / 4))
                     {
-                        var fResult = await _cognitiveFaceService.ParseFace(p, stream);
-                        if (fResult != null)
+                        var f = new FileInfo(Path.GetTempFileName());
+
+                        imgResized.Save(f.FullName);
+
+                        var fUse = face.FileName;
+
+                        if (img.Width > 1280)
                         {
-                            var isFace = p.PersonId == fResult.FaceId;
+                            fUse = f.FullName;
                         }
-                        face.Face = fResult;
+
+                        using (var stream = await _fileRepo.ReadStream(fUse))
+                        {
+                            var fResult = await _cognitiveFaceService.ParseFace(p, stream);
+                            if (fResult != null)
+                            {
+                                face.Face = fResult;
+                            }
+                            
+                        }
+                        f.Delete();
+                        await _faceDataService.SetFaceData(face);
                     }
-                    f.Delete();
-                    await _faceDataService.SetFaceData(face);
                 }
             }
+            catch (FaceAPIException ex)
+            {
+                _logService.Log($"Response: {ex.ErrorCode}. {ex.ErrorMessage}");
+            }
+            catch (Exception ex)
+            {
+                _logService.Log("It's probably nothing: " + ex.ToString());
+            }
+
+
         }
 
         public void LocalDetectFaces(List<FaceData> faces)

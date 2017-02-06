@@ -25,7 +25,7 @@ namespace IntegrationTests.Tests
 
             var fCogService = Resolve<ICognitiveServicesFaceService>();
 
-            var p = await pService.OpenProject(@"C:\Users\jakka\Documents\FaceSystem\Apple");
+            var p = await pService.OpenProject(@"C:\Users\jak\Documents\FaceProjects\OldApple");
 
             var faceFiles = new string[]
             {
@@ -65,7 +65,32 @@ namespace IntegrationTests.Tests
 
 
             Assert.IsTrue(directory.GetFiles().Length == 5);
+           
+        }
 
+        [TestMethod]
+        public async Task ParseFaces()
+        {
+            var pService = Resolve<IProjectService>();
+            var fileManagementService = Resolve<IFileManagementService>();
+            var faceDataService = Resolve<IFaceDataService>();
+            var faceService = Resolve<IFaceService>();
+            var fileRepo = Resolve<IFileRepo>();
+
+           
+
+            var p = await pService.OpenProject(@"C:\Users\jak\Documents\FaceProjects\OldApple");
+
+      
+
+            var files = await fileManagementService.GetFiles(p, ProjectFolderTypes.Staging);
+           
+            var dataAll = new List<FaceData>();
+
+            foreach (var f in files)
+            {
+                dataAll.Add(await faceDataService.GetFaceData(f));
+            }
 
             foreach (var faceData in dataAll)
             {
