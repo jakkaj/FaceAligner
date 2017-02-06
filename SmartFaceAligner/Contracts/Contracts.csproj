@@ -35,9 +35,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entity\BingSearchResult.cs" />
+    <Compile Include="Entity\FaceData.cs" />
     <Compile Include="Entity\Project.cs" />
     <Compile Include="Entity\ProjectFolder.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
+    <Compile Include="Interfaces\IFaceDataService.cs" />
+    <Compile Include="Interfaces\IFaceService.cs" />
     <Compile Include="Interfaces\IFileCacheService.cs" />
     <Compile Include="Interfaces\IFileManagementService.cs" />
     <Compile Include="Interfaces\IFileRepo.cs" />

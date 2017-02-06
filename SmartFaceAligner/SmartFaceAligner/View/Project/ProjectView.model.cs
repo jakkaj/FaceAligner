@@ -23,6 +23,9 @@ namespace SmartFaceAligner.View.Project
     {
         private readonly IFileManagementService _fileManagementService;
         private readonly IProjectService _projectService;
+        private readonly IFaceDataService _faceDataService;
+        private readonly IFaceService _faceService;
+
         public Contracts.Entity.Project Project { get; set; }
 
         public ObservableCollection<FaceItemViewModel> FaceItems { get; private set; }
@@ -30,6 +33,7 @@ namespace SmartFaceAligner.View.Project
         private FaceItemViewModel _selectedFace;
 
         public ICommand ImportCommand => Command(_import);
+        public ICommand FilterFacesCommand => Command(_filterFaces);
 
         public FaceItemViewModel SelectedFace
         {
@@ -42,10 +46,14 @@ namespace SmartFaceAligner.View.Project
         }
 
         public ProjectViewModel(IFileManagementService fileManagementService,
-            IProjectService projectService)
+            IProjectService projectService,
+            IFaceDataService faceDataService, 
+            IFaceService faceService)
         {
             _fileManagementService = fileManagementService;
             _projectService = projectService;
+            _faceDataService = faceDataService;
+            _faceService = faceService;
             FaceItems = new ObservableCollection<FaceItemViewModel>();
 
             this.Register<ViewItemMessage>(_onViewPortUpdatedMessage);
@@ -69,6 +77,22 @@ namespace SmartFaceAligner.View.Project
             }
         }
 
+        async void _filterFaces()
+        {
+            await Task.Run(() =>
+            {
+                _faceService.LocalDetectFaces(FaceItems.Select(_ => _.FaceData).ToList());
+            }).ConfigureAwait(true);
+
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(_ => _.FaceData.HasFace.HasValue && _.FaceData.HasFace.Value).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_=>FaceItems.Add(_));
+        }
+
         public override Task NavigatedTo(bool isBack)
         {
             Load();
@@ -80,14 +104,14 @@ namespace SmartFaceAligner.View.Project
             var files = await _fileManagementService.GetFiles(Project, ProjectFolderTypes.Staging);
             FaceItems.Clear();
 
-            FaceItemViewModel Wrap(string f)
+            async Task Wrap(string f)
             {
                 var vm = Scope.Resolve<FaceItemViewModel>();
-                vm.FileName = f;
-                return vm;
+                vm.FaceData = await _faceDataService.GetFaceData(f);
+                FaceItems.Add(vm);
             }
 
-            files.ForEach(_ => FaceItems.Add(Wrap(_)));
+            await files.WhenAllList(_=>Wrap(_));
         }
 
         async void _import()

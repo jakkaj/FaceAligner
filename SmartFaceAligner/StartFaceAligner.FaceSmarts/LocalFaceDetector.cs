@@ -18,26 +18,52 @@ namespace StartFaceAligner.FaceSmarts
     {
         public static bool HasFace(string fileName)
         {
-            var bytes = File.ReadAllBytes(fileName);
-            using (var magickImage = new MagickImage(bytes))
+
+            Debug.WriteLine($"Detecting: {fileName}");
+            try
             {
-                magickImage.Resize(new Percentage(25));
-                magickImage.Format = MagickFormat.Jpg;
-
-                var f = new FileInfo(Path.GetTempFileName());
-
-                magickImage.Write(f);
-
-                IImage image = new UMat(f.FullName, ImreadModes.Color);
-
-                var result = Detect(image);
-                f.Delete();
-                if (result.Item1?.Count > 0)
+                using (var img = Image.FromFile(fileName))
                 {
-                    return true;
+                    using (var imgResized = ResizeImage(img, img.Width / 4, img.Height / 4))
+                    {
+                        var f = new FileInfo(Path.GetTempFileName());
+
+                        imgResized.Save(f.FullName);
+
+                        IImage image = new UMat(f.FullName, ImreadModes.Color);
+
+                        var result = Detect(image);
+
+                        f.Delete();
+
+                        if (result.Item1?.Count > 0)
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+
+
                 }
-                return false;
             }
+            catch
+            {
+                
+            }
+
+            return false;
+
+        }
+
+        public static Image ResizeImage(Image img, int width, int height)
+        {
+            Bitmap b = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage((Image)b))
+            {
+                g.DrawImage(img, 0, 0, width, height);
+            }
+
+            return (Image)b;
         }
 
         public static (List<Rectangle>, List<Rectangle>) Detect(

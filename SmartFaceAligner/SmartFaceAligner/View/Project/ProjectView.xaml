@@ -16,13 +16,15 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Button Content="Import" Command="{Binding ImportCommand}" Visibility="{Binding HasImported, Converter={StaticResource Bool2Vis}}"></Button>
             <TextBox Text="&#xE73E;" Foreground="Green" FontSize="30" FontFamily="Segoe MDL2 Assets"></TextBox>
-            <Button Content="Filter faces"></Button>
+            <Button Content="Filter faces" Command="{Binding FilterFacesCommand}"></Button>
             <Button Content="Filter person"></Button>
             <Button Content="Sort by age"></Button>
             <Button Content="Align"></Button>
 
         </StackPanel>
+        
         <face:FaceView Width="500" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding SelectedFace}" Background="Green"/>
+        
         <ListView x:Name="ImageList" ItemsSource="{Binding FaceItems}"
                   VerticalAlignment="Bottom" 
                   HorizontalAlignment="Stretch" Height="120"

@@ -11,6 +11,7 @@ namespace SmartFaceAligner.Processor.Entity
         public static class Cache
         {
             public const string Thumbnail = "Thumbnail";
+            public const string FaceData = "FaceData";
         }
         public static class FileNames
         {

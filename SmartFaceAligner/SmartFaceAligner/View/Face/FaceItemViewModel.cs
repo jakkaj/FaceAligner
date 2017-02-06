@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Contracts.Entity;
 using Contracts.Interfaces;
 using StartFaceAligner.FaceSmarts;
 using XCoreLite.View;
@@ -18,27 +19,19 @@ namespace SmartFaceAligner.View.Face
         private bool? _hasFace = null;
         private string _fileName;
         private string _thumbnail;
+        public FaceData FaceData { get; set; }
+
 
         public FaceItemViewModel(IImageService imageService)
         {
             _imageService = imageService;
         }
 
-        public string FileName
-        {
-            get { return _fileName; }
-            set
-            {
-                _fileName = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string Thumbnail
         {
             get
             {
-                if (_thumbnail == null && FileName != null)
+                if (_thumbnail == null && FaceData.FileName != null)
                 {
                     _loadImage();
                     return null;
@@ -70,7 +63,7 @@ namespace SmartFaceAligner.View.Face
 
             await Task.Run(async () =>
             {
-                thumb = await _imageService.GetThumbFile(FileName);
+                thumb = await _imageService.GetThumbFile(FaceData.FileName);
             }).ConfigureAwait(true);
 
             Thumbnail = thumb;
@@ -87,7 +80,7 @@ namespace SmartFaceAligner.View.Face
 
             await Task.Run(() =>
             {
-                result = LocalFaceDetector.HasFace(FileName);
+                result = LocalFaceDetector.HasFace(FaceData.FileName);
             }).ConfigureAwait(true);
 
             HasFace = result;
