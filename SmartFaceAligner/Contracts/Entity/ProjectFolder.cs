@@ -10,7 +10,8 @@ namespace Contracts.Entity
     {
         Staging,
         Filtered,
-        Aligned
+        Aligned,
+        RecPerson
     }
 
     public class ProjectFolder

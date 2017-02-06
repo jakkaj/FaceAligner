@@ -10,5 +10,6 @@ namespace Contracts.Interfaces
         Task<bool> HasFiles(Project p, ProjectFolderTypes folderType);
         Task DeleteFiles(Project p, ProjectFolderTypes folderType);
         Task<List<string>> GetFiles(Project p, ProjectFolderTypes folderType);
+        Task<bool> CopyToFolder(Project p, string fileName, ProjectFolderTypes folderType);
     }
 }

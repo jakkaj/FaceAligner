@@ -96,6 +96,26 @@ namespace SmartFaceAligner.Processor.Repo
             return d.Exists;
         }
 
+        public async Task<bool> CopyFile(string source, string targetDirectory)
+        {
+            var fSource = new FileInfo(source);
+            var fTarget = new DirectoryInfo(targetDirectory);
+
+            if (!fSource.Exists)
+            {
+                return false;
+            }
+
+            if (!fTarget.Exists)
+            {
+                fTarget.Create();
+            }
+
+            fSource.CopyTo(Path.Combine(fTarget.FullName, fSource.Name), true);
+
+            return true;
+        }
+
         public async Task<int> CopyFolder(string source, string target, List<string> allowedExtensions)
         {
             var dSource = new DirectoryInfo(source);

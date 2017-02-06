@@ -29,12 +29,13 @@ namespace SmartFaceAligner.View.Project
         public Contracts.Entity.Project Project { get; set; }
 
         public ObservableCollection<FaceItemViewModel> FaceItems { get; private set; }
+        public IList<FaceItemViewModel> SelectedItems { get; set; }
 
         private FaceItemViewModel _selectedFace;
 
         public ICommand ImportCommand => Command(_import);
         public ICommand FilterFacesCommand => Command(_filterFaces);
-
+   
         public FaceItemViewModel SelectedFace
         {
             get { return _selectedFace; }
@@ -57,6 +58,15 @@ namespace SmartFaceAligner.View.Project
             FaceItems = new ObservableCollection<FaceItemViewModel>();
 
             this.Register<ViewItemMessage>(_onViewPortUpdatedMessage);
+        }
+
+        public async void SelectFilterPersonCommand()
+        {
+            if (SelectedItems == null)
+            {
+                return;
+            }
+            await _faceService.SetPersonGroupPhotos(Project, SelectedItems.Select(_ => _.FaceData).ToList());
         }
 
         void _onViewPortUpdatedMessage(object message)

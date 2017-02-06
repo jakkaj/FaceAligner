@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SmartFaceAligner.View.Face;
 using XamlingCore.Portable.Messages.XamlingMessenger;
 
 namespace SmartFaceAligner.View.Project
@@ -68,6 +69,25 @@ namespace SmartFaceAligner.View.Project
             }
 
             return null;
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            // all this becasue we cannot have generic properties and cannot bind from SelectedItems on ListView. 
+            if (DataContext is ProjectViewModel vm)
+            {
+                var l = new List<FaceItemViewModel>();
+                foreach (var item in ImageList.SelectedItems)
+                {
+                    if (item is FaceItemViewModel faceVm)
+                    {
+                        l.Add(faceVm);
+                    }
+                }
+
+                vm.SelectedItems = l;
+                vm.SelectFilterPersonCommand();
+            }
         }
     }
 }

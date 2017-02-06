@@ -32,6 +32,13 @@ namespace SmartFaceAligner.Processor.Services
             return await _fileRepo.GetFiles(p.SourceDirectory);
         }
 
+        public async Task<bool> CopyToFolder(Project p, string fileName, ProjectFolderTypes folderType)
+        {
+            var baseFolder = await _projectService.GetFolder(p, folderType);
+           
+            return await _fileRepo.CopyFile(fileName, baseFolder.FolderPath);
+        }
+
         public async Task<int> ImportFolder(Project p, string sourceFolder)
         {
             if (!await _fileRepo.DirectoryExists(sourceFolder))
