@@ -28,6 +28,7 @@ namespace SmartFaceAligner.Glue
             Builder.RegisterModule<BingModule>();
             Builder.Register((c) => _navigationService);
             Builder.Register((c) => new XDispatcher(Dispatcher.CurrentDispatcher)).As<IDispatcher>();
+            
 
             Builder.RegisterAssemblyTypes(typeof(ProjectGlue).Assembly)
                 .Where(t => t.Name.EndsWith("View") || t.Name.EndsWith("ViewModel"))

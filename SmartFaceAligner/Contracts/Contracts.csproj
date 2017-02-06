@@ -38,8 +38,10 @@
     <Compile Include="Entity\Project.cs" />
     <Compile Include="Entity\ProjectFolder.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
+    <Compile Include="Interfaces\IFileCacheService.cs" />
     <Compile Include="Interfaces\IFileManagementService.cs" />
     <Compile Include="Interfaces\IFileRepo.cs" />
+    <Compile Include="Interfaces\IImageService.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />
     <Compile Include="Interfaces\ISearchService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

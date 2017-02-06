@@ -34,12 +34,12 @@ namespace SmartFaceAligner
         public MainWindow()
         {
             InitializeComponent();
-          
+            XDispatcher.Dispatcher = Dispatcher;
             new ProjectGlue(_mainFrame.NavigationService).Init();
 
             _container = ContainerHost.Container;
             this.Loaded += MainWindow_Loaded;
-            XDispatcher.Dispatcher = Dispatcher;
+          
         }
 
 

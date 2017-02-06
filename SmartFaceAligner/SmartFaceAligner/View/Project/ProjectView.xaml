@@ -28,7 +28,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="100">
-                        <Image Width="100" Height="100" Source="{Binding FileName}"></Image>
+                        <Image Width="100" Height="100" Source="{Binding Thumbnail}"></Image>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

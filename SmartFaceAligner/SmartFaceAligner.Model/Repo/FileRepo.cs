@@ -11,7 +11,15 @@ namespace SmartFaceAligner.Processor.Repo
     public class FileRepo : IFileRepo
     {
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        
+
+
+        public async Task<string> GetLocalStoragePath(string fileName)
+        {
+            var f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"FaceSystem\\{fileName}");
+
+            return f;
+        }
+
         public async Task<bool> Write(string file, byte[] data)
         {
             var f = _getFile(file);

@@ -8,6 +8,10 @@ namespace SmartFaceAligner.Processor.Entity
 {
     public static class Constants
     {
+        public static class Cache
+        {
+            public const string Thumbnail = "Thumbnail";
+        }
         public static class FileNames
         {
             public const string ProjectRoot = "faceProject.json";

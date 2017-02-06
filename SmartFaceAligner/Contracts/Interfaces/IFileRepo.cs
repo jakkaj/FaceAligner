@@ -22,5 +22,6 @@ namespace Contracts.Interfaces
         Task<bool> HasFiles(string path);
         Task DeleteFiles(string path);
         Task<List<string>> GetFiles(string path);
+        Task<string> GetLocalStoragePath(string fileName);
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Autofac;
+using XamlingCore.Portable.Contract.UI;
 using XamlingCore.Portable.View;
 using XamlingCore.Portable.View.ViewModel.Base;
 using XCoreLite.Contract;
@@ -14,6 +15,8 @@ namespace XCoreLite.View
     {
         public IXNavigator Navigator { get; set; }
         public ILifetimeScope Scope { get; set; }
+
+        public IDispatcher Dispatcher { get; set; }
 
 #pragma warning disable 1998
         public virtual async Task Initialised()
