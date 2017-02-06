@@ -47,7 +47,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 using (var img = Image.FromFile(face.FileName))
                 {
                 
-                    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 4, img.Height / 4))
+                    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 2, img.Height / 2))
                     {
                         var f = new FileInfo(Path.GetTempFileName());
 

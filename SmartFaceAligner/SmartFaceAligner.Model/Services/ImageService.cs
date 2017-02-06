@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Contracts.Interfaces;
 using ImageMagick;
 using SmartFaceAligner.Processor.Entity;
+using StartFaceAligner.FaceSmarts;
 using XamlingCore.NET.Implementations;
 
 namespace SmartFaceAligner.Processor.Services
@@ -22,6 +23,33 @@ namespace SmartFaceAligner.Processor.Services
         {
             _fileRepo = fileRepo;
             _cacheService = cacheService;
+        }
+
+        public byte[] GetImageFile(string fileName)
+        {
+            try
+            {
+                var image = Image.FromFile(fileName);
+
+                var flipper = ImageTools.GetExifOrientationData(image);
+
+                if (flipper != RotateFlipType.Rotate180FlipNone)
+                {
+                    image.RotateFlip(flipper);
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    image.Save(ms, ImageFormat.Jpeg);
+                    return ms.ToArray();
+                }
+            }
+            catch
+            {
+
+            }
+
+            return null;
         }
 
         public async Task<string> GetThumbFile(string fileName)
@@ -42,7 +70,19 @@ namespace SmartFaceAligner.Processor.Services
             {
 
                 var image = Image.FromFile(fileName);
+
+                var flipper = ImageTools.GetExifOrientationData(image);
+
                 var thum = image.GetThumbnailImage(100, 100, () => false, IntPtr.Zero);
+
+                if (flipper != RotateFlipType.Rotate180FlipNone)
+                {
+                    thum.RotateFlip(flipper);
+                    //image.RotateFlip(flipper);
+                    //image.RemovePropertyItem(0x0112);
+                    //image.Save(fileName +"_flipped_.jpg");
+                }
+
 
                 using (var ms = new MemoryStream())
                 {

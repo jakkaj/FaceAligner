@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,10 +23,36 @@ namespace SmartFaceAligner.View.Face
         private string _thumbnail;
         public FaceData FaceData { get; set; }
 
+        public BitmapImage BitmapSource
+        {
+            get { return _getBitmap(); }
+        }
+
 
         public FaceItemViewModel(IImageService imageService)
         {
             _imageService = imageService;
+        }
+
+        BitmapImage _getBitmap()
+        {
+            if (FaceData?.FileName == null)
+            {
+                return null;
+            }
+
+            var img = _imageService.GetImageFile(FaceData.FileName);
+            
+            using (var ms = new MemoryStream(img))
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.StreamSource = ms;
+                bitmap.EndInit();
+                return bitmap;
+            }
+
         }
 
         public string Thumbnail
@@ -58,6 +86,8 @@ namespace SmartFaceAligner.View.Face
 
         async void _loadImage()
         {
+            
+
             await Task.Yield();
             var thumb = "";
 

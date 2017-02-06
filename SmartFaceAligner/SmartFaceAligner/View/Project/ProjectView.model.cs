@@ -16,6 +16,7 @@ using SmartFaceAligner.View.Face;
 using XCoreLite.View;
 using SmartFaceAligner.Messages;
 using XamlingCore.Portable.Messages.XamlingMessenger;
+using XamlingCore.Portable.Util.TaskUtils;
 
 namespace SmartFaceAligner.View.Project
 {
@@ -35,7 +36,11 @@ namespace SmartFaceAligner.View.Project
 
         public ICommand ImportCommand => Command(_import);
         public ICommand FilterFacesCommand => Command(_filterFaces);
-   
+        public ICommand FilterPersonCommand => Command(_filterPersonCommand);
+        public ICommand RunFilterCommand => Command(_runFilter);
+
+  
+
         public FaceItemViewModel SelectedFace
         {
             get { return _selectedFace; }
@@ -87,6 +92,38 @@ namespace SmartFaceAligner.View.Project
             }
         }
 
+        private void _runFilter()
+        {
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(_ => _.FaceData.Face != null).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
+        private async void _filterPersonCommand()
+        {
+            async Task FilterLocal(FaceData faceData)
+            {
+                await _faceService.CognitiveDetectFace(Project, faceData);
+            }
+
+            var tasks = new List<Task>();
+
+            foreach (var f in FaceItems.Where(_=>_.FaceData.Face == null))
+            {
+                tasks.Add(TaskThrottler.Get("Faces", 8).Throttle(() => FilterLocal(f.FaceData)));
+            }
+
+            await Task.WhenAll(tasks);
+
+;        }
+
+        /// <summary>
+        /// this does a local filter using EMGU face detection. Can be useful to pre-clean, but may not work as well as other systems. 
+        /// </summary>
         async void _filterFaces()
         {
             await Task.Run(() =>
