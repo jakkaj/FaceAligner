@@ -10,6 +10,8 @@ namespace Contracts.Entity
         public string Name { get; set; }
         public string SourceDirectory { get; set; }
 
+        public Guid PersonId { get; set; }
+
         [JsonIgnore]
         public string FilePath { get; set; }
     }

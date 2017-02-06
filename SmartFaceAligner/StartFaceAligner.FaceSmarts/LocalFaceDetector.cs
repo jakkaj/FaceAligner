@@ -24,7 +24,7 @@ namespace StartFaceAligner.FaceSmarts
             {
                 using (var img = Image.FromFile(fileName))
                 {
-                    using (var imgResized = ResizeImage(img, img.Width / 4, img.Height / 4))
+                    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 4, img.Height / 4))
                     {
                         var f = new FileInfo(Path.GetTempFileName());
 
@@ -53,17 +53,6 @@ namespace StartFaceAligner.FaceSmarts
 
             return false;
 
-        }
-
-        public static Image ResizeImage(Image img, int width, int height)
-        {
-            Bitmap b = new Bitmap(width, height);
-            using (Graphics g = Graphics.FromImage((Image)b))
-            {
-                g.DrawImage(img, 0, 0, width, height);
-            }
-
-            return (Image)b;
         }
 
         public static (List<Rectangle>, List<Rectangle>) Detect(

@@ -8,5 +8,6 @@ namespace Contracts.Interfaces
     {
         void LocalDetectFaces(List<FaceData> faces);
         Task<bool> SetPersonGroupPhotos(Project p, List<FaceData> faces);
+        Task CognitiveDetectFace(Project p, FaceData face);
     }
 }

@@ -24,5 +24,6 @@ namespace Contracts.Interfaces
         Task<List<string>> GetFiles(string path);
         Task<string> GetLocalStoragePath(string fileName);
         Task<bool> CopyFile(string source, string target);
+        Task<Stream> ReadStream(string file);
     }
 }

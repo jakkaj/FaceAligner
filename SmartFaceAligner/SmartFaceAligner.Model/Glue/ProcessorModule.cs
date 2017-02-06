@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Contracts.Interfaces;
 using Microsoft.ProjectOxford.Face;
 using SmartFaceAligner.Processor.Entity;
 using SmartFaceAligner.Processor.Services;
@@ -18,7 +19,7 @@ namespace SmartFaceAligner.Processor.Glue
             builder.RegisterType<ConfigService>().AsImplementedInterfaces().SingleInstance();
 
             builder.Register(
-                (c, r) => new FaceServiceClient(c.Resolve<IConfig>()[Constants.Settings.SubsKeys]));
+                (c, r) => new FaceServiceClient(c.Resolve<IConfigurationService>().FaceApiSubscriptionKey));
 
             base.Load(builder);
         }

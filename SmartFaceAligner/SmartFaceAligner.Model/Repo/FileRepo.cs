@@ -34,6 +34,18 @@ namespace SmartFaceAligner.Processor.Repo
             return true;
         }
 
+        public async Task<Stream> ReadStream(string file)
+        {
+            var f = _getFile(file);
+            if (!f.Exists)
+            {
+                return null;
+            }
+
+            var fStream = f.OpenRead();
+
+            return fStream;
+        }
 
         public async Task<byte[]> ReadBytes(string file)
         {

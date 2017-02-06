@@ -8,6 +8,12 @@ namespace SmartFaceAligner.Processor.Entity
 {
     public static class Constants
     {
+        public static class CogServices
+        {
+            public const string PersonGroupPattern = "{0}_group";
+            public const string DefaultPerson = "DefaultPerson";
+        }
+
         public static class Cache
         {
             public const string Thumbnail = "Thumbnail";

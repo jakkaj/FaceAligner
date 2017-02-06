@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts.Entity;
@@ -14,12 +16,52 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         private readonly FaceServiceClient _faceServiceClient;
         private readonly IFaceDataService _faceDataService;
         private readonly IFileManagementService _fileManagementService;
+        private readonly IProjectService _projectService;
+        private readonly ICognitiveServicesFaceService _cognitiveFaceService;
+        private readonly IFileRepo _fileRepo;
+        private readonly ILogService _logService;
 
-        public FaceService(FaceServiceClient faceServiceClient, IFaceDataService faceDataService, IFileManagementService fileManagementService)
+        public FaceService(FaceServiceClient faceServiceClient,
+            IFaceDataService faceDataService, 
+            IFileManagementService fileManagementService, 
+            IProjectService projectService,
+            ICognitiveServicesFaceService cognitiveFaceService,
+            IFileRepo fileRepo,
+            ILogService logService)
         {
             _faceServiceClient = faceServiceClient;
             _faceDataService = faceDataService;
             _fileManagementService = fileManagementService;
+            _projectService = projectService;
+            _cognitiveFaceService = cognitiveFaceService;
+            _fileRepo = fileRepo;
+            _logService = logService;
+        }
+
+        public async Task CognitiveDetectFace(Project p, FaceData face)
+        {
+            _logService.Log($"Parsing face: {face.FileName}");
+            using (var img = Image.FromFile(face.FileName))
+            {
+                using (var imgResized = ImageTools.ResizeImage(img, img.Width / 4, img.Height / 4))
+                {
+                    var f = new FileInfo(Path.GetTempFileName());
+
+                    imgResized.Save(f.FullName);
+
+                    using (var stream = await _fileRepo.ReadStream(f.FullName))
+                    {
+                        var fResult = await _cognitiveFaceService.ParseFace(p, stream);
+                        if (fResult != null)
+                        {
+                            var isFace = p.PersonId == fResult.FaceId;
+                        }
+                        face.Face = fResult;
+                    }
+                    f.Delete();
+                    await _faceDataService.SetFaceData(face);
+                }
+            }
         }
 
         public void LocalDetectFaces(List<FaceData> faces)
@@ -43,12 +85,14 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 await _fileManagementService.CopyToFolder(p, f.FileName, ProjectFolderTypes.RecPerson);
             }
 
+            await _cognitiveFaceService.RegisterPersonGroup(p, faces);
+
+            await _projectService.SetProject(p);
+
             return true;
         }
 
-        //public async Task<bool> CreateFaceGroup(string baseDirectory)
-        //{
-
-        //}
+        
     }
+
 }
