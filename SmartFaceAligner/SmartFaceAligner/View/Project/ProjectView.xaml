@@ -13,9 +13,15 @@
         <util:Bool2Vis x:Key="Bool2Vis"/>
 </Page.Resources>
     <Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
             
-            <TextBox Text="&#xE73E;" Foreground="Green" FontSize="30" FontFamily="Segoe MDL2 Assets"></TextBox>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <TextBlock Text="Cognitive Commands"/>
+            <!--<TextBox Text="&#xE73E;" Foreground="Green" FontSize="30" FontFamily="Segoe MDL2 Assets"></TextBox>-->
             <!--<Button Content="Filter faces" Command="{Binding FilterFacesCommand}"></Button>-->
             <Button Content="Add new person indentity" Command="{Binding AddNewIdentityGroupCommand}"/>
             
@@ -27,11 +33,21 @@
 
         </StackPanel>
         
-        <face:FaceView Width="500" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding SelectedFace}" Background="Green"/>
+        <face:FaceView Width="500" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding SelectedFace}" Grid.Column="1"/>
+        
+        <Grid Grid.Column="2">
+            <ListView ItemsSource="{Binding IdentityPeople}" SelectedItem="{Binding CurrentIdentity, Mode=TwoWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <face:RecognisePersonConfigView/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
         
         <ListView x:Name="ImageList" ItemsSource="{Binding FaceItems}"
                   VerticalAlignment="Bottom" 
-                  HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple"
+                  HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple" Grid.ColumnSpan="3"
                  
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <ListView.ItemTemplate>

@@ -11,9 +11,10 @@
     <Grid>
         
        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-           <TextBlock Text="Welcome. Let's do some AI :)"></TextBlock>
-            <Button Content="Create new project" Margin="0,10,0,0" Command="{Binding NewProjectCommand}" ></Button>
-            <Button Content="Open existing project" Margin="0,10,0,0" Command="{Binding OpenProjectCommand}"></Button>
+           <Image Source="/Media/coglogo.png" Width="100" Height="100"></Image>
+            <TextBlock Text="Welcome. Let's use some AI on some faces!" Margin="5"></TextBlock>
+            <Button Content="Create new project" Margin="5" Command="{Binding NewProjectCommand}" ></Button>
+            <Button Content="Open existing project" Margin="5" Command="{Binding OpenProjectCommand}"></Button>
        </StackPanel>
 
       

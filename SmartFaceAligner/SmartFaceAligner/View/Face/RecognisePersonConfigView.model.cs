@@ -13,10 +13,10 @@ namespace SmartFaceAligner.View.Face
     public class RecognisePersonConfigViewModel : ViewModel
     {
         private readonly IFileManagementService _fileManagementService;
-     
-        public string GroupName { get; set; }
-        public Contracts.Entity.Project Project { get; set; }
 
+        public string GroupName => IdentityPerson.PersonName;
+        public Contracts.Entity.Project Project { get; set; }
+        public IdentityPerson IdentityPerson { get; set; }
 
         public RecognisePersonConfigViewModel(IFileManagementService fileManagementService)
         {

@@ -31,6 +31,7 @@ namespace SmartFaceAligner.View.Project
         public Contracts.Entity.Project Project { get; set; }
 
         public ObservableCollection<FaceItemViewModel> FaceItems { get; private set; }
+        public ObservableCollection<RecognisePersonConfigViewModel> IdentityPeople {get;private set;}
         public IList<FaceItemViewModel> SelectedItems { get; set; }
 
         private FaceItemViewModel _selectedFace;
@@ -56,6 +57,16 @@ namespace SmartFaceAligner.View.Project
             }
         }
 
+        public IdentityPerson CurrentIdentity
+        {
+            get { return _currentIdentity; }
+            set
+            {
+                _currentIdentity = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ProjectViewModel(IFileManagementService fileManagementService,
             IProjectService projectService,
             IFaceDataService faceDataService, 
@@ -66,6 +77,7 @@ namespace SmartFaceAligner.View.Project
             _faceDataService = faceDataService;
             _faceService = faceService;
             FaceItems = new ObservableCollection<FaceItemViewModel>();
+            IdentityPeople = new ObservableCollection<RecognisePersonConfigViewModel>();
 
             this.Register<ViewItemMessage>(_onViewPortUpdatedMessage);
         }
@@ -234,7 +246,9 @@ namespace SmartFaceAligner.View.Project
 
         public async Task Load()
         {
-            var files = await _fileManagementService.GetFiles(Project, ProjectFolderTypes.Staging);
+            CurrentIdentity = null;
+
+               var files = await _fileManagementService.GetFiles(Project, ProjectFolderTypes.Staging);
             FaceItems.Clear();
 
             async Task Wrap(string f)
@@ -245,6 +259,21 @@ namespace SmartFaceAligner.View.Project
             }
 
             await files.WhenAllList(_=>Wrap(_));
+
+            _loadIdentities();
+        }
+
+         void _loadIdentities()
+        {
+            IdentityPeople.Clear();
+
+            foreach (var id in Project.IdentityPeople)
+            {
+                var vm = Scope.Resolve<RecognisePersonConfigViewModel>();
+                vm.Project = Project;
+                vm.IdentityPerson = id;
+                IdentityPeople.Add(vm);
+            }
         }
 
         async void _import()
