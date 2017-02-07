@@ -99,6 +99,17 @@ namespace SmartFaceAligner.Processor.Repo
             return File.ReadAllText(f.FullName);
         }
 
+        DirectoryInfo _getDir(string dir, bool createPath = true)
+        {
+            var d = new DirectoryInfo(dir);
+            if (!d.Exists && createPath)
+            {
+                d.Create();
+            }
+
+            return d;
+        }
+
         FileInfo _getFile(string file, bool createPath = true)
         {
             var f = new FileInfo(file);
@@ -122,6 +133,11 @@ namespace SmartFaceAligner.Processor.Repo
             }
             var f = new FileInfo(filePath);
             return f.Exists;
+        }
+
+        public string GetFileNameComponent(string fullPath)
+        {
+            return Path.GetFileName(fullPath);
         }
 
         public string GetPathSeparator()
@@ -194,11 +210,7 @@ namespace SmartFaceAligner.Processor.Repo
         public async Task<string> GetOffsetFolder(params string[] filePath)
         {
             var fOffset = string.Join(GetPathSeparator(), filePath);
-            var d = new DirectoryInfo(fOffset);
-            if (!d.Exists)
-            {
-                d.Create();
-            }
+            var d = _getDir(fOffset);
             return d.FullName;
         }
 
@@ -215,13 +227,38 @@ namespace SmartFaceAligner.Processor.Repo
             return dirInfo.GetFiles().Length > 0;
         }
 
+        public async Task DeleteDirectory(string path)
+        {
+            var dirInfo = new DirectoryInfo(path);
+            if (!dirInfo.Exists)
+            {
+                return;
+            }
+            await DeleteFiles(path);
+           dirInfo.Delete(true);
+
+        }
         public async Task DeleteFiles(string path)
         {
             var dirInfo = new DirectoryInfo(path);
+            if (!dirInfo.Exists)
+            {
+                return;
+            }
             foreach (var fileInfo in dirInfo.GetFiles())
             {
                 fileInfo.Delete();
             }
+        }
+
+        public async Task DeleteFile(string path)
+        {
+            var f = _getFile(path);
+            if (!f.Exists)
+            {
+                return;
+            }
+            f.Delete();
         }
 
         public async Task<List<string>> GetFiles(string path)

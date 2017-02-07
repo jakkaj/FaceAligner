@@ -14,19 +14,18 @@ namespace SmartFaceAligner.Processor.Services
 {
     public class FaceDataService : IFaceDataService
     {
+        private readonly IFileManagementService _fileManagementService;
         private IFileRepo _fileRepo { get; }
-        private readonly IProjectService _projectService;
-      
 
-        public FaceDataService(IProjectService projectService, IFileRepo fileRepo)
+        public FaceDataService(IFileRepo fileRepo, IFileManagementService fileManagementService)
         {
+            _fileManagementService = fileManagementService;
             _fileRepo = fileRepo;
-            _projectService = projectService;
         }
 
         async Task<string> _getFile(Project p, string fileName)
         {
-            var folder = await _projectService.GetFolder(p, ProjectFolderTypes.Data);
+            var folder = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Data);
 
             return await _fileRepo.GetOffsetFile(folder.FolderPath, await _getKey(fileName));
         }

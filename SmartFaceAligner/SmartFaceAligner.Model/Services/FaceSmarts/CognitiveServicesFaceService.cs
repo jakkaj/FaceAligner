@@ -29,7 +29,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             _fileRepo = fileRepo;
         }
 
-        public async Task<Face> ParseFace(Project p, Stream image)
+        public async Task<List<ParsedFace>> ParseFace(Project p, Stream image)
         {
             var parsedFace = await _faceServiceClient.DetectAsync(image, true, true,
                 new FaceAttributeType[]
@@ -43,25 +43,41 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     
                 });
 
+            var listResults = new List<ParsedFace>();
+
             if (parsedFace != null && parsedFace.Length > 0)
             {
                 var groupId = string.Format(Constants.CogServices.PersonGroupPattern, p.Id);
                 var result = await _faceServiceClient.IdentifyAsync(groupId, parsedFace.Select(_ => _.FaceId).ToArray());
                 if (result != null && result.Length > 0)
                 {
-                    var resultThis = result.FirstOrDefault(_ => _.Candidates.Any(_2 => _2.PersonId == p.PersonId))?.FaceId;
-                    if (resultThis != null)
+                    foreach (var faceResult in result)
                     {
-                        var parsedFaceMatch = parsedFace.FirstOrDefault(_ => _.FaceId == resultThis.Value);
-                        return parsedFaceMatch;
+                        var parseResult = new ParsedFace
+                        {
+                            Face = parsedFace.FirstOrDefault(_ => _.FaceId == faceResult.FaceId)
+                        };
+
+                        //search for matching people we know about. 
+                        var matchingPerson =
+                            p.IdentityPeople.FirstOrDefault(
+                                _ => faceResult.Candidates.Any(_2 => _2.PersonId == _.PersonId));
+                        if (matchingPerson != null)
+                        {
+                            parseResult.IdentityPerson = matchingPerson;
+                        }
+
+                        listResults.Add(parseResult);
                     }
+
+                    return listResults;
                 }
             }
 
             return null;
         }
 
-        public async Task RegisterPersonGroup(Project p, List<FaceData> faces)
+        public async Task RegisterPersonGroup(Project p, List<IdentityPerson> personGroups)
         {
             var groupId = string.Format(Constants.CogServices.PersonGroupPattern, p.Id);
                 
@@ -77,26 +93,31 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             }
 
             await _faceServiceClient.CreatePersonGroupAsync(groupId, groupId);
-            
-            _logService.Log($"Request: Creating person \"{groupId}\"");
-            var createPersonResult = await _faceServiceClient.CreatePersonAsync(groupId, Constants.CogServices.DefaultPerson);
-            var personId = createPersonResult.PersonId;
-            p.PersonId = personId;
-            //var Tasks
 
-            async Task AddFace(FaceData face)
+            foreach (var person in personGroups)
             {
-                using (var stream = await _fileRepo.ReadStream(face.FileName))
-                {
-                    _logService.Log($"Adding face: {face.FileName}");
-                    var result = await _faceServiceClient.AddPersonFaceAsync(groupId, personId, stream);
-                    
-                    _logService.Log($"Added face: {face.FileName}");
-                    //probably shoudl do something with this result :P
-                }
-            }
+                _logService.Log($"Request: Creating person \"{groupId}\"");
+                var createPersonResult = await _faceServiceClient.CreatePersonAsync(groupId, Constants.CogServices.DefaultPerson);
+                var personId = createPersonResult.PersonId;
+                person.PersonId = personId;
+               
+                //var Tasks
 
-            await faces.WhenAllList(AddFace);
+                async Task AddFace(FaceData face)
+                {
+                    using (var stream = await _fileRepo.ReadStream(face.FileName))
+                    {
+                        _logService.Log($"Adding face: {face.FileName}");
+                        var result = await _faceServiceClient.AddPersonFaceAsync(groupId, personId, stream);
+
+                        _logService.Log($"Added face: {face.FileName}");
+
+                        face.PersistedFaceId = result.PersistedFaceId;
+                    }
+                }
+
+                await person.Faces.WhenAllList(AddFace);
+            }
 
             await _faceServiceClient.TrainPersonGroupAsync(groupId);
 

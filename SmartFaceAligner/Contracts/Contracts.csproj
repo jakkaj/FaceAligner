@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="Entity\BingSearchResult.cs" />
     <Compile Include="Entity\FaceData.cs" />
+    <Compile Include="Entity\ParsedFace.cs" />
+    <Compile Include="Entity\PersonGroup.cs" />
     <Compile Include="Entity\Project.cs" />
     <Compile Include="Entity\ProjectFolder.cs" />
     <Compile Include="Interfaces\ICognitiveServicesFaceService.cs" />
@@ -47,6 +49,7 @@
     <Compile Include="Interfaces\IFileRepo.cs" />
     <Compile Include="Interfaces\IImageService.cs" />
     <Compile Include="Interfaces\ILogService.cs" />
+    <Compile Include="Interfaces\IPersonGroupService.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />
     <Compile Include="Interfaces\ISearchService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

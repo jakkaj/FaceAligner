@@ -8,7 +8,7 @@ namespace Contracts.Interfaces
 {
     public interface ICognitiveServicesFaceService
     {
-        Task RegisterPersonGroup(Project p, List<FaceData> faces);
-        Task<Face> ParseFace(Project p, Stream image);
+        Task RegisterPersonGroup(Project p, List<IdentityPerson> personGroups);
+        Task<List<ParsedFace>> ParseFace(Project p, Stream image);
     }
 }

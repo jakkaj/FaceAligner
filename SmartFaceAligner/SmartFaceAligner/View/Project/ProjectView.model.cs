@@ -41,7 +41,9 @@ namespace SmartFaceAligner.View.Project
         public ICommand RunFilterCommand => Command(_runFilter);
         public ICommand SortByAgeCommand => Command(_sortByAge);
         public ICommand AlignCommand => Command(_align);
-       
+
+        private IdentityPerson _currentIdentity;
+        private FaceData _alignFaceData;
 
         public FaceItemViewModel SelectedFace
         {
@@ -73,7 +75,7 @@ namespace SmartFaceAligner.View.Project
             {
                 return;
             }
-            await _faceService.SetPersonGroupPhotos(Project, SelectedItems.Select(_ => _.FaceData).ToList());
+            await _faceService.TrainPersonGroups(Project);
         }
 
         void _onViewPortUpdatedMessage(object message)
@@ -96,15 +98,33 @@ namespace SmartFaceAligner.View.Project
 
         private async void _align()
         {
-            await _faceService.PrepAlign(Project);
-            async Task FilterLocal(FaceData faceData)
+            if (_currentIdentity == null || _alignFaceData == null)
             {
-                await _faceService.Align(Project, FaceItems.First().FaceData, faceData);
+                return;
+            }
+
+            await _faceService.PrepAlign(Project);
+
+            var _alignFace = _alignFaceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity)?.Face;
+
+            if (_alignFace == null)
+            {
+                return;
+            }
+
+             async Task FilterLocal(FaceData faceData)
+            {
+                var thisAlignFace = faceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity)?.Face;
+                if (thisAlignFace == null)
+                {
+                    return;
+                }
+                await _faceService.Align(Project,_alignFaceData,faceData, _alignFace, thisAlignFace);
             }
 
             var tasks = new Queue<Func<Task>>();
 
-            foreach (var f in FaceItems.Where(_ => _.FaceData.Face != null))
+            foreach (var f in FaceItems.Where(_filterFaceItemVmByIdentity))
             {
                 tasks.Enqueue(() => FilterLocal(f.FaceData));
             }
@@ -114,20 +134,49 @@ namespace SmartFaceAligner.View.Project
 
         private void _sortByAge()
         {
-            var fTemp = FaceItems.OrderBy(_ => _.FaceData.Face.FaceAttributes.Age);
+            if (_currentIdentity == null)
+            {
+                return;
+            }
 
-            var filtered = fTemp.Where(_ => _.FaceData.Face != null).ToList();
+            var fTemp =
+                FaceItems.OrderBy(
+                    _ =>
+                        _.FaceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity)?
+                            .Face.FaceAttributes.Age).ToList();
 
             FaceItems.Clear();
 
-            filtered.ForEach(_ => FaceItems.Add(_));
+            fTemp.ForEach(_ => FaceItems.Add(_));
+        }
+
+
+        bool _filterParsedFaceByIdentity(ParsedFace face)
+        {
+            if (_currentIdentity == null)
+            {
+                return true;
+            }
+
+            return face.IdentityPerson != null && face.IdentityPerson.PersonId == _currentIdentity.PersonId;
+        }
+
+        bool _filterFaceItemVmByIdentity(FaceItemViewModel vm)
+        {
+            if (_currentIdentity == null)
+            {
+                return true;
+            }
+
+            return vm.FaceData?.ParsedFaces != null &&
+                   vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson.PersonId == _currentIdentity.PersonId);
         }
 
         private void _runFilter()
         {
             var fTemp = FaceItems.ToList();
 
-            var filtered = fTemp.Where(_ => _.FaceData.Face != null).ToList();
+            var filtered = fTemp.Where(_filterFaceItemVmByIdentity).ToList();
 
             FaceItems.Clear();
 
@@ -143,7 +192,7 @@ namespace SmartFaceAligner.View.Project
 
             var tasks = new Queue<Func<Task>>();
 
-            foreach (var f in FaceItems.Where(_=>_.FaceData.Face == null))
+            foreach (var f in FaceItems.Where(_=>!_.FaceData.HasBeenScanned ))
             {
                 tasks.Enqueue(()=> FilterLocal(f.FaceData));
             }
@@ -164,7 +213,7 @@ namespace SmartFaceAligner.View.Project
 
             var fTemp = FaceItems.ToList();
 
-            var filtered = fTemp.Where(_ => _.FaceData.HasFace.HasValue && _.FaceData.HasFace.Value).ToList();
+            var filtered = fTemp.Where(_ => !_.FaceData.HasBeenScanned).ToList();
 
             FaceItems.Clear();
 

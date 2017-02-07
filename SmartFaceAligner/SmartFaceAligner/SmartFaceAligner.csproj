@@ -103,6 +103,10 @@
     <Compile Include="View\Face\FaceView.xaml.cs">
       <DependentUpon>FaceView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Face\RecognisePersonConfigView.model.cs" />
+    <Compile Include="View\Face\RecognisePersonConfigView.xaml.cs">
+      <DependentUpon>RecognisePersonConfigView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\HomeView.model.cs" />
     <Compile Include="View\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
@@ -141,6 +145,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\Face\FaceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Face\RecognisePersonConfigView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

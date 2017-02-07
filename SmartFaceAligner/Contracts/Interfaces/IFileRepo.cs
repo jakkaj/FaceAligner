@@ -26,5 +26,8 @@ namespace Contracts.Interfaces
         Task<bool> CopyFile(string source, string target);
         Task<Stream> ReadStream(string file);
         Task<string> GetHash(string fileName);
+        string GetFileNameComponent(string fullPath);
+        Task DeleteDirectory(string path);
+        Task DeleteFile(string path);
     }
 }

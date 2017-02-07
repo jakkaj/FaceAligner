@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 
@@ -9,8 +10,7 @@ namespace Contracts.Entity
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string SourceDirectory { get; set; }
-
-        public Guid PersonId { get; set; }
+        public List<IdentityPerson> IdentityPeople { get; set; }
 
         [JsonIgnore]
         public string FilePath { get; set; }

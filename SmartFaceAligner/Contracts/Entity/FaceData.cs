@@ -1,4 +1,5 @@
-﻿using Microsoft.ProjectOxford.Face.Contract;
+﻿using System;
+using Microsoft.ProjectOxford.Face.Contract;
 using Newtonsoft.Json;
 
 namespace Contracts.Entity
@@ -6,10 +7,10 @@ namespace Contracts.Entity
     public class FaceData
     {
         public string FileName { get; set; }
-        public bool? HasFace { get; set; }
-
-        public Face Face { get; set; }
-
+        public bool HasBeenScanned { get; set; }
+        public Guid? PersistedFaceId { get; set; }
+        public ParsedFace[] ParsedFaces { get; set; }
+        
         [JsonIgnore]
         public Project Project { get; set; }
     }

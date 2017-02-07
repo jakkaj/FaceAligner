@@ -37,7 +37,7 @@ namespace IntegrationTests.Tests
         {
             var pService = Resolve<IProjectService>();
             var fileRepo = Resolve<IFileRepo>();
-
+            var fileManagementService = Resolve<IFileManagementService>();
             var testProject = await pService.CreateProject("TestProject", "c:\\temp\\testproject", @"E:\Pictures Archive\Tom's Wedding");
 
             Assert.IsNotNull(testProject);
@@ -48,13 +48,13 @@ namespace IntegrationTests.Tests
 
             Assert.IsTrue(fileInfo.Exists);
 
-            var folderStaging = await pService.GetFolder(testProject, ProjectFolderTypes.Staging);
+            var folderStaging = await fileManagementService.GetFolder(testProject, ProjectFolderTypes.Staging);
             Assert.IsTrue(Directory.Exists(folderStaging.FolderPath));
 
-            var folderFildtered = await pService.GetFolder(testProject, ProjectFolderTypes.Filtered);
+            var folderFildtered = await fileManagementService.GetFolder(testProject, ProjectFolderTypes.Filtered);
             Assert.IsTrue(Directory.Exists(folderFildtered.FolderPath));
 
-            var folderAligned = await pService.GetFolder(testProject, ProjectFolderTypes.Aligned);
+            var folderAligned = await fileManagementService.GetFolder(testProject, ProjectFolderTypes.Aligned);
             Assert.IsTrue(Directory.Exists(folderAligned.FolderPath));
 
         }

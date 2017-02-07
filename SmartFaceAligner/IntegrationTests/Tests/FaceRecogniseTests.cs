@@ -27,7 +27,7 @@ namespace IntegrationTests.Tests
 
             var p = await pService.OpenProject(@"C:\Users\jak\Documents\FaceProjects\OldApple");
 
-            var faceFiles = new string[]
+            var faceFilesA = new string[]
             {
                 "IMG_0086.JPG",
                 "IMG_0143.JPG",
@@ -36,36 +36,78 @@ namespace IntegrationTests.Tests
                 "IMG_0128.JPG"
             };
 
+            var faceFilesB = new string[]
+            {
+                "IMG_0089.JPG",
+                "IMG_0207.JPG",
+                "IMG_0204.JPG",
+                "IMG_0292.JPG",
+                "IMG_2086.JPG"
+            };
+
             var files = await fileManagementService.GetFiles(p, ProjectFolderTypes.Staging);
 
-            var data = new List<FaceData>();
+            var faceDataA = new List<FaceData>();
+            var faceDataB = new List<FaceData>();
             var dataAll = new List<FaceData>();
 
             foreach (var f in files)
             {
-                foreach (var ff in faceFiles)
+                var dataLoaded = await faceDataService.GetFaceData(p, f);
+                dataAll.Add(dataLoaded);
+                foreach (var ff in faceFilesA)
                 {
                     if (f.IndexOf(ff) != -1)
                     {
                         var d = await faceDataService.GetFaceData(p, f);
-                        data.Add(d);
+                        faceDataA.Add(d);
                     }
-                    else
+                }
+
+                foreach (var ff in faceFilesB)
+                {
+                    if (f.IndexOf(ff) != -1)
                     {
-                        dataAll.Add(await faceDataService.GetFaceData(p, f));
+                        var d = await faceDataService.GetFaceData(p, f);
+                        faceDataB.Add(d);
                     }
                 }
             }
 
+            if (p.IdentityPeople != null)
+            {
+                foreach (var person in p.IdentityPeople.ToArray())
+                {
+                    await pService.RemoveIdentityPerson(person);
+                }
+            }
 
-            await faceService.SetPersonGroupPhotos(p, data);
-            var folder = await pService.GetFolder(p, ProjectFolderTypes.RecPerson);
+            await pService.SetProject(p);
+
+            var folder = await fileManagementService.GetFolder(p, ProjectFolderTypes.RecPerson);
 
             var directory = new DirectoryInfo(folder.FolderPath);
 
 
-            Assert.IsTrue(directory.GetFiles().Length == 5);
-           
+            Assert.IsTrue(directory.GetDirectories().Length == 0);
+
+            var newGroupA =  await pService.AddNewIdentityPerson(p, "PersonA");
+
+            foreach (var f in faceDataA)
+            {
+                await pService.AddImageToPerson(newGroupA, f);
+            }
+
+            var newGroupB = await pService.AddNewIdentityPerson(p, "PersonB");
+
+            foreach (var f in faceDataB)
+            {
+                await pService.AddImageToPerson(newGroupB, f);
+            }
+
+            await faceService.TrainPersonGroups(p);
+
+            Assert.IsTrue(directory.GetDirectories().Length == 2);
         }
 
         [TestMethod]

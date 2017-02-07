@@ -11,13 +11,67 @@ namespace SmartFaceAligner.Processor.Services
 {
     public class FileManagementService : IFileManagementService
     {
-        private readonly IProjectService _projectService;
         private readonly IFileRepo _fileRepo;
 
-        public FileManagementService(IProjectService projectService, IFileRepo fileRepo)
+        public FileManagementService(IFileRepo fileRepo)
         {
-            _projectService = projectService;
             _fileRepo = fileRepo;
+        }
+
+
+        public async Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType)
+        {
+            //This will create the directory if it doesnt already exist
+            var folder = await _fileRepo.GetOffsetFolder(await _fileRepo.GetParentFolder(p.FilePath), folderType.ToString());
+
+            var projectFolder = new ProjectFolder
+            {
+                ProjectFolderType = folderType,
+                Project = p,
+                FolderPath = folder
+            };
+
+            return projectFolder;
+        }
+
+        public async Task<string> GetSubFolder(Project p, ProjectFolderTypes folderType, params string[] subFolder)
+        {
+            //This will create the directory if it doesnt already exist
+            var folder = await GetFolder(p, folderType);
+
+            var s = new List<string>(subFolder);
+            s.Insert(0, folder.FolderPath);
+
+            var deeperFolder = await _fileRepo.GetOffsetFolder(s.ToArray());
+            return deeperFolder;
+        }
+
+        public async Task<string> GetSubFile(Project p, ProjectFolderTypes folderType, params string[] subFolder)
+        {
+            //This will create the directory if it doesnt already exist
+            var folder = await GetFolder(p, folderType);
+
+            var s = new List<string>(subFolder);
+            s.Insert(0, folder.FolderPath);
+
+            var deeperFolder = await _fileRepo.GetOffsetFile(s.ToArray());
+            return deeperFolder;
+
+        }
+
+        /// <summary>
+        /// Copies the file to the subPath provided. Do not include target file name in the subPath... it uses the source filename. 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="p"></param>
+        /// <param name="folderType"></param>
+        /// <param name="subPath"></param>
+        /// <returns></returns>
+        public async Task CopyTo(string source, Project p, ProjectFolderTypes folderType, params string[] subPath)
+        {
+            var f = await GetSubFile(p, folderType, subPath);
+           
+            await _fileRepo.CopyFile(source, f);
         }
 
         public async Task<List<string>> GetFiles(Project p, ProjectFolderTypes folderType)
@@ -34,7 +88,7 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task<bool> CopyToFolder(Project p, string fileName, ProjectFolderTypes folderType)
         {
-            var baseFolder = await _projectService.GetFolder(p, folderType);
+            var baseFolder = await GetFolder(p, folderType);
            
             return await _fileRepo.CopyFile(fileName, baseFolder.FolderPath);
         }
@@ -46,7 +100,7 @@ namespace SmartFaceAligner.Processor.Services
                 return -1;
             }
 
-            var target = await _projectService.GetFolder(p, ProjectFolderTypes.Staging);
+            var target = await GetFolder(p, ProjectFolderTypes.Staging);
             var result = await _fileRepo.CopyFolder(sourceFolder, target.FolderPath, new List<string>{".jpg", ".jpeg", ".png"});
 
             return result;
@@ -54,13 +108,13 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task<bool> HasFiles(Project p, ProjectFolderTypes folderType)
         {
-            var d = await _projectService.GetFolder(p, folderType);
+            var d = await GetFolder(p, folderType);
             return await _fileRepo.HasFiles(d.FolderPath);
         }
 
         public async Task DeleteFiles(Project p, ProjectFolderTypes folderType)
         {
-            var d = await _projectService.GetFolder(p, folderType);
+            var d = await GetFolder(p, folderType);
             await _fileRepo.DeleteFiles(d.FolderPath);
         }
     }

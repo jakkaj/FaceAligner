@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts.Entity;
 using Contracts.Interfaces;
 using Microsoft.ProjectOxford.Face;
+using Microsoft.ProjectOxford.Face.Contract;
 using SmartFaceAligner.Processor.Entity;
 using StartFaceAligner.FaceSmarts;
 
@@ -44,34 +45,34 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.RecPerson);
         }
  
-        public async Task Align(Project p, FaceData face1, FaceData face2)
+        public async Task Align(Project p, FaceData faceData1, FaceData faceData2, Face face1, Face face2)
         {
-            if (face1.Face == null || face2.Face == null)
+            if (face1 == null || face2 == null)
             {
                 return;
             }
 
-            if (!FaceFilter.SimpleCheck(face1.Face, face2.Face))
+            if (!FaceFilter.SimpleCheck(face1, face2))
             {
                 return;
             }
 
             var a = new ImageAligner();
 
-            var img1 = await _fileRepo.ReadBytes(face1.FileName);
-            var img2 = await _fileRepo.ReadBytes(face2.FileName);
+            var img1 = await _fileRepo.ReadBytes(faceData1.FileName);
+            var img2 = await _fileRepo.ReadBytes(faceData2.FileName);
 
-            var result = await a.AlignImages(img1, img2, face1.Face, face2.Face);
+            var result = await a.AlignImages(img1, img2, face1, face2);
 
             if (result == null)
             {
                 return;
             }
 
-            var folderSave = await _projectService.GetFolder(p, ProjectFolderTypes.Aligned);
+            var folderSave = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Aligned);
 
             await _fileRepo.Write(
-                await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(face2.FileName)), result);
+                await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData2.FileName)), result);
         }
 
         public async Task CognitiveDetectFace(Project p, FaceData face)
@@ -98,13 +99,15 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                         using (var stream = await _fileRepo.ReadStream(fUse))
                         {
                             var fResult = await _cognitiveFaceService.ParseFace(p, stream);
+
                             if (fResult != null)
                             {
-                                face.Face = fResult;
+                                face.ParsedFaces = fResult.ToArray();
+                                face.HasBeenScanned = true;
                             }
-                            
                         }
                         f.Delete();
+                       
                         await _faceDataService.SetFaceData(face);
                     }
                 }
@@ -123,27 +126,25 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
         public void LocalDetectFaces(List<FaceData> faces)
         {
-            var trimmed = faces.Where(_ => !_.HasFace.HasValue);
+            var trimmed = faces.Where(_ => !_.HasBeenScanned);
 
             foreach (var item in trimmed)
             {
                 var result = LocalFaceDetector.HasFace(item.FileName);
-                item.HasFace = result;
+                item.HasBeenScanned = result;
                 _faceDataService.SetFaceData(item);
             }
         }
 
-        public async Task<bool> SetPersonGroupPhotos(Project p, List<FaceData> faces)
+        /// <summary>
+        /// Send off to cognitive services for learning
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="faces"></param>
+        /// <returns></returns>
+        public async Task<bool> TrainPersonGroups(Project p)
         {
-            await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.RecPerson);
-
-            foreach (var f in faces)
-            {
-                await _fileManagementService.CopyToFolder(p, f.FileName, ProjectFolderTypes.RecPerson);
-            }
-
-            await _cognitiveFaceService.RegisterPersonGroup(p, faces);
-
+            await _cognitiveFaceService.RegisterPersonGroup(p, p.IdentityPeople);
             await _projectService.SetProject(p);
 
             return true;

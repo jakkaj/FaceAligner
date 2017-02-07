@@ -15,10 +15,14 @@ namespace SmartFaceAligner.Processor.Services
     public class ProjectService : IProjectService
     {
         private readonly IFileRepo _fileRepo;
+        private readonly IFileManagementService _fileManagementService;
+        private readonly IFaceDataService _faceDataService;
 
-        public ProjectService(IFileRepo fileRepo)
+        public ProjectService(IFileRepo fileRepo, IFileManagementService fileManagementService, IFaceDataService faceDataService)
         {
             _fileRepo = fileRepo;
+            _fileManagementService = fileManagementService;
+            _faceDataService = faceDataService;
         }
 
         public async Task<Project> OpenProject(string projectFile)
@@ -26,20 +30,81 @@ namespace SmartFaceAligner.Processor.Services
             return await _getProject(projectFile);
         }
 
-        public async Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType)
+        public async Task AddImageToPerson(IdentityPerson personGroup, FaceData f)
         {
-            //This will create the directory if it doesnt already exist
-            var folder = await _fileRepo.GetOffsetFolder(await _fileRepo.GetParentFolder(p.FilePath), folderType.ToString());
+            var p = personGroup.Project;
+            await _fileManagementService.CopyTo(f.FileName, p, ProjectFolderTypes.RecPerson, personGroup.PersonName);
+            await _initIdentityPersons(p);
+        }
 
-            var projectFolder = new ProjectFolder
+        public async Task RemoveImageFromPerson(IdentityPerson personGroup, FaceData f)
+        {
+            await _fileRepo.DeleteFile(f.FileName);
+            await _initIdentityPersons(personGroup.Project);
+        }
+
+        public async Task<IdentityPerson> AddNewIdentityPerson(Project p, string groupName)
+        {
+            if (p.IdentityPeople == null)
             {
-                ProjectFolderType = folderType,
-                Project = p,
-                FolderPath = folder
+                return null;
+            }
+
+            if(p.IdentityPeople.Any(_=>_.PersonName.ToLower() == groupName.ToLower()))
+            {
+                return null;
+            }
+
+            var ip = new IdentityPerson
+            {
+                PersonName = groupName
             };
 
-            return projectFolder;
+            p.IdentityPeople.Add(ip);
 
+            await SetProject(p);
+            await _initIdentityPersons(p);
+
+            return ip;
+        }
+
+        public async Task RemoveIdentityPerson(IdentityPerson p)
+        {
+            var project = p.Project;
+            project.IdentityPeople.Remove(p);
+            await SetProject(project);
+            await _initIdentityPersons(project);
+
+            var baseGroupFolder = await _fileManagementService.GetSubFolder(project, ProjectFolderTypes.RecPerson, p.PersonName);
+            await _fileRepo.DeleteDirectory(baseGroupFolder);
+        }
+
+        async Task _initIdentityPersons(Project p)
+        {
+            if (p.IdentityPeople == null)
+            {
+                p.IdentityPeople = new List<IdentityPerson>();
+            }
+
+            var baseGroupFolder = await _fileManagementService.GetFolder(p, ProjectFolderTypes.RecPerson);
+
+            foreach (var g in p.IdentityPeople)
+            {
+                g.Faces = new List<FaceData>();
+
+                var folder = await _fileRepo.GetOffsetFolder(baseGroupFolder.FolderPath, g.PersonName);
+
+                g.FolderPath = folder;
+                g.Project = p;
+
+                var files = await _fileRepo.GetFiles(folder);
+
+                foreach (var f in files)
+                {
+                    var data = await _faceDataService.GetFaceData(p, f);
+                    g.Faces.Add(data);
+                }
+            }
         }
 
         async Task<string> _getProjectFile(string projectFile)
@@ -53,7 +118,6 @@ namespace SmartFaceAligner.Processor.Services
             }
 
             return projectFile;
-
         }
 
         public async Task<Project> CreateProject(string projectName, string projectDirectory, string sourceDirectory)
@@ -61,12 +125,13 @@ namespace SmartFaceAligner.Processor.Services
             var p = await _getProject(projectDirectory);
             p.Name = projectName;
             p.SourceDirectory = sourceDirectory;
+            await _initIdentityPersons(p);
             await SetProject(p);
             return p;
         }
 
         public async Task SetProject(Project p)
-        { 
+        {
             await _fileRepo.Write(p.FilePath, JsonConvert.SerializeObject(p));
         }
 
@@ -77,9 +142,10 @@ namespace SmartFaceAligner.Processor.Services
             if (await _fileRepo.FileExists(projectPath))
             {
                 var projectData = await _fileRepo.ReadText(projectPath);
-               
+
                 var project = JsonConvert.DeserializeObject<Project>(projectData);
                 project.FilePath = projectPath;
+                await _initIdentityPersons(project);
                 return project;
             }
 
@@ -89,6 +155,7 @@ namespace SmartFaceAligner.Processor.Services
                 FilePath = projectPath
             };
 
+            await _initIdentityPersons(newProject);
             await SetProject(newProject);
 
             return newProject;
