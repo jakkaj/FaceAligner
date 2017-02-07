@@ -8,6 +8,12 @@ namespace SmartFaceAligner.Processor.Entity
 {
     public static class Constants
     {
+        public static class Filters
+        {
+            public const string Female = "female";
+            public const string Male = "male";
+        }
+
         public static class Errors
         {
             public const string RateLimitExceeded = "RateLimitExceeded";

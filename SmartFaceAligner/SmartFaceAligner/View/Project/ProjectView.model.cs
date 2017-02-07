@@ -19,6 +19,8 @@ using SmartFaceAligner.Util;
 using XamlingCore.Portable.Messages.XamlingMessenger;
 using XamlingCore.Portable.Util.TaskUtils;
 using System.Diagnostics;
+using Microsoft.ProjectOxford.Face.Contract;
+using SmartFaceAligner.Processor.Entity;
 
 namespace SmartFaceAligner.View.Project
 {
@@ -44,6 +46,9 @@ namespace SmartFaceAligner.View.Project
         public ICommand TrainCommand => Command(_train);
 
         public ICommand FilterFacesCommand => Command(_filterFaces);
+
+        public ICommand FilterMalesCommand => Command(_filterMales);
+        public ICommand FilterFemalesCommand => Command(_filterFemales);
 
         public ICommand DetectFacesCommand => Command(_detectFaces);
         public ICommand RunFilterCommand => Command(_runFilter);
@@ -253,6 +258,75 @@ namespace SmartFaceAligner.View.Project
             CurrentIdentity = null;
             await Load();
         }
+
+        public ICommand FilterByReadingGlassesCommand => Command(_filterByReadingGlasses);
+        public ICommand FilterBySunGlassesCommand => Command(_filterBySunGlasses);
+        public ICommand FilterByNoGlassesCommand => Command(_filterByNoGlasses);
+        public ICommand FilterByGogglesCommand => Command(_filterBySwimmingGoggles);
+
+        void _filterByReadingGlasses()
+        {
+            _filterByGlasses(Glasses.ReadingGlasses);
+        }
+
+        void _filterBySunGlasses()
+        {
+            _filterByGlasses(Glasses.Sunglasses);
+        }
+
+        void _filterByNoGlasses()
+        {
+            _filterByGlasses(Glasses.NoGlasses);
+        }
+
+        void _filterBySwimmingGoggles()
+        {
+            _filterByGlasses(Glasses.SwimmingGoggles);
+        }
+
+        private async void _filterByGlasses(Glasses type)
+        {
+            await Load();
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(
+                _ => _.FaceData.ParsedFaces != null &&
+                _.FaceData.ParsedFaces.Any(
+                    _2 => _2.Face.FaceAttributes.Glasses == type)
+                ).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
+        private async void _filterByGender(string gender)
+        {
+            await Load();
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(
+                _=> _.FaceData.ParsedFaces != null && 
+                _.FaceData.ParsedFaces.Any(
+                    _2=>_2.Face.FaceAttributes.Gender == gender)
+                ).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
+        void _filterMales()
+        {
+            _filterByGender(Constants.Filters.Male);
+        }
+
+        void _filterFemales()
+        {
+            _filterByGender(Constants.Filters.Female);
+        }
+
+
 
         private async void _runFilter()
         {

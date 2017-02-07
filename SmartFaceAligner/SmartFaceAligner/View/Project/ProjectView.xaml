@@ -30,8 +30,18 @@
             <Button Content="Train AI" Command="{Binding TrainCommand}"></Button>
             
             <Button Content="Detect faces" Command="{Binding DetectFacesCommand}"></Button>
-            
-            
+
+
+            <Button Content="Show only females" Command="{Binding FilterFemalesCommand}"/>
+            <Button Content="Show only males" Command="{Binding FilterMalesCommand}"/>
+
+            <Button Content="Reading Glasses" Command="{Binding FilterByReadingGlassesCommand}"/>
+            <Button Content="Sun Glasses" Command="{Binding FilterBySunGlassesCommand}"/>
+            <Button Content="No Glasses" Command="{Binding FilterByNoGlassesCommand}"/>
+            <Button Content="Goggles" Command="{Binding FilterByGogglesCommand}"/>
+
+
+            <Button Content="Show with glasses" Command="{Binding FilterGlassesCommand}"/>
             
             <Button Content="Sort by age" Command="{Binding SortByAgeCommand}"></Button>
             <Button Content="Align" Command="{Binding AlignCommand}"></Button>

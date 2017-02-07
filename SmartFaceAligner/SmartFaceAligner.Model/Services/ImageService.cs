@@ -33,7 +33,7 @@ namespace SmartFaceAligner.Processor.Services
 
                 var flipper = ImageTools.GetExifOrientationData(image);
 
-                if (flipper != RotateFlipType.Rotate180FlipNone)
+                if (flipper != RotateFlipType.RotateNoneFlipNone)
                 {
                     image.RotateFlip(flipper);
                 }
@@ -65,12 +65,12 @@ namespace SmartFaceAligner.Processor.Services
                 return null;
             }
             
-            var isCached = await _cacheService.ExistsInCache(fileName, Constants.Cache.Thumbnail);
+            //var isCached = await _cacheService.ExistsInCache(fileName, Constants.Cache.Thumbnail);
 
-            if (isCached)
-            {
-                return await _cacheService.GetCacheFileName(fileName, Constants.Cache.Thumbnail);
-            }
+            //if (isCached)
+            //{
+            //    return await _cacheService.GetCacheFileName(fileName, Constants.Cache.Thumbnail);
+            //}
 
             try
             {
@@ -81,7 +81,8 @@ namespace SmartFaceAligner.Processor.Services
 
                 var thum = image.GetThumbnailImage(100, 100, () => false, IntPtr.Zero);
 
-                if (flipper != RotateFlipType.Rotate180FlipNone)
+
+                if (flipper != RotateFlipType.RotateNoneFlipNone)
                 {
                     thum.RotateFlip(flipper);
                     //image.RotateFlip(flipper);
