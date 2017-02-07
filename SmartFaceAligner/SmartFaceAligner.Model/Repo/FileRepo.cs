@@ -13,35 +13,13 @@ using XamlingCore.Portable.Contract.Entities;
 namespace SmartFaceAligner.Processor.Repo
 {
     public class FileRepo : IFileRepo
-    {
-        private readonly IEntityCache _entityCache;
+    {  
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
-
-        public FileRepo(IEntityCache entityCache)
-        {
-            _entityCache = entityCache;
-        }
-
-        private Dictionary<string, string> _hashCache;
+        private static object _writeLock = new object();
 
         public async Task<string> GetHash(string fileName)
         {
-            if (_hashCache == null)
-            {
-                _hashCache = await _entityCache.GetEntity<Dictionary<string, string>>(Constants.Cache.HashCache);
-
-                if (_hashCache == null)
-                {
-                    _hashCache = new Dictionary<string, string>();
-                }
-            }
-
-            if (_hashCache.ContainsKey(fileName))
-            {
-                return _hashCache[fileName];
-            }
-
             var f = _getFile(fileName);
 
             if (!f.Exists)
@@ -49,14 +27,10 @@ namespace SmartFaceAligner.Processor.Repo
                 return null;
             }
 
-            
+            var hashSource = f.Length.ToString() + f.Name;
 
-            var d = await ReadBytes(fileName);
-
-            var hMade = _createSHA1(d);
-            d = null;
-            _hashCache.Add(fileName, hMade);
-            await _entityCache.SetEntity(Constants.Cache.HashCache, _hashCache);
+            var hMade = _createSHA1(Encoding.UTF8.GetBytes(hashSource));
+           
             return hMade;
         }
 
@@ -70,7 +44,7 @@ namespace SmartFaceAligner.Processor.Repo
             return _hexStringFromBytes(hashBytes);
         }
 
-         string _hexStringFromBytes(byte[] bytes)
+        string _hexStringFromBytes(byte[] bytes)
         {
             var sb = new StringBuilder();
             foreach (byte b in bytes)
@@ -98,7 +72,11 @@ namespace SmartFaceAligner.Processor.Repo
         public async Task<bool> Write(string file, string text)
         {
             var f = _getFile(file);
-            File.WriteAllText(f.FullName, text);
+            lock (_writeLock)
+            {
+                File.WriteAllText(f.FullName, text);
+            }
+            
             return true;
         }
 
@@ -287,7 +265,7 @@ namespace SmartFaceAligner.Processor.Repo
                 return;
             }
             await DeleteFiles(path);
-           dirInfo.Delete(true);
+            dirInfo.Delete(true);
 
         }
         public async Task DeleteFiles(string path)
@@ -313,21 +291,39 @@ namespace SmartFaceAligner.Processor.Repo
             f.Delete();
         }
 
-        public async Task<List<string>> GetFiles(string path)
+        public async Task<List<string>> GetFiles(string path, List<string> extensions = null)
         {
             var dirInfo = new DirectoryInfo(path);
-           
+
             var l = dirInfo.GetFiles().Select(_ => _.FullName).ToList();
+
+            var lResult = new List<string>();
+
+            if (extensions == null)
+            {
+                lResult = l;
+            }
+            else
+            {
+                foreach (var lFile in l)
+                {
+                    var extension = Path.GetExtension(lFile);
+
+                    lResult.AddRange(from ext in extensions
+                                     where ext.ToLower().IndexOf(extension.ToLower()) != -1
+                                     select lFile);
+                }
+            }
 
             foreach (var child in dirInfo.GetDirectories())
             {
-                l.AddRange(await GetFiles(child.FullName));
+                lResult.AddRange(await GetFiles(child.FullName, extensions));
             }
 
-            return l;
+            return lResult;
 
         }
-       
+
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }
 }

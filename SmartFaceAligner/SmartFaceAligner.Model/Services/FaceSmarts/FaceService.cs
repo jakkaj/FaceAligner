@@ -76,7 +76,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData2.FileName)), result);
         }
 
-        public async Task CognitiveDetectFace(Project p, FaceData face)
+        public async Task<(bool, long)> CognitiveDetectFace(Project p, FaceData face)
         {
             _logService.Log($"Parsing face: {face.FileName}");
             try
@@ -98,8 +98,19 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                             fUse = f.FullName;
                         }
 
-                        var len = File.ReadAllBytes(fUse).Length;
+                        var len = new FileInfo(fUse).Length;
+
+                        var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
+                        if (!resultLocalCheck)
+                        {
+                            face.HasBeenScanned = true;
+                            await _faceDataService.SetFaceData(face);
+                            _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
+                            return (false, 0);
+                        }
+
                         _logService.Log($"Uploading: {len} bytes");
+
 
                         using (var stream = await _fileRepo.ReadStream(fUse))
                         {
@@ -114,18 +125,20 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                         f.Delete();
                        
                         await _faceDataService.SetFaceData(face);
+                        return (true, len);
                     }
                 }
             }
             catch (FaceAPIException ex)
             {
-                _logService.Log($"Response: {ex.ErrorCode}. {ex.ErrorMessage}");
+                _logService.Log($"Cognitive response: {ex.ErrorCode}. {ex.ErrorMessage}");
             }
             catch (Exception ex)
             {
                 _logService.Log("It's probably nothing: " + ex.ToString());
             }
 
+            return (false, 0);
 
         }
 

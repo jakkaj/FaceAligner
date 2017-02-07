@@ -1,4 +1,5 @@
 ﻿using System;
+using Contracts.Entity;
 
 namespace Contracts.Interfaces
 {
@@ -6,5 +7,6 @@ namespace Contracts.Interfaces
     {
         void Log(string text);
         Action<string> Callback { get; set; }
+        event EventHandler<TextEventArgs> Logged;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Contracts.Entity;
 using Microsoft.ProjectOxford.Face.Contract;
@@ -9,7 +10,7 @@ namespace Contracts.Interfaces
     {
         void LocalDetectFaces(List<FaceData> faces);
         
-        Task CognitiveDetectFace(Project p, FaceData face);
+        Task<ValueTuple<bool, long>> CognitiveDetectFace(Project p, FaceData face);
         Task Align(Project p, FaceData faceData1, FaceData faceData2, Face face1, Face face2);
         Task PrepAlign(Project p);
 

@@ -39,12 +39,12 @@
             <Button Content="Sun Glasses" Command="{Binding FilterBySunGlassesCommand}"/>
             <Button Content="No Glasses" Command="{Binding FilterByNoGlassesCommand}"/>
             <Button Content="Goggles" Command="{Binding FilterByGogglesCommand}"/>
-
-
-            <Button Content="Show with glasses" Command="{Binding FilterGlassesCommand}"/>
+           
             
             <Button Content="Sort by age" Command="{Binding SortByAgeCommand}"></Button>
             <Button Content="Align" Command="{Binding AlignCommand}"></Button>
+            
+           
 
         </StackPanel>
         
@@ -71,7 +71,7 @@
         
         <ListView x:Name="ImageList" ItemsSource="{Binding FaceItems}"
                   VerticalAlignment="Bottom" 
-                  HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple" Grid.ColumnSpan="3"
+                  HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple" Grid.ColumnSpan="3" Margin="0, 0, 0, 26"
                  
                   ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionChanged="ImageList_OnSelectionChanged">
             <ListView.ItemTemplate>
@@ -88,5 +88,6 @@
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
         </ListView>
+        <TextBox Text="{Binding CurrentLog}"  Grid.ColumnSpan="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="25"></TextBox>
     </Grid>
 </Page>

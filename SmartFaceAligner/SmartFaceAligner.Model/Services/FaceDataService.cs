@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Entity;
 using Contracts.Interfaces;
@@ -15,25 +16,67 @@ namespace SmartFaceAligner.Processor.Services
     public class FaceDataService : IFaceDataService
     {
         private readonly IFileManagementService _fileManagementService;
+
+        private Dictionary<Guid, List<FaceData>> _faceData = new Dictionary<Guid, List<FaceData>>();
+
         private IFileRepo _fileRepo { get; }
+
+        private SemaphoreSlim _semaphore;
 
         public FaceDataService(IFileRepo fileRepo, IFileManagementService fileManagementService)
         {
             _fileManagementService = fileManagementService;
             _fileRepo = fileRepo;
+            _semaphore = new SemaphoreSlim(1,1);
         }
 
-        async Task<string> _getFile(Project p, string fileName)
+        async Task<List<FaceData>> _init(Project p)
         {
-            var folder = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Data);
+            if (!_faceData.ContainsKey(p.Id))
+            {
+                var file = await _fileManagementService.GetSubFile(p, ProjectFolderTypes.Data, Constants.Cache.FaceData);
 
-            return await _fileRepo.GetOffsetFile(folder.FolderPath, await _getKey(fileName));
+                if (await _fileRepo.FileExists(file))
+                {
+                    var dLoaded = await _fileRepo.ReadText(file);
+                    _faceData[p.Id] = JsonConvert.DeserializeObject<List<FaceData>>(dLoaded);
+                }
+                else
+                {
+                    _faceData[p.Id] = new List<FaceData>();
+                }
+            }
+
+            return _faceData[p.Id];
         }
+
+        async Task _save(Project p)
+        {
+            if (_faceData.ContainsKey(p.Id))
+            {
+                var file = await _fileManagementService.GetSubFile(p, ProjectFolderTypes.Data, Constants.Cache.FaceData);
+               
+                var ser = JsonConvert.SerializeObject(_faceData[p.Id]);
+               
+                await _fileRepo.Write(file, ser);
+            }
+        }
+
+       
 
         public async Task SetFaceData(FaceData f)
         {
-            var data = JsonConvert.SerializeObject(f);
-            await _fileRepo.Write(await _getFile(f.Project, f.FileName), data);
+            await _semaphore.WaitAsync();
+            var list = await _init(f.Project);
+            var current = list.FirstOrDefault(_ => _.FileName == f.FileName);
+            if (current != null)
+            {
+                list.Remove(current);
+            }
+
+            list.Add(f);
+            await _save(f.Project);
+            _semaphore.Release();
         }
 
         public async Task<List<FaceData>> GetFaceData(Project p )
@@ -50,14 +93,13 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task<FaceData> GetFaceData(Project p, string fileName)
         {
-            var file = await _getFile(p, fileName);
+            var list = await _init(p);
 
-            if (await _fileRepo.FileExists(file))
+            var existing = list.FirstOrDefault(_ => _.FileName == fileName);
+
+            if (existing != null)
             {
-                var data = await _fileRepo.ReadText(file);
-                var fd = JsonConvert.DeserializeObject<FaceData>(data);
-                fd.Project = p;
-                return fd;
+                return existing;
             }
 
             return new FaceData { FileName = fileName, Project = p };

@@ -40,6 +40,7 @@
     <Compile Include="Entity\PersonGroup.cs" />
     <Compile Include="Entity\Project.cs" />
     <Compile Include="Entity\ProjectFolder.cs" />
+    <Compile Include="Entity\TextEventArgs.cs" />
     <Compile Include="Interfaces\ICognitiveServicesFaceService.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
     <Compile Include="Interfaces\IFaceDataService.cs" />

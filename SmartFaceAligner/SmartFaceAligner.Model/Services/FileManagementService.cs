@@ -83,7 +83,7 @@ namespace SmartFaceAligner.Processor.Services
                 return null;
             }
 
-            return await _fileRepo.GetFiles(p.SourceDirectory);
+            return await _fileRepo.GetFiles(p.SourceDirectory, new List<string>{".jpg", ".png", ".jpeg"});
         }
 
         public async Task<bool> CopyToFolder(Project p, string fileName, ProjectFolderTypes folderType)

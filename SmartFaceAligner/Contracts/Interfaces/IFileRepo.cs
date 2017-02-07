@@ -21,7 +21,7 @@ namespace Contracts.Interfaces
         Task<string> GetParentFolder(string path);
         Task<bool> HasFiles(string path);
         Task DeleteFiles(string path);
-        Task<List<string>> GetFiles(string path);
+        Task<List<string>> GetFiles(string path, List<string> extensions = null);
         Task<string> GetLocalStoragePath(string fileName);
         Task<bool> CopyFile(string source, string target);
         Task<Stream> ReadStream(string file);

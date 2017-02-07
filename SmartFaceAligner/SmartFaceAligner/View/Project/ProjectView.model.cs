@@ -30,6 +30,7 @@ namespace SmartFaceAligner.View.Project
         private readonly IProjectService _projectService;
         private readonly IFaceDataService _faceDataService;
         private readonly IFaceService _faceService;
+        private readonly ILogService _logService;
 
         public Contracts.Entity.Project Project { get; set; }
 
@@ -55,9 +56,9 @@ namespace SmartFaceAligner.View.Project
         public ICommand ClearFilterCommand => Command(_clearFilter);
         public ICommand SortByAgeCommand => Command(_sortByAge);
         public ICommand AlignCommand => Command(_align);
-        
 
-       
+
+        string _currentLog;
 
         private RecognisePersonConfigViewModel _currentIdentity;
         
@@ -95,12 +96,14 @@ namespace SmartFaceAligner.View.Project
         public ProjectViewModel(IFileManagementService fileManagementService,
             IProjectService projectService,
             IFaceDataService faceDataService, 
-            IFaceService faceService)
+            IFaceService faceService,
+            ILogService logService)
         {
             _fileManagementService = fileManagementService;
             _projectService = projectService;
             _faceDataService = faceDataService;
             _faceService = faceService;
+            _logService = logService;
             FaceItems = new ObservableCollection<FaceItemViewModel>();
             IdentityPeople = new ObservableCollection<RecognisePersonConfigViewModel>();
 
@@ -267,6 +270,16 @@ namespace SmartFaceAligner.View.Project
         public ICommand FilterByNoGlassesCommand => Command(_filterByNoGlasses);
         public ICommand FilterByGogglesCommand => Command(_filterBySwimmingGoggles);
 
+        public string CurrentLog
+        {
+            get { return _currentLog; }
+            set
+            {
+                _currentLog = value; 
+                OnPropertyChanged();
+            }
+        }
+
         void _filterByReadingGlasses()
         {
             _filterByGlasses(Glasses.ReadingGlasses);
@@ -343,14 +356,34 @@ namespace SmartFaceAligner.View.Project
             filtered.ForEach(_ => FaceItems.Add(_));
         }
 
+        private long _totalBytesSent = 0;
+        private int _sentToServer = 0;
+        private int _notSentToServer = 0;
+
         private async void _detectFaces()
         {
-            async Task FilterLocal(FaceData faceData)
-            {
-                await _faceService.CognitiveDetectFace(Project, faceData);
-            }
+            _totalBytesSent = 0;
+            _sentToServer = 0;
+            _notSentToServer = 0;
 
             var tasks = new Queue<Func<Task>>();
+
+            var count = 0;
+
+            async Task FilterLocal(FaceData faceData)
+            {
+              (bool sent, long bytes) = await _faceService.CognitiveDetectFace(Project, faceData);
+                if (sent)
+                {
+                    _sentToServer += 1;
+                    _totalBytesSent += bytes;
+                }
+                else
+                {
+                    _notSentToServer += 1;
+                }
+                _logService.Log($"Cognitive Progress: {_totalBytesSent/1024/1024} mb / {_sentToServer} files sent. {_notSentToServer} ignored. {tasks.Count} remaining of {count} total.");
+            }
 
             foreach (var f in FaceItems)
             {
@@ -366,7 +399,8 @@ namespace SmartFaceAligner.View.Project
                     tasks.Enqueue(() => FilterLocal(f.FaceData));
                 }
             }
-
+            _logService.Log($"Processing {tasks.Count} items");
+            count = tasks.Count;
             await tasks.Parallel(10);
 
             await Load();
@@ -399,7 +433,22 @@ namespace SmartFaceAligner.View.Project
         public override Task NavigatedTo(bool isBack)
         {
             Load();
+            _logService.Logged += _logService_Logged;
             return base.NavigatedTo(isBack);
+        }
+
+        public override Task NavigatingAway(bool isBack)
+        {
+            _logService.Logged -= _logService_Logged;
+            return base.NavigatingAway(isBack);
+        }
+
+        private void _logService_Logged(object sender, TextEventArgs e)
+        {
+            if (e.Text.StartsWith("Cognitive Progress:"))
+            {
+                CurrentLog = e.Text;
+            }
         }
 
         public async Task Load()
@@ -417,6 +466,8 @@ namespace SmartFaceAligner.View.Project
             await files.WhenAllList(_=>Wrap(_));
 
             _loadIdentities();
+
+            CurrentLog = $"Loaded {files.Count} images";
         }
 
          void _loadIdentities()

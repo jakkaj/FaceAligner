@@ -19,32 +19,42 @@ namespace StartFaceAligner.FaceSmarts
         public static bool HasFace(string fileName)
         {
 
-            Debug.WriteLine($"Detecting: {fileName}");
+            //Debug.WriteLine($"Detecting: {fileName}");
             try
             {
-                using (var img = Image.FromFile(fileName))
+                IImage image = new UMat(fileName, ImreadModes.Color);
+
+                var result = Detect(image);
+
+                if (result.Item1?.Count > 0)
                 {
-                    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 4, img.Height / 4))
-                    {
-                        var f = new FileInfo(Path.GetTempFileName());
-
-                        imgResized.Save(f.FullName);
-
-                        IImage image = new UMat(f.FullName, ImreadModes.Color);
-
-                        var result = Detect(image);
-
-                        f.Delete();
-
-                        if (result.Item1?.Count > 0)
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-
-
+                    return true;
                 }
+                return false;
+
+                //using (var img = Image.FromFile(fileName))
+                //{
+                //    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 2, img.Height / 2))
+                //    {
+                //        var f = new FileInfo(Path.GetTempFileName());
+
+                //        imgResized.Save(f.FullName);
+
+                //        IImage image = new UMat(f.FullName, ImreadModes.Color);
+
+                //        var result = Detect(image);
+
+                //        f.Delete();
+
+                //        if (result.Item1?.Count > 0)
+                //        {
+                //            return true;
+                //        }
+                //        return false;
+                //    }
+
+
+                //}
             }
             catch
             {
