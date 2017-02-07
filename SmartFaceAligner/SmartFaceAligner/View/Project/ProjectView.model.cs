@@ -36,6 +36,7 @@ namespace SmartFaceAligner.View.Project
         private FaceItemViewModel _selectedFace;
 
         public ICommand ImportCommand => Command(_import);
+        public ICommand AddNewIdentityGroupCommand => Command(_addNewIdentityGroup);
         public ICommand FilterFacesCommand => Command(_filterFaces);
         public ICommand FilterPersonCommand => Command(_filterPersonCommand);
         public ICommand RunFilterCommand => Command(_runFilter);
@@ -94,6 +95,11 @@ namespace SmartFaceAligner.View.Project
                 SelectedFace = FaceItems[selIndex];
 
             }
+        }
+
+        async void _addNewIdentityGroup()
+        {
+            await NavigateTo<NewIdentityViewModel>(_=>_.Project = Project);
         }
 
         private async void _align()

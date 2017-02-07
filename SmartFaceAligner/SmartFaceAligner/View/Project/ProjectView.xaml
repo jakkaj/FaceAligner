@@ -17,6 +17,8 @@
             
             <TextBox Text="&#xE73E;" Foreground="Green" FontSize="30" FontFamily="Segoe MDL2 Assets"></TextBox>
             <!--<Button Content="Filter faces" Command="{Binding FilterFacesCommand}"></Button>-->
+            <Button Content="Add new person indentity" Command="{Binding AddNewIdentityGroupCommand}"/>
+            
             <Button Content="Select filter person" Click="ButtonBase_OnClick"></Button>
             <Button Content="Process faces" Command="{Binding FilterPersonCommand}"></Button>
             <Button Content="Run Filter" Command="{Binding RunFilterCommand}"></Button>

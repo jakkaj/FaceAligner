@@ -115,6 +115,10 @@
     <Compile Include="View\NewProject\NewProjectStartView.xaml.cs">
       <DependentUpon>NewProjectStartView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Project\NewIdentityView.model.cs" />
+    <Compile Include="View\Project\NewIdentityView.xaml.cs">
+      <DependentUpon>NewIdentityView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Project\ProjectView.model.cs" />
     <Compile Include="View\Project\ProjectView.xaml.cs">
       <DependentUpon>ProjectView.xaml</DependentUpon>
@@ -157,6 +161,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\NewProject\NewProjectStartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Project\NewIdentityView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
