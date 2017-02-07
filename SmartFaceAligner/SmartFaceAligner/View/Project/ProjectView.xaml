@@ -31,7 +31,7 @@
             
             <Button Content="Detect faces" Command="{Binding DetectFacesCommand}"></Button>
             
-            <Button Content="Run Filter" Command="{Binding RunFilterCommand}"></Button>
+            
             
             <Button Content="Sort by age" Command="{Binding SortByAgeCommand}"></Button>
             <Button Content="Align" Command="{Binding AlignCommand}"></Button>
@@ -41,7 +41,16 @@
         <face:FaceView Width="500" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding SelectedFace}" Grid.Column="1"/>
         
         <Grid Grid.Column="2">
-            <ListView ItemsSource="{Binding IdentityPeople}" SelectedItem="{Binding CurrentIdentity, Mode=TwoWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75"/>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Filter Selected" Command="{Binding RunFilterCommand}"></Button>
+                <Button Content="Clear Filter" Command="{Binding ClearFilterCommand}"></Button>
+            </StackPanel>
+           
+            <ListView ItemsSource="{Binding IdentityPeople}" SelectedItem="{Binding CurrentIdentity, Mode=TwoWay}" Grid.Row="1">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <face:RecognisePersonConfigView/>
@@ -54,7 +63,7 @@
                   VerticalAlignment="Bottom" 
                   HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple" Grid.ColumnSpan="3"
                  
-                  ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                  ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionChanged="ImageList_OnSelectionChanged">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="100">

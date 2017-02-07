@@ -42,7 +42,10 @@ namespace SmartFaceAligner.View.Face
             }
 
             var img = _imageService.GetImageFile(FaceData.FileName);
-            
+            if (img == null)
+            {
+                return null;
+            }
             using (var ms = new MemoryStream(img))
             {
                 var bitmap = new BitmapImage();

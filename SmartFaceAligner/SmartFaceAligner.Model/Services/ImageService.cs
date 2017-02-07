@@ -38,6 +38,12 @@ namespace SmartFaceAligner.Processor.Services
                     image.RotateFlip(flipper);
                 }
 
+                if (image.Width > 1280)
+                {
+                    image = ImageTools.ResizeImage(image, 1280, 1024);
+                }
+
+               
                 using (var ms = new MemoryStream())
                 {
                     image.Save(ms, ImageFormat.Jpeg);

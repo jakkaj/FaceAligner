@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
+
 using System.Windows.Input;
 using Autofac;
 using Contracts.Entity;
@@ -35,6 +35,8 @@ namespace SmartFaceAligner.View.Project
         public ObservableCollection<RecognisePersonConfigViewModel> IdentityPeople {get;private set;}
         public IList<FaceItemViewModel> SelectedItems { get; set; }
 
+        private FaceItemViewModel _selectedItem;
+
         private FaceItemViewModel _selectedFace;
 
         public ICommand ImportCommand => Command(_import);
@@ -45,6 +47,7 @@ namespace SmartFaceAligner.View.Project
 
         public ICommand DetectFacesCommand => Command(_detectFaces);
         public ICommand RunFilterCommand => Command(_runFilter);
+        public ICommand ClearFilterCommand => Command(_clearFilter);
         public ICommand SortByAgeCommand => Command(_sortByAge);
         public ICommand AlignCommand => Command(_align);
         
@@ -74,6 +77,16 @@ namespace SmartFaceAligner.View.Project
             }
         }
 
+        public FaceItemViewModel SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ProjectViewModel(IFileManagementService fileManagementService,
             IProjectService projectService,
             IFaceDataService faceDataService, 
@@ -89,6 +102,7 @@ namespace SmartFaceAligner.View.Project
             this.Register<ViewItemMessage>(_onViewPortUpdatedMessage);
         }
 
+        
         public async void SelectFilterPersonCommand()
         {
             if (SelectedItems == null)
@@ -234,6 +248,12 @@ namespace SmartFaceAligner.View.Project
             return any;
         }
 
+        async void _clearFilter()
+        {
+            CurrentIdentity = null;
+            await Load();
+        }
+
         private async void _runFilter()
         {
             await Load();
@@ -270,7 +290,11 @@ namespace SmartFaceAligner.View.Project
                 }
             }
 
-            await tasks.Parallel(4);
+            await tasks.Parallel(10);
+
+            await Load();
+
+            System.Windows.MessageBox.Show("Face detection complete", "Processing",  MessageBoxButton.OK);
 
 ;        }
 
@@ -354,7 +378,7 @@ namespace SmartFaceAligner.View.Project
 
             var result = dialog.ShowDialog();
 
-            if (result != DialogResult.OK)
+            if (result != System.Windows.Forms.DialogResult.OK)
             {
                 return;
             }

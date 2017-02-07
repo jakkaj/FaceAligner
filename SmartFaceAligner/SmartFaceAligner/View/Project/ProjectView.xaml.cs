@@ -37,7 +37,8 @@ namespace SmartFaceAligner.View.Project
             var scrollViewer = FindSimpleVisualChild<ScrollViewer>(ImageList);
             if (scrollViewer != null)
             {
-                ScrollBar scrollBar = scrollViewer.Template.FindName("PART_HorizontalScrollBar", scrollViewer) as ScrollBar;
+                ScrollBar scrollBar =
+                    scrollViewer.Template.FindName("PART_HorizontalScrollBar", scrollViewer) as ScrollBar;
                 if (scrollBar != null)
                 {
                     scrollBar.ValueChanged += delegate
@@ -88,6 +89,30 @@ namespace SmartFaceAligner.View.Project
                 vm.SelectedItems = l;
                 vm.SelectFilterPersonCommand();
                 ImageList.SelectedItems.Clear();
+            }
+        }
+
+
+        private void ImageList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is ProjectViewModel vm)
+            {
+                var l = new List<FaceItemViewModel>();
+
+                foreach (var item in ImageList.SelectedItems)
+                {
+                    if (item is FaceItemViewModel faceVm)
+                    {
+                        l.Add(faceVm);
+                    }
+                }
+
+                var selItem = l.LastOrDefault();
+
+                if (selItem != null)
+                {
+                    vm.SelectedFace = selItem;
+                }
             }
         }
     }
