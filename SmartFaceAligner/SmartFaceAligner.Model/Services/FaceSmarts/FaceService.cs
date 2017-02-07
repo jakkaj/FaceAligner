@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -87,14 +88,18 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     {
                         var f = new FileInfo(Path.GetTempFileName());
 
-                        imgResized.Save(f.FullName);
+                        imgResized.Save(f.FullName, ImageFormat.Jpeg);
 
                         var fUse = face.FileName;
 
                         if (img.Width > 1280)
                         {
+                           
                             fUse = f.FullName;
                         }
+
+                        var len = File.ReadAllBytes(fUse).Length;
+                        _logService.Log($"Uploading: {len} bytes");
 
                         using (var stream = await _fileRepo.ReadStream(fUse))
                         {

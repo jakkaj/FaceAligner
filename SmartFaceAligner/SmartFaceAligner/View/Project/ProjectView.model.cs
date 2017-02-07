@@ -281,7 +281,7 @@ namespace SmartFaceAligner.View.Project
                 {
                     if (f.FaceData.ParsedFaces != null && f.FaceData.ParsedFaces.Length > 0)
                     {
-                        Debug.WriteLine("her");
+                        //can do some checking here for debugging. 
                     }
                 }
                 else

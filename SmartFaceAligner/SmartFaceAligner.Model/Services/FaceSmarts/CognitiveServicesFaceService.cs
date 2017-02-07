@@ -12,6 +12,8 @@ using ExtensionGoo.Standard.Extensions;
 using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
 using SmartFaceAligner.Processor.Entity;
+using SmartFaceAligner.Processor.Messages;
+using XamlingCore.Portable.Messages.XamlingMessenger;
 
 namespace SmartFaceAligner.Processor.Services.FaceSmarts
 {
@@ -21,7 +23,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         private readonly ILogService _logService;
         private readonly IFileRepo _fileRepo;
 
-        public CognitiveServicesFaceService(FaceServiceClient faceServiceClient, 
+        public CognitiveServicesFaceService(FaceServiceClient faceServiceClient,
             ILogService logService, IFileRepo fileRepo)
         {
             _faceServiceClient = faceServiceClient;
@@ -31,24 +33,76 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
         public async Task<List<ParsedFace>> ParseFace(Project p, Stream image)
         {
-            var parsedFace = await _faceServiceClient.DetectAsync(image, true, true,
-                new FaceAttributeType[]
+            Face[] parsedFace = null;
+
+            var _isThrottled = false;
+
+            try
+            {
+                parsedFace = await _faceServiceClient.DetectAsync(image, true, true,
+                    new FaceAttributeType[]
+                    {
+                        FaceAttributeType.Gender,
+                        FaceAttributeType.Age,
+                        FaceAttributeType.Smile,
+                        FaceAttributeType.Glasses,
+                        FaceAttributeType.HeadPose,
+                        FaceAttributeType.FacialHair,
+                    });
+            }
+            catch (FaceAPIException ex)
+            {
+                if (ex.ErrorCode == Constants.Errors.RateLimitExceeded)
                 {
-                    //FaceAttributeType.Gender,
-                    FaceAttributeType.Age,
-                    //FaceAttributeType.Smile,
-                    //FaceAttributeType.Glasses,
-                    FaceAttributeType.HeadPose,
-                    //FaceAttributeType.FacialHair,
-                    
-                });
+                    _logService.Log("Face API is throttling");
+                    _isThrottled = true;
+                    new ThrottlingMessage().Send();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logService.Log(ex.ToString());
+                
+            }
+
+            if (_isThrottled)
+            {
+                await Task.Delay(1000);
+                return await ParseFace(p, image);
+            }
 
             var listResults = new List<ParsedFace>();
 
             if (parsedFace != null && parsedFace.Length > 0)
             {
                 var groupId = string.Format(Constants.CogServices.PersonGroupPattern, p.Id);
-                var result = await _faceServiceClient.IdentifyAsync(groupId, parsedFace.Select(_ => _.FaceId).ToArray());
+
+                IdentifyResult[] result = null;
+
+                try
+                {
+                    result = await _faceServiceClient.IdentifyAsync(groupId, parsedFace.Select(_ => _.FaceId).Take(10).ToArray(), 5);
+                }
+                catch (FaceAPIException ex)
+                {
+                    if (ex.ErrorCode == Constants.Errors.RateLimitExceeded)
+                    {
+                        _logService.Log("Face API is throttling");
+                        _isThrottled = true;
+                        new ThrottlingMessage().Send();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService.Log(ex.ToString());
+                }
+
+                if (_isThrottled)
+                {
+                    await Task.Delay(1000);
+                    return await ParseFace(p, image);
+                }
+
                 if (result != null && result.Length > 0)
                 {
                     foreach (var faceResult in result)
@@ -80,7 +134,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         public async Task RegisterPersonGroup(Project p, List<IdentityPerson> personGroups)
         {
             var groupId = string.Format(Constants.CogServices.PersonGroupPattern, p.Id);
-                
+
             try
             {
                 //var existing = await
@@ -100,7 +154,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 var createPersonResult = await _faceServiceClient.CreatePersonAsync(groupId, person.PersonName);
                 var personId = createPersonResult.PersonId;
                 person.PersonId = personId;
-               
+
                 //var Tasks
 
                 async Task AddFace(FaceData face)
@@ -122,7 +176,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                         {
                             _logService.Log(ex.ToString());
                         }
-                 
+
                     }
                 }
 

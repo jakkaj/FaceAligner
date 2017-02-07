@@ -78,6 +78,7 @@
     <Compile Include="Entity\Settings.cs" />
     <Compile Include="Glue\Navigator.cs" />
     <Compile Include="Glue\ProcessorModule.cs" />
+    <Compile Include="Messages\ThrottlingMessage.cs" />
     <Compile Include="Repo\FileRepo.cs" />
     <Compile Include="Services\ConfigService.cs" />
     <Compile Include="Services\FaceDataService.cs" />

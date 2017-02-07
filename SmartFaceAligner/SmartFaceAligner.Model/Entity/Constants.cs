@@ -8,6 +8,10 @@ namespace SmartFaceAligner.Processor.Entity
 {
     public static class Constants
     {
+        public static class Errors
+        {
+            public const string RateLimitExceeded = "RateLimitExceeded";
+        }
         public static class CogServices
         {
             public const string PersonGroupPattern = "{0}_group";

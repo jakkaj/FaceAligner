@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,11 +25,8 @@ namespace SmartFaceAligner.Util
         {
             while (queue.Count > 0)
             {
-                await Task.Run(async () =>
-                {
-                    var q = queue.Dequeue();
-                    await q();
-                });
+                var q = queue.Dequeue();
+                await Task.Run(()=>q());
             }
         }
     }
