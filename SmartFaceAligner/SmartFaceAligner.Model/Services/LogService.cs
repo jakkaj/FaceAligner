@@ -10,9 +10,16 @@ namespace SmartFaceAligner.Processor.Services
 {
     public class LogService : ILogService
     {
+
+        public Action<string> Callback { get; set; }
+
         public void Log(string text)
         {
             Debug.WriteLine(text);
+
+            Callback?.Invoke(text);
         }
+
+        
     }
 }

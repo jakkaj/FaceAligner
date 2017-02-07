@@ -11,6 +11,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="Edit Key" Click="MenuItem_OnClick" />
                 <MenuItem Header="Bing Search" Click="BingSearch_OnClick" />
+                <MenuItem Header="Log" Click="Log_OnClick"/>
             </MenuItem>
         </Menu>
         <Frame x:Name="_mainFrame"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" NavigationUIVisibility="Visible"/>

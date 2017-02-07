@@ -74,7 +74,7 @@ namespace SmartFaceAligner.Processor.Services
             await _fileRepo.CopyFile(source, f);
         }
 
-        public async Task<List<string>> GetFiles(Project p, ProjectFolderTypes folderType)
+        public async Task<List<string>> GetSourceFiles(Project p)
         {
             var folder = p.SourceDirectory;
 

@@ -45,7 +45,7 @@ namespace IntegrationTests.Tests
                 "IMG_2086.JPG"
             };
 
-            var files = await fileManagementService.GetFiles(p, ProjectFolderTypes.Staging);
+            var files = await fileManagementService.GetSourceFiles(p);
 
             var faceDataA = new List<FaceData>();
             var faceDataB = new List<FaceData>();
@@ -125,7 +125,7 @@ namespace IntegrationTests.Tests
 
       
 
-            var files = await fileManagementService.GetFiles(p, ProjectFolderTypes.Staging);
+            var files = await fileManagementService.GetSourceFiles(p);
            
             var dataAll = new List<FaceData>();
 

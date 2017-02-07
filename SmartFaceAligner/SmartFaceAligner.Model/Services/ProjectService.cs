@@ -30,6 +30,26 @@ namespace SmartFaceAligner.Processor.Services
             return await _getProject(projectFile);
         }
 
+        public async Task ClearIdentity(Project p)
+        {
+            foreach (var id in p.IdentityPeople)
+            {
+                id.PersonId = Guid.Empty;
+            }
+
+            await SetProject(p);
+
+            var allData = await _faceDataService.GetFaceData(p);
+
+            foreach (var d in allData)
+            {
+                d.HasBeenScanned = false;
+                d.ParsedFaces = null;
+                d.PersistedFaceId = null;
+                await _faceDataService.SetFaceData(d);
+            }
+        }
+
         public async Task AddImageToPerson(IdentityPerson personGroup, FaceData f)
         {
             var p = personGroup.Project;
@@ -88,11 +108,18 @@ namespace SmartFaceAligner.Processor.Services
 
             var baseGroupFolder = await _fileManagementService.GetFolder(p, ProjectFolderTypes.RecPerson);
 
-            foreach (var g in p.IdentityPeople)
+            foreach (var g in p.IdentityPeople.ToArray())
             {
                 g.Faces = new List<FaceData>();
 
                 var folder = await _fileRepo.GetOffsetFolder(baseGroupFolder.FolderPath, g.PersonName);
+
+                if (!await _fileRepo.FolderExists(folder))
+                {
+                    p.IdentityPeople.Remove(g);
+                    await SetProject(p);
+                    continue;
+                }
 
                 g.FolderPath = folder;
                 g.Project = p;

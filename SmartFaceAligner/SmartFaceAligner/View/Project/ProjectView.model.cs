@@ -18,6 +18,7 @@ using SmartFaceAligner.Messages;
 using SmartFaceAligner.Util;
 using XamlingCore.Portable.Messages.XamlingMessenger;
 using XamlingCore.Portable.Util.TaskUtils;
+using System.Diagnostics;
 
 namespace SmartFaceAligner.View.Project
 {
@@ -38,13 +39,19 @@ namespace SmartFaceAligner.View.Project
 
         public ICommand ImportCommand => Command(_import);
         public ICommand AddNewIdentityGroupCommand => Command(_addNewIdentityGroup);
+        public ICommand TrainCommand => Command(_train);
+
         public ICommand FilterFacesCommand => Command(_filterFaces);
-        public ICommand FilterPersonCommand => Command(_filterPersonCommand);
+
+        public ICommand DetectFacesCommand => Command(_detectFaces);
         public ICommand RunFilterCommand => Command(_runFilter);
         public ICommand SortByAgeCommand => Command(_sortByAge);
         public ICommand AlignCommand => Command(_align);
+        
 
-        private IdentityPerson _currentIdentity;
+       
+
+        private RecognisePersonConfigViewModel _currentIdentity;
         private FaceData _alignFaceData;
 
         public FaceItemViewModel SelectedFace
@@ -57,7 +64,7 @@ namespace SmartFaceAligner.View.Project
             }
         }
 
-        public IdentityPerson CurrentIdentity
+        public RecognisePersonConfigViewModel CurrentIdentity
         {
             get { return _currentIdentity; }
             set
@@ -88,7 +95,21 @@ namespace SmartFaceAligner.View.Project
             {
                 return;
             }
-            await _faceService.TrainPersonGroups(Project);
+
+            if (_currentIdentity == null)
+            {
+                return;
+            }
+
+            foreach (var f in SelectedItems)
+            {
+                var faceData = f.FaceData;
+                await _projectService.AddImageToPerson(_currentIdentity.IdentityPerson, faceData);
+            }
+
+
+            _loadIdentities();
+
         }
 
         void _onViewPortUpdatedMessage(object message)
@@ -112,6 +133,18 @@ namespace SmartFaceAligner.View.Project
         async void _addNewIdentityGroup()
         {
             await NavigateTo<NewIdentityViewModel>(_=>_.Project = Project);
+        }
+
+        private async void _train()
+        {
+            var messageBoxResult = System.Windows.MessageBox.Show($"Warning. This will clear all previous detection results. Continue?", "Clear previous detectio results", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            await _projectService.ClearIdentity(Project);
+            await _faceService.TrainPersonGroups(Project);
         }
 
         private async void _align()
@@ -176,7 +209,7 @@ namespace SmartFaceAligner.View.Project
                 return true;
             }
 
-            return face.IdentityPerson != null && face.IdentityPerson.PersonId == _currentIdentity.PersonId;
+            return face.IdentityPerson != null && face.IdentityPerson.PersonId == _currentIdentity.IdentityPerson.PersonId;
         }
 
         bool _filterFaceItemVmByIdentity(FaceItemViewModel vm)
@@ -186,12 +219,24 @@ namespace SmartFaceAligner.View.Project
                 return true;
             }
 
-            return vm.FaceData?.ParsedFaces != null &&
-                   vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson.PersonId == _currentIdentity.PersonId);
+            if (vm.FaceData == null || vm.FaceData.ParsedFaces == null)
+            {
+                return false;
+            }
+
+            var any = vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson != null && _.IdentityPerson.PersonId == _currentIdentity.IdentityPerson.PersonId);
+
+            if (any)
+            {
+                Debug.WriteLine("found");
+            }
+
+            return any;
         }
 
-        private void _runFilter()
+        private async void _runFilter()
         {
+            await Load();
             var fTemp = FaceItems.ToList();
 
             var filtered = fTemp.Where(_filterFaceItemVmByIdentity).ToList();
@@ -201,7 +246,7 @@ namespace SmartFaceAligner.View.Project
             filtered.ForEach(_ => FaceItems.Add(_));
         }
 
-        private async void _filterPersonCommand()
+        private async void _detectFaces()
         {
             async Task FilterLocal(FaceData faceData)
             {
@@ -210,9 +255,19 @@ namespace SmartFaceAligner.View.Project
 
             var tasks = new Queue<Func<Task>>();
 
-            foreach (var f in FaceItems.Where(_=>!_.FaceData.HasBeenScanned ))
+            foreach (var f in FaceItems)
             {
-                tasks.Enqueue(()=> FilterLocal(f.FaceData));
+                if (f.FaceData.HasBeenScanned)
+                {
+                    if (f.FaceData.ParsedFaces != null && f.FaceData.ParsedFaces.Length > 0)
+                    {
+                        Debug.WriteLine("her");
+                    }
+                }
+                else
+                {
+                    tasks.Enqueue(() => FilterLocal(f.FaceData));
+                }
             }
 
             await tasks.Parallel(4);
@@ -224,6 +279,8 @@ namespace SmartFaceAligner.View.Project
         /// </summary>
         async void _filterFaces()
         {
+            await Load();//reload them so they are all there incase it's a new face they want to filter on. 
+
             await Task.Run(() =>
             {
                 _faceService.LocalDetectFaces(FaceItems.Select(_ => _.FaceData).ToList());
@@ -246,9 +303,7 @@ namespace SmartFaceAligner.View.Project
 
         public async Task Load()
         {
-            CurrentIdentity = null;
-
-               var files = await _fileManagementService.GetFiles(Project, ProjectFolderTypes.Staging);
+               var files = await _fileManagementService.GetSourceFiles(Project);
             FaceItems.Clear();
 
             async Task Wrap(string f)
@@ -265,14 +320,22 @@ namespace SmartFaceAligner.View.Project
 
          void _loadIdentities()
         {
-            IdentityPeople.Clear();
+            var selId = _currentIdentity?.IdentityPerson?.PersonName;
 
+            IdentityPeople.Clear();
+           
+            CurrentIdentity = null;
             foreach (var id in Project.IdentityPeople)
             {
                 var vm = Scope.Resolve<RecognisePersonConfigViewModel>();
                 vm.Project = Project;
                 vm.IdentityPerson = id;
                 IdentityPeople.Add(vm);
+            }
+
+            if (selId != null)
+            {
+                CurrentIdentity = IdentityPeople.FirstOrDefault(_ => _.IdentityPerson.PersonName == selId);
             }
         }
 

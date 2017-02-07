@@ -15,5 +15,6 @@ namespace Contracts.Interfaces
         Task RemoveImageFromPerson(IdentityPerson personGroup, FaceData f);
         Task<IdentityPerson> AddNewIdentityPerson(Project p, string groupName);
         Task RemoveIdentityPerson(IdentityPerson p);
+        Task ClearIdentity(Project p);
     }
 }

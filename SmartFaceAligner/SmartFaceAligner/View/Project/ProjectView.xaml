@@ -25,9 +25,14 @@
             <!--<Button Content="Filter faces" Command="{Binding FilterFacesCommand}"></Button>-->
             <Button Content="Add new person indentity" Command="{Binding AddNewIdentityGroupCommand}"/>
             
-            <Button Content="Select filter person" Click="ButtonBase_OnClick"></Button>
-            <Button Content="Process faces" Command="{Binding FilterPersonCommand}"></Button>
+            <Button Content="Add selected images to current identity" Click="ButtonBase_OnClick"></Button>
+
+            <Button Content="Train AI" Command="{Binding TrainCommand}"></Button>
+            
+            <Button Content="Detect faces" Command="{Binding DetectFacesCommand}"></Button>
+            
             <Button Content="Run Filter" Command="{Binding RunFilterCommand}"></Button>
+            
             <Button Content="Sort by age" Command="{Binding SortByAgeCommand}"></Button>
             <Button Content="Align" Command="{Binding AlignCommand}"></Button>
 

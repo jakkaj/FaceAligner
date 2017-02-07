@@ -87,6 +87,7 @@ namespace SmartFaceAligner.View.Project
 
                 vm.SelectedItems = l;
                 vm.SelectFilterPersonCommand();
+                ImageList.SelectedItems.Clear();
             }
         }
     }

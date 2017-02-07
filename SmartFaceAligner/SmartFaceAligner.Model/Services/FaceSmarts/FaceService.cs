@@ -103,8 +103,8 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                             if (fResult != null)
                             {
                                 face.ParsedFaces = fResult.ToArray();
-                                face.HasBeenScanned = true;
                             }
+                            face.HasBeenScanned = true;
                         }
                         f.Delete();
                        

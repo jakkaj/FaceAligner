@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Contracts.Interfaces;
 using SmartFaceAligner.Glue;
 using SmartFaceAligner.Processor.Glue;
 using SmartFaceAligner.Util;
@@ -57,6 +58,13 @@ namespace SmartFaceAligner
         private async void BingSearch_OnClick(object sender, RoutedEventArgs e)
         {
             await _container.Resolve<IXNavigator>().NavigateTo<SearchViewModel>();
+        }
+
+        private void Log_OnClick(object sender, RoutedEventArgs e)
+        {
+            var w = new LogWindow();
+            w.LogService = _container.Resolve<ILogService>();
+            w.Show();
         }
     }
 }

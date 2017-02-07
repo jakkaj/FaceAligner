@@ -9,7 +9,7 @@ namespace Contracts.Interfaces
         Task<int> ImportFolder(Project p, string sourceFolder);
         Task<bool> HasFiles(Project p, ProjectFolderTypes folderType);
         Task DeleteFiles(Project p, ProjectFolderTypes folderType);
-        Task<List<string>> GetFiles(Project p, ProjectFolderTypes folderType);
+        
         Task<bool> CopyToFolder(Project p, string fileName, ProjectFolderTypes folderType);
 
         /// <summary>
@@ -25,5 +25,6 @@ namespace Contracts.Interfaces
         Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType);
         Task<string> GetSubFolder(Project p, ProjectFolderTypes folderType, params string[] subFolder);
         Task<string> GetSubFile(Project p, ProjectFolderTypes folderType, params string[] subFolder);
+        Task<List<string>> GetSourceFiles(Project p);
     }
 }

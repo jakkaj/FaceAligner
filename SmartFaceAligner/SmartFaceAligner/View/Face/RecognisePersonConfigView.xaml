@@ -7,6 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBlock Text="{Binding GroupName}"></TextBlock>
+        <StackPanel>
+            <TextBlock Text="{Binding GroupName}"></TextBlock>
+            <TextBlock Text="{Binding Count}"></TextBlock>
+        </StackPanel>
+       
     </Grid>
 </UserControl>

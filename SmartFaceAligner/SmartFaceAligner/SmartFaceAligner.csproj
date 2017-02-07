@@ -94,6 +94,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Glue\ProjectGlue.cs" />
+    <Compile Include="LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindowView.model.cs" />
     <Compile Include="Messages\ViewItemMessage.cs" />
     <Compile Include="Util\Bool2Vis.cs" />
@@ -136,6 +139,10 @@
     <Compile Include="View\Setup\SetupView.xaml.cs">
       <DependentUpon>SetupView.xaml</DependentUpon>
     </Compile>
+    <Page Include="LogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -237,6 +244,7 @@
   <ItemGroup>
     <Resource Include="Media\coglogo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

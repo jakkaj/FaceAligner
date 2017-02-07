@@ -96,8 +96,8 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
             foreach (var person in personGroups)
             {
-                _logService.Log($"Request: Creating person \"{groupId}\"");
-                var createPersonResult = await _faceServiceClient.CreatePersonAsync(groupId, Constants.CogServices.DefaultPerson);
+                _logService.Log($"Request: Creating person \"{person.PersonName}\"");
+                var createPersonResult = await _faceServiceClient.CreatePersonAsync(groupId, person.PersonName);
                 var personId = createPersonResult.PersonId;
                 person.PersonId = personId;
                
@@ -107,12 +107,22 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 {
                     using (var stream = await _fileRepo.ReadStream(face.FileName))
                     {
+
                         _logService.Log($"Adding face: {face.FileName}");
-                        var result = await _faceServiceClient.AddPersonFaceAsync(groupId, personId, stream);
+                        try
+                        {
+                            var result = await _faceServiceClient.AddPersonFaceAsync(groupId, personId, stream);
 
-                        _logService.Log($"Added face: {face.FileName}");
+                            _logService.Log($"Added face: {face.FileName}");
 
-                        face.PersistedFaceId = result.PersistedFaceId;
+                            face.PersistedFaceId = result.PersistedFaceId;
+
+                        }
+                        catch (Exception ex)
+                        {
+                            _logService.Log(ex.ToString());
+                        }
+                 
                     }
                 }
 

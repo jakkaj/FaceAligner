@@ -57,10 +57,14 @@ namespace XCoreLite.Navigation
             if (_navigationService.CanGoBack)
             {
                 _navigationService.GoBack();
+                await Task.Delay(500);
 
-                if (_navigationService.Content is ViewModel vm)
+                if (_navigationService.Content is FrameworkElement elementToo)
                 {
-                    await vm.NavigatedTo(true);
+                    if (elementToo.DataContext is ViewModel vm)
+                    {
+                        await vm.NavigatedTo(true);
+                    }
                 }
             }
         }

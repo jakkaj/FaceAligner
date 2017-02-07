@@ -5,19 +5,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.Interfaces;
+using SmartFaceAligner.Processor.Entity;
 using XamlingCore.NET.Implementations;
+using XamlingCore.Portable.Contract.Entities;
 
 namespace SmartFaceAligner.Processor.Repo
 {
     public class FileRepo : IFileRepo
     {
+        private readonly IEntityCache _entityCache;
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 
-        Dictionary<string,string> _hashCache = new Dictionary<string, string>();
+        public FileRepo(IEntityCache entityCache)
+        {
+            _entityCache = entityCache;
+        }
+
+        private Dictionary<string, string> _hashCache;
 
         public async Task<string> GetHash(string fileName)
         {
+            if (_hashCache == null)
+            {
+                _hashCache = await _entityCache.GetEntity<Dictionary<string, string>>(Constants.Cache.HashCache);
+
+                if (_hashCache == null)
+                {
+                    _hashCache = new Dictionary<string, string>();
+                }
+            }
+
             if (_hashCache.ContainsKey(fileName))
             {
                 return _hashCache[fileName];
@@ -36,7 +54,7 @@ namespace SmartFaceAligner.Processor.Repo
 
             var hMade = h.Hash(d);
             _hashCache.Add(fileName, hMade);
-
+            await _entityCache.SetEntity(Constants.Cache.HashCache, _hashCache);
             return hMade;
         }
 
@@ -123,6 +141,17 @@ namespace SmartFaceAligner.Processor.Repo
         public async Task<string> GetParentFolder(string path)
         {
             return Path.GetDirectoryName(path);
+        }
+
+
+        public async Task<bool> FolderExists(string folderPath)
+        {
+            if (folderPath == null)
+            {
+                return false;
+            }
+            var f = new DirectoryInfo(folderPath);
+            return f.Exists;
         }
 
         public async Task<bool> FileExists(string filePath)

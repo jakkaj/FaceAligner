@@ -18,6 +18,8 @@ namespace SmartFaceAligner.Processor.Entity
         {
             public const string Thumbnail = "Thumbnail";
             public const string FaceData = "FaceData";
+            public const string HashCache = "HashCache";
+
         }
         public static class FileNames
         {

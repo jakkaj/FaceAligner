@@ -36,6 +36,18 @@ namespace SmartFaceAligner.Processor.Services
             await _fileRepo.Write(await _getFile(f.Project, f.FileName), data);
         }
 
+        public async Task<List<FaceData>> GetFaceData(Project p )
+        {
+            var files = await _fileManagementService.GetSourceFiles(p);
+            var result = new List<FaceData>();
+            foreach (var f in files)
+            {
+                result.Add(await GetFaceData(p, f));
+            }
+
+            return result;
+        }
+
         public async Task<FaceData> GetFaceData(Project p, string fileName)
         {
             var file = await _getFile(p, fileName);

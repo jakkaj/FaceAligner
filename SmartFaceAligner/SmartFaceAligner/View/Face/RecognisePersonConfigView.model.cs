@@ -15,13 +15,13 @@ namespace SmartFaceAligner.View.Face
         private readonly IFileManagementService _fileManagementService;
 
         public string GroupName => IdentityPerson.PersonName;
+        public string Count => IdentityPerson.Faces.Count.ToString();
         public Contracts.Entity.Project Project { get; set; }
         public IdentityPerson IdentityPerson { get; set; }
 
         public RecognisePersonConfigViewModel(IFileManagementService fileManagementService)
         {
             _fileManagementService = fileManagementService;
-           
         }
 
         public async Task AddFaceToGroup(FaceData face)

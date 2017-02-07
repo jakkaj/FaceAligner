@@ -29,5 +29,6 @@ namespace Contracts.Interfaces
         string GetFileNameComponent(string fullPath);
         Task DeleteDirectory(string path);
         Task DeleteFile(string path);
+        Task<bool> FolderExists(string folderPath);
     }
 }

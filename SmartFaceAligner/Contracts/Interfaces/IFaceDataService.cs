@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Contracts.Entity;
 
 namespace Contracts.Interfaces
@@ -7,5 +8,6 @@ namespace Contracts.Interfaces
     {
         Task SetFaceData(FaceData f);
         Task<FaceData> GetFaceData(Project p, string fileName);
+        Task<List<FaceData>> GetFaceData(Project p );
     }
 }
