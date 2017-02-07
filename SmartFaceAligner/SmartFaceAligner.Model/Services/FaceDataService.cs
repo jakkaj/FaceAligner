@@ -68,7 +68,8 @@ namespace SmartFaceAligner.Processor.Services
         {
             await _semaphore.WaitAsync();
             var list = await _init(f.Project);
-            var current = list.FirstOrDefault(_ => _.FileName == f.FileName);
+
+            var current = list.FirstOrDefault(_ => _.Hash == f.Hash);
             if (current != null)
             {
                 list.Remove(current);
@@ -95,14 +96,16 @@ namespace SmartFaceAligner.Processor.Services
         {
             var list = await _init(p);
 
-            var existing = list.FirstOrDefault(_ => _.FileName == fileName);
+            var hash = await _fileRepo.GetHash(fileName);
+
+            var existing = list.FirstOrDefault(_ => _.Hash == hash);
 
             if (existing != null)
             {
                 return existing;
             }
 
-            return new FaceData { FileName = fileName, Project = p };
+            return new FaceData { FileName = fileName, Project = p, Hash= hash };
         }
 
         async Task<string> _getKey(string fileName)
