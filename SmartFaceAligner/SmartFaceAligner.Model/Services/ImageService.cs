@@ -64,13 +64,13 @@ namespace SmartFaceAligner.Processor.Services
             {
                 return null;
             }
-            
-            //var isCached = await _cacheService.ExistsInCache(fileName, Constants.Cache.Thumbnail);
 
-            //if (isCached)
-            //{
-            //    return await _cacheService.GetCacheFileName(fileName, Constants.Cache.Thumbnail);
-            //}
+            var isCached = await _cacheService.ExistsInCache(fileName, Constants.Cache.Thumbnail);
+
+            if (isCached)
+            {
+                return await _cacheService.GetCacheFileName(fileName, Constants.Cache.Thumbnail);
+            }
 
             try
             {
@@ -95,6 +95,7 @@ namespace SmartFaceAligner.Processor.Services
                 {
                     thum.Save(ms, ImageFormat.Jpeg);
                     var b = ms.ToArray();
+                    
                     return await _cacheService.SaveCache(fileName, Constants.Cache.Thumbnail, b);
                 }
             }

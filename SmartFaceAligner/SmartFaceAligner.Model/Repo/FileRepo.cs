@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.Interfaces;
@@ -48,14 +49,36 @@ namespace SmartFaceAligner.Processor.Repo
                 return null;
             }
 
-            var h = new HashHelper();
+            
 
             var d = await ReadBytes(fileName);
 
-            var hMade = h.Hash(d);
+            var hMade = _createSHA1(d);
+            d = null;
             _hashCache.Add(fileName, hMade);
             await _entityCache.SetEntity(Constants.Cache.HashCache, _hashCache);
             return hMade;
+        }
+
+
+        string _createSHA1(byte[] bytes)
+        {
+
+            var sha1 = SHA1.Create();
+            byte[] hashBytes = sha1.ComputeHash(bytes);
+
+            return _hexStringFromBytes(hashBytes);
+        }
+
+         string _hexStringFromBytes(byte[] bytes)
+        {
+            var sb = new StringBuilder();
+            foreach (byte b in bytes)
+            {
+                var hex = b.ToString("x2");
+                sb.Append(hex);
+            }
+            return sb.ToString();
         }
 
         public async Task<string> GetLocalStoragePath(string fileName)
