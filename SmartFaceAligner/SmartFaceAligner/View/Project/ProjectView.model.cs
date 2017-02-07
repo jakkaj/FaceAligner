@@ -60,7 +60,7 @@ namespace SmartFaceAligner.View.Project
        
 
         private RecognisePersonConfigViewModel _currentIdentity;
-        private FaceData _alignFaceData;
+        
 
         public FaceItemViewModel SelectedFace
         {
@@ -168,16 +168,19 @@ namespace SmartFaceAligner.View.Project
 
         private async void _align()
         {
-            if (_currentIdentity == null || _alignFaceData == null)
+            
+
+            if (_currentIdentity == null || SelectedFace?.FaceData == null)
             {
                 return;
             }
 
             await _faceService.PrepAlign(Project);
 
-            var _alignFace = _alignFaceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity)?.Face;
 
-            if (_alignFace == null)
+            var alignFace = SelectedFace.FaceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity);
+            var a2 = alignFace;
+            if (a2 == null)
             {
                 return;
             }
@@ -189,7 +192,7 @@ namespace SmartFaceAligner.View.Project
                 {
                     return;
                 }
-                await _faceService.Align(Project,_alignFaceData,faceData, _alignFace, thisAlignFace);
+                await _faceService.Align(Project,SelectedFace.FaceData,faceData, alignFace.Face, thisAlignFace);
             }
 
             var tasks = new Queue<Func<Task>>();
