@@ -25,7 +25,23 @@ namespace SmartFaceAligner.Processor.Services
             _cacheService = cacheService;
         }
 
-        public byte[] GetImageFile(string fileName)
+        public byte[] GetImageFileBytes(string fileName)
+        {
+            var image = GetImageFile(fileName);
+
+            if (image == null)
+            {
+                return null;
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Jpeg);
+                return ms.ToArray();
+            }
+        }
+
+        public Image GetImageFile(string fileName)
         {
             try
             {
@@ -43,12 +59,10 @@ namespace SmartFaceAligner.Processor.Services
                     image = ImageTools.ResizeImage(image, 1280, 1024);
                 }
 
-               
-                using (var ms = new MemoryStream())
-                {
-                    image.Save(ms, ImageFormat.Jpeg);
-                    return ms.ToArray();
-                }
+                return image;
+
+
+
             }
             catch
             {

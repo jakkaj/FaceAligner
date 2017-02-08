@@ -6,7 +6,27 @@
              xmlns:local="clr-namespace:SmartFaceAligner.View.Face"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <Image Source="{Binding BitmapSource}"/>
+    <Grid x:Name="MainGrid" Background="Red">
+        <Image Source="{Binding BitmapSource}" VerticalAlignment="Stretch" Stretch="Uniform"/>
+        
+            <ItemsControl ItemsSource="{Binding FaceDots}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                    <local:FaceDotView/>
+                </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding Path=X}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+        
     </Grid>
 </UserControl>

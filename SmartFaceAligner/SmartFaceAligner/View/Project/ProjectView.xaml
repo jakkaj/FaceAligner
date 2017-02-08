@@ -7,60 +7,140 @@
       xmlns:util="clr-namespace:SmartFaceAligner.Util"
       xmlns:face="clr-namespace:SmartFaceAligner.View.Face"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
+      d:DesignHeight="800" d:DesignWidth="1200"
       Title="ProjectView">
-<Page.Resources>
+    <Page.Resources>
         <util:Bool2Vis x:Key="Bool2Vis"/>
-</Page.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="Foreground" Value="DodgerBlue" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="Margin" Value="5" />
+
+        </Style>
+
+        <Style x:Key="ButtonStyleSmall" BasedOn="{StaticResource ButtonStyle}" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+
+        <Style x:Key="TextStyle" TargetType="TextBlock">
+
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Foreground" Value="DodgerBlue" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="Margin" Value="5" />
+
+        </Style>
+
+        <Style x:Key="TextStyleSmall" TargetType="TextBlock" BasedOn="{StaticResource TextStyle}">
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            
-            <ColumnDefinition Width="200"/>
+
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <TextBlock Text="Cognitive Commands"/>
+
+        <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="LightGray" Grid.RowSpan="2"></Border>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20">
+
             <!--<TextBox Text="&#xE73E;" Foreground="Green" FontSize="30" FontFamily="Segoe MDL2 Assets"></TextBox>-->
             <!--<Button Content="Filter faces" Command="{Binding FilterFacesCommand}"></Button>-->
-            <Button Content="Add new person indentity" Command="{Binding AddNewIdentityGroupCommand}"/>
-            
-            <Button Content="Add selected images to current identity" Click="ButtonBase_OnClick"></Button>
 
-            <Button Content="Train AI" Command="{Binding TrainCommand}"></Button>
-            
-            <Button Content="Detect faces" Command="{Binding DetectFacesCommand}"></Button>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE928;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <Button Content="Add to ID" Click="ButtonBase_OnClick" Style="{StaticResource ButtonStyle}"></Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE7BE;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <Button Content="Train AI" Command="{Binding TrainCommand}" Style="{StaticResource ButtonStyle}"></Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE950;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <Button Content="Detect Faces" Command="{Binding DetectFacesCommand}" Style="{StaticResource ButtonStyle}"></Button>
+            </StackPanel>
+
+            <Border Background="SlateGray" Padding="10" BorderBrush="Transparent">
+                <StackPanel HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Females" Command="{Binding FilterFemalesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Males" Command="{Binding FilterMalesCommand}"  Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Reading Glasses" Command="{Binding FilterByReadingGlassesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
 
 
-            <Button Content="Show only females" Command="{Binding FilterFemalesCommand}"/>
-            <Button Content="Show only males" Command="{Binding FilterMalesCommand}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Sun Glasses" Command="{Binding FilterBySunGlassesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
 
-            <Button Content="Reading Glasses" Command="{Binding FilterByReadingGlassesCommand}"/>
-            <Button Content="Sun Glasses" Command="{Binding FilterBySunGlassesCommand}"/>
-            <Button Content="No Glasses" Command="{Binding FilterByNoGlassesCommand}"/>
-            <Button Content="Goggles" Command="{Binding FilterByGogglesCommand}"/>
-           
-            
-            <Button Content="Sort by age" Command="{Binding SortByAgeCommand}"></Button>
-            <Button Content="Align" Command="{Binding AlignCommand}"></Button>
-            
-           
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="No Glasses" Command="{Binding FilterByNoGlassesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Goggles" Command="{Binding FilterByGogglesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+
+
+                    
+                </StackPanel>
+            </Border>
+
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE8CB;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <Button Content="Sort by age" Command="{Binding SortByAgeCommand}" Style="{StaticResource ButtonStyle}"></Button>
+                </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE8CB;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <Button Content="Align" Command="{Binding AlignCommand}" Style="{StaticResource ButtonStyle}"></Button>
+                </StackPanel>
+
+
 
         </StackPanel>
-        
-        <face:FaceView Width="500" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding SelectedFace}" Grid.Column="1"/>
-        
+
+        <face:FaceView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DataContext="{Binding SelectedFace}" Grid.Column="1"/>
+
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="75"/>
+                <RowDefinition Height="100"/>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Filter Selected" Command="{Binding RunFilterCommand}"></Button>
-                <Button Content="Clear Filter" Command="{Binding ClearFilterCommand}"></Button>
+            <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="LightGray" Grid.RowSpan="2"></Border>
+            <TextBlock Text="People" HorizontalAlignment="Center" FontSize="25" FontFamily="Segoe UI Light" Foreground="DimGray"></TextBlock>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0">
+
+                <Button Command="{Binding RunFilterCommand}" Content="&#xE71C;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource ButtonStyle}" ></Button>
+                <Button Command="{Binding ClearFilterCommand}" Content="&#xE8E6;" FontFamily="Segoe MDL2 Assets"  Style="{StaticResource ButtonStyle}"></Button>
+                <Button Command="{Binding AddNewIdentityGroupCommand}" Content="&#xE8FA;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource ButtonStyle}"/>
             </StackPanel>
-           
-            <ListView ItemsSource="{Binding IdentityPeople}" SelectedItem="{Binding CurrentIdentity, Mode=TwoWay}" Grid.Row="1">
+
+            <ListView ItemsSource="{Binding IdentityPeople}" 
+                      SelectedItem="{Binding CurrentIdentity, Mode=TwoWay}" 
+                      Grid.Row="1" 
+                      BorderBrush="Transparent" Background="Transparent" Margin="15,0,5,0">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <face:RecognisePersonConfigView/>
@@ -68,10 +148,10 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        
+
         <ListView x:Name="ImageList" ItemsSource="{Binding FaceItems}"
                   VerticalAlignment="Bottom" 
-                  HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple" Grid.ColumnSpan="3" Margin="0, 0, 0, 26"
+                  HorizontalAlignment="Stretch" Height="120" SelectionMode="Multiple" Grid.Column="1" Margin="0, 0, 0, 26"
                  
                   ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionChanged="ImageList_OnSelectionChanged">
             <ListView.ItemTemplate>
@@ -81,7 +161,7 @@
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-          
+
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Horizontal"/>

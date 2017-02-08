@@ -32,6 +32,18 @@ namespace SmartFaceAligner.Processor.Services
             }
         }
 
+        public string LastProject
+        {
+            get
+            {
+                return GetSavedSetting(Constants.Settings.LastProject);
+            }
+            set
+            {
+                SaveSetting(Constants.Settings.LastProject, value);
+            }
+        }
+
 
         public string BingSearchSubscriptionKey
         {

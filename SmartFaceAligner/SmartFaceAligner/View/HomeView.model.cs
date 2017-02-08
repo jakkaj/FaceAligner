@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using SmartFaceAligner.Processor.Entity;
 using SmartFaceAligner.View.NewProject;
 using SmartFaceAligner.View.Project;
+using System;
 
 namespace SmartFaceAligner.View
 {
@@ -20,12 +21,25 @@ namespace SmartFaceAligner.View
         public ICommand NewProjectCommand => Command(_newProject);
         public ICommand OpenProjectCommand => Command(_existingProject);
 
+        public ICommand OpenLastProjectCommand => Command(_openLastProject);
+        
+
+        private string _lastProject;
+        private bool _hasLastProject;
+
         public HomeViewModel(IProjectService projectService, IConfigurationService configService)
         {
             _projectService = projectService;
             _configService = configService;
         }
-       
+
+        private async void _openLastProject()
+        {
+            var project = await _projectService.OpenProject(_lastProject);
+
+            await NavigateTo<ProjectViewModel>(_ => _.Project = project);
+        }
+
         private async void _existingProject()
         {
             var openFileDialog = new OpenFileDialog
@@ -41,6 +55,8 @@ namespace SmartFaceAligner.View
             }
 
             var f = openFileDialog.FileName;
+
+            _configService.LastProject = f;
 
             var project = await _projectService.OpenProject(f);
 
@@ -59,6 +75,30 @@ namespace SmartFaceAligner.View
             {
                 await Task.Delay(1000);
                 await NavigateTo<SetupViewModel>();
+            }
+
+            LastProject = _configService.LastProject;
+            HasLastProject = !string.IsNullOrWhiteSpace(LastProject);
+        }
+
+
+        public string LastProject
+        {
+            get { return _lastProject; }
+            set
+            {
+                _lastProject = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool HasLastProject
+        {
+            get { return _hasLastProject; }
+            set
+            {
+                _hasLastProject = value;
+                OnPropertyChanged();
             }
         }
     }

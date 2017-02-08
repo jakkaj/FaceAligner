@@ -4,10 +4,15 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SmartFaceAligner.View"
+      xmlns:util="clr-namespace:SmartFaceAligner.Util"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="HomeView" Style="{StaticResource PageStyle}">
 
+    <Page.Resources>
+        <util:Bool2Vis x:Key="Bool2Vis"/>
+    </Page.Resources>
+    
     <Grid>
         
        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -15,7 +20,8 @@
             <TextBlock Text="Welcome. Let's use some AI on some faces!" Margin="5"></TextBlock>
             <Button Content="Create new project" Margin="5" Command="{Binding NewProjectCommand}" ></Button>
             <Button Content="Open existing project" Margin="5" Command="{Binding OpenProjectCommand}"></Button>
-       </StackPanel>
+            <Button Content="Open last project" Margin="5" Command="{Binding OpenLastProjectCommand}" Visibility="{Binding HasLastProject, Converter={StaticResource Bool2Vis}}"></Button>
+        </StackPanel>
 
       
     </Grid>

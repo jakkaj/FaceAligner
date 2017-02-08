@@ -79,28 +79,20 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         public async Task<(bool, long)> CognitiveDetectFace(Project p, FaceData face)
         {
             _logService.Log($"Parsing face: {face.FileName}");
+            _logService.Log($"Parsing face: {face.FileName}");
             try
             {
                 using (var img = Image.FromFile(face.FileName))
                 {
-                
-                    using (var imgResized = ImageTools.ResizeImage(img, img.Width / 2, img.Height / 2))
+                    using (var ms = new MemoryStream())
                     {
-                        var f = new FileInfo(Path.GetTempFileName());
+                        img.Save(ms, ImageFormat.Jpeg);
+                        var fUse = new FileInfo(Path.GetTempFileName());
+                        img.Save(fUse.FullName, ImageFormat.Jpeg);
 
-                        imgResized.Save(f.FullName, ImageFormat.Jpeg);
+                        var len = ms.Length;
 
-                        var fUse = face.FileName;
-
-                        if (img.Width > 1280)
-                        {
-                           
-                            fUse = f.FullName;
-                        }
-
-                        var len = new FileInfo(fUse).Length;
-
-                        var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
+                        var resultLocalCheck = LocalFaceDetector.HasFace(fUse.FullName);
                         if (!resultLocalCheck)
                         {
                             face.HasBeenScanned = true;
@@ -111,19 +103,16 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
                         _logService.Log($"Uploading: {len} bytes");
 
+                        var fResult = await _cognitiveFaceService.ParseFace(p, ms);
 
-                        using (var stream = await _fileRepo.ReadStream(fUse))
+                        if (fResult != null)
                         {
-                            var fResult = await _cognitiveFaceService.ParseFace(p, stream);
-
-                            if (fResult != null)
-                            {
-                                face.ParsedFaces = fResult.ToArray();
-                            }
-                            face.HasBeenScanned = true;
+                            face.ParsedFaces = fResult.ToArray();
                         }
-                        f.Delete();
-                       
+                        face.HasBeenScanned = true;
+
+                        fUse.Delete();
+
                         await _faceDataService.SetFaceData(face);
                         return (true, len);
                     }

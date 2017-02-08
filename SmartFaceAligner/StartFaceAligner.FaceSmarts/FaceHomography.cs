@@ -14,7 +14,7 @@ namespace StartFaceAligner.FaceSmarts
     public static class FaceHomography
     {
 
-        static List<PointF> _getPoints(ImageAligner.ProcessFaceData face)
+        public static List<PointF> GetPoints(ImageAligner.ProcessFaceData face)
         {
             List<PointF> points = new List<PointF>();
 
@@ -111,8 +111,8 @@ namespace StartFaceAligner.FaceSmarts
 
         public static UMat MapFaces(ImageAligner.ProcessFaceData face1, ImageAligner.ProcessFaceData face2)
         {
-            var points = _getPoints(face1);
-            var points2 = _getPoints(face2);
+            var points = GetPoints(face1);
+            var points2 = GetPoints(face2);
 
 
 

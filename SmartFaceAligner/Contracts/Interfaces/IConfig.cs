@@ -9,5 +9,6 @@ namespace Contracts.Interfaces
         bool NeedsConfig { get; }
         string FaceApiSubscriptionKey { get; set; }
         string BingSearchSubscriptionKey { get; set; }
+        string LastProject { get; set; }
     }
 }

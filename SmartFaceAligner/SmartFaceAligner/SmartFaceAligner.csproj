@@ -102,6 +102,10 @@
     <Compile Include="Util\Bool2Vis.cs" />
     <Compile Include="Util\RotationFlipper.cs" />
     <Compile Include="Util\XDispatcher.cs" />
+    <Compile Include="View\Face\FaceDotView.model.cs" />
+    <Compile Include="View\Face\FaceDotView.xaml.cs">
+      <DependentUpon>FaceDotView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Face\FaceItemViewModel.cs" />
     <Compile Include="View\Face\FaceView.xaml.cs">
       <DependentUpon>FaceView.xaml</DependentUpon>
@@ -155,6 +159,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Face\FaceDotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Face\FaceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

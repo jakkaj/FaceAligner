@@ -12,6 +12,9 @@ using Contracts.Entity;
 using Contracts.Interfaces;
 using StartFaceAligner.FaceSmarts;
 using XCoreLite.View;
+using System.Collections.ObjectModel;
+using System.Drawing.Imaging;
+using Autofac;
 
 namespace SmartFaceAligner.View.Face
 {
@@ -23,6 +26,13 @@ namespace SmartFaceAligner.View.Face
         private string _thumbnail;
         public FaceData FaceData { get; set; }
 
+        
+        public Func<double, double, FaceView.UIScaleHelper> CalculateUIScale { get; set; }
+
+        private FaceView.UIScaleHelper _scaleHelper = null;
+
+        public ObservableCollection<FaceDotViewModel> FaceDots { get; private set; }
+
         public BitmapImage BitmapSource
         {
             get { return _getBitmap(); }
@@ -32,6 +42,8 @@ namespace SmartFaceAligner.View.Face
         public FaceItemViewModel(IImageService imageService)
         {
             _imageService = imageService;
+            FaceDots = new ObservableCollection<FaceDotViewModel>();
+          
         }
 
         BitmapImage _getBitmap()
@@ -46,16 +58,65 @@ namespace SmartFaceAligner.View.Face
             {
                 return null;
             }
-            using (var ms = new MemoryStream(img))
+
+            if (CalculateUIScale != null)
             {
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
-                return bitmap;
+                _scaleHelper = CalculateUIScale(img.Width, img.Height);
+                _updateDots();
             }
 
+            using (var msOuter = new MemoryStream())
+            {
+                img.Save(msOuter, ImageFormat.Jpeg);
+
+                using (var ms = new MemoryStream(msOuter.ToArray()))
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = ms;
+                    bitmap.EndInit();
+                    return bitmap;
+                }
+            }
+        }
+
+        void _updateDots()
+        {
+            FaceDots.Clear();
+
+            if (_scaleHelper == null)
+            {
+                return;
+            }
+
+            if (FaceData?.ParsedFaces == null || FaceData.ParsedFaces.Length == 0)
+            {
+                return;
+            }
+
+            foreach (var faceData in FaceData.ParsedFaces)
+            {
+                var detail = faceData.Face.FaceLandmarks;
+
+                var points = FaceHomography.GetPoints(new ImageAligner.ProcessFaceData{ParsedFace = faceData.Face});
+
+              
+
+                foreach (var p in points.ToList())
+                {
+                    var x = _scaleHelper.Left + (p.X * _scaleHelper.ScaleX);
+                    var y = _scaleHelper.Top + (p.Y * _scaleHelper.ScaleY);
+
+                    var pointVm = Scope.Resolve<FaceDotViewModel>();
+                    pointVm.X = x;
+                    pointVm.Y = y;
+                    FaceDots.Add(pointVm);
+
+                }
+
+                
+            }
         }
 
         public string Thumbnail
