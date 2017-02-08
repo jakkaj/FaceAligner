@@ -51,7 +51,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
             var folderSave = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Aligned);
 
-           
+
 
             if (face1 == null || face2 == null)
             {
@@ -72,7 +72,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
             if (!await _fileRepo.FileExists(fSource))
             {
-                await _fileRepo.Write(fSource, img1);
+                await _fileRepo.Write(fSource, _crop(img1, face1));
             }
 
             var result = await a.AlignImages(img1, img2, face1, face2);
@@ -82,10 +82,43 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 return;
             }
 
-            
-
             await _fileRepo.Write(
-                await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData2.FileName)), result);
+                await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData2.FileName)), _crop(result, face1));
+        }
+
+        byte[] _crop(byte[] img, Face face)
+        {
+            using (var ms = new MemoryStream(img))
+            {
+                Rectangle cropRect = new Rectangle
+                {
+                    Height = face.FaceRectangle.Height + 300,
+                    Width = face.FaceRectangle.Width + 300,
+
+                    X = face.FaceRectangle.Left - 150,
+                    Y = face.FaceRectangle.Top - 150
+
+                };
+
+
+                Bitmap src = Image.FromStream(ms) as Bitmap;
+                Bitmap target = new Bitmap(cropRect.Width, cropRect.Height);
+
+                using (Graphics g = Graphics.FromImage(target))
+                {
+                    g.DrawImage(src, new Rectangle(0, 0, target.Width, target.Height),
+                                     cropRect,
+                                     GraphicsUnit.Pixel);
+                }
+
+                using (var ms2 = new MemoryStream())
+                {
+                    target.Save(ms2, ImageFormat.Jpeg);
+                    return ms2.ToArray();
+                }
+
+            }
+
         }
 
         public async Task<(bool, long)> CognitiveDetectFace(Project p, FaceData face)
@@ -150,7 +183,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     //    }
                     //}
 
-                  
+
 
                     f.Delete();
 
