@@ -205,7 +205,7 @@ namespace SmartFaceAligner.View.Project
                 tasks.Enqueue(() => FilterLocal(f.FaceData));
             }
 
-            await tasks.Parallel(4);
+            await tasks.Parallel(1);
         }
 
         private void _sortByAge()

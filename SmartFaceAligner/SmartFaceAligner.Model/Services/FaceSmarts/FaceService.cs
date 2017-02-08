@@ -92,11 +92,11 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             {
                 Rectangle cropRect = new Rectangle
                 {
-                    Height = face.FaceRectangle.Height + 300,
-                    Width = face.FaceRectangle.Width + 300,
+                    Height = face.FaceRectangle.Height + 150,
+                    Width = face.FaceRectangle.Width + 150,
 
-                    X = face.FaceRectangle.Left - 150,
-                    Y = face.FaceRectangle.Top - 150
+                    X = face.FaceRectangle.Left - 75,
+                    Y = face.FaceRectangle.Top - 75
 
                 };
 
