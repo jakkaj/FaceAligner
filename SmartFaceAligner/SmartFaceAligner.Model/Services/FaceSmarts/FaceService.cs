@@ -25,8 +25,8 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         private readonly ILogService _logService;
 
         public FaceService(FaceServiceClient faceServiceClient,
-            IFaceDataService faceDataService, 
-            IFileManagementService fileManagementService, 
+            IFaceDataService faceDataService,
+            IFileManagementService fileManagementService,
             IProjectService projectService,
             ICognitiveServicesFaceService cognitiveFaceService,
             IFileRepo fileRepo,
@@ -45,7 +45,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         {
             await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.RecPerson);
         }
- 
+
         public async Task Align(Project p, FaceData faceData1, FaceData faceData2, Face face1, Face face2)
         {
             if (face1 == null || face2 == null)
@@ -79,44 +79,51 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         public async Task<(bool, long)> CognitiveDetectFace(Project p, FaceData face)
         {
             _logService.Log($"Parsing face: {face.FileName}");
-            _logService.Log($"Parsing face: {face.FileName}");
             try
             {
                 using (var img = Image.FromFile(face.FileName))
                 {
-                    using (var ms = new MemoryStream())
+
+                    var imgResizeData = ImageTools.ResizeImage(img, img.Width > 1440 ? 1440 : img.Width);
+                    var imgResized = imgResizeData.Item1;
+
+                    var f = new FileInfo(Path.GetTempFileName());
+
+                    imgResized.Save(f.FullName, ImageFormat.Jpeg);
+
+                    var fUse = f.FullName;
+
+                    var len = new FileInfo(fUse).Length;
+
+                    var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
+                    if (!resultLocalCheck)
                     {
-                        img.Save(ms, ImageFormat.Jpeg);
-                        var fUse = new FileInfo(Path.GetTempFileName());
-                        img.Save(fUse.FullName, ImageFormat.Jpeg);
+                        face.HasBeenScanned = true;
+                        await _faceDataService.SetFaceData(face);
+                        _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
+                        return (false, 0);
+                    }
 
-                        var len = ms.Length;
+                    _logService.Log($"Uploading: {len} bytes");
 
-                        var resultLocalCheck = LocalFaceDetector.HasFace(fUse.FullName);
-                        if (!resultLocalCheck)
-                        {
-                            face.HasBeenScanned = true;
-                            await _faceDataService.SetFaceData(face);
-                            _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
-                            return (false, 0);
-                        }
 
-                        _logService.Log($"Uploading: {len} bytes");
-
-                        var fResult = await _cognitiveFaceService.ParseFace(p, ms);
+                    using (var stream = await _fileRepo.ReadStream(fUse))
+                    {
+                        var fResult = await _cognitiveFaceService.ParseFace(p, stream);
 
                         if (fResult != null)
                         {
                             face.ParsedFaces = fResult.ToArray();
+                            
                         }
                         face.HasBeenScanned = true;
-
-                        fUse.Delete();
-
-                        await _faceDataService.SetFaceData(face);
-                        return (true, len);
                     }
+                    f.Delete();
+
+                    await _faceDataService.SetFaceData(face);
+                    return (true, len);
                 }
+
             }
             catch (FaceAPIException ex)
             {
@@ -129,6 +136,54 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
             return (false, 0);
 
+        }
+
+        /// <summary>
+        /// The image we sent to the server may have been reduced so we need to correc the points. 
+        /// </summary>
+        /// <param name="faces"></param>
+        /// <param name="aspect"></param>
+        void _adjustImageLandmarks(ParsedFace[] faces, double aspect)
+        {
+            foreach (var f in faces)
+            {
+                //thank goodness for OSS (https://github.com/Microsoft/ProjectOxford-ClientSDK/blob/master/Face/Windows/ClientLibrary/Contract/FaceLandmarks.cs)
+
+                var l = f.Face.FaceLandmarks;
+                _fixFeatureCoordinate(l.PupilLeft, aspect);
+                _fixFeatureCoordinate(l.PupilRight, aspect);
+                _fixFeatureCoordinate(l.NoseTip, aspect);
+                _fixFeatureCoordinate(l.MouthLeft, aspect);
+                _fixFeatureCoordinate(l.MouthRight, aspect);
+                _fixFeatureCoordinate(l.EyebrowLeftOuter, aspect);
+                _fixFeatureCoordinate(l.EyebrowLeftInner, aspect);
+                _fixFeatureCoordinate(l.EyeLeftOuter, aspect);
+                _fixFeatureCoordinate(l.EyeLeftTop, aspect);
+                _fixFeatureCoordinate(l.EyeLeftBottom, aspect);
+                _fixFeatureCoordinate(l.EyeLeftInner, aspect);
+                _fixFeatureCoordinate(l.EyebrowRightInner, aspect);
+                _fixFeatureCoordinate(l.EyebrowRightOuter, aspect);
+                _fixFeatureCoordinate(l.EyeRightInner, aspect);
+                _fixFeatureCoordinate(l.EyeRightTop, aspect);
+                _fixFeatureCoordinate(l.EyeRightBottom, aspect);
+                _fixFeatureCoordinate(l.EyeRightOuter, aspect);
+                _fixFeatureCoordinate(l.NoseRootLeft, aspect);
+                _fixFeatureCoordinate(l.NoseRootRight, aspect);
+                _fixFeatureCoordinate(l.NoseLeftAlarTop, aspect);
+                _fixFeatureCoordinate(l.NoseRightAlarTop, aspect);
+                _fixFeatureCoordinate(l.NoseLeftAlarOutTip, aspect);
+                _fixFeatureCoordinate(l.NoseRightAlarOutTip, aspect);
+                _fixFeatureCoordinate(l.UpperLipTop, aspect);
+                _fixFeatureCoordinate(l.UpperLipBottom, aspect);
+                _fixFeatureCoordinate(l.UnderLipTop, aspect);
+                _fixFeatureCoordinate(l.UnderLipBottom, aspect);
+            }
+        }
+
+        void _fixFeatureCoordinate(FeatureCoordinate coord, double aspect)
+        {
+            coord.X = coord.X * aspect;
+            coord.Y = coord.Y * aspect;
         }
 
         public void LocalDetectFaces(List<FaceData> faces)
@@ -157,7 +212,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             return true;
         }
 
-        
+
     }
 
 }

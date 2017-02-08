@@ -53,6 +53,8 @@ namespace StartFaceAligner.FaceSmarts
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeLeftTop.X,
                 (float)face.ParsedFace.FaceLandmarks.EyeLeftTop.Y));
 
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightTop.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeRightTop.Y));
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightInner.X,
                 (float)face.ParsedFace.FaceLandmarks.EyeRightInner.Y));
@@ -76,8 +78,14 @@ namespace StartFaceAligner.FaceSmarts
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseLeftAlarTop.X,
                 (float)face.ParsedFace.FaceLandmarks.NoseLeftAlarTop.Y));
 
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRightAlarTop.X,
+                (float)face.ParsedFace.FaceLandmarks.NoseRightAlarTop.Y));
+
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseLeftAlarOutTip.X,
                 (float)face.ParsedFace.FaceLandmarks.NoseLeftAlarOutTip.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRightAlarOutTip.X,
+               (float)face.ParsedFace.FaceLandmarks.NoseRightAlarOutTip.Y));
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRootLeft.X,
                 (float)face.ParsedFace.FaceLandmarks.NoseRootLeft.Y));

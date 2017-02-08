@@ -56,30 +56,9 @@ namespace SmartFaceAligner.Processor.Services
                     image.RotateFlip(flipper);
                 }
 
-                double scale = 1;
+                var result = ImageTools.ResizeImage(image, resize);
 
-                if (image.Width > resize || image.Height > resize)
-                {
-                    var imageHeight = image.Height;
-                    var imageWidth = image.Width;
-
-                    if (image.Height > image.Width)
-                    {
-                        var aspect = Convert.ToDouble(image.Height) / Convert.ToDouble(image.Width);
-
-                        image = ImageTools.ResizeImage(image, Convert.ToInt32(resize / aspect), resize);
-                        scale = Convert.ToDouble(imageHeight) / Convert.ToDouble(resize) ;
-                    }
-                    else
-                    {
-                        var aspect = Convert.ToDouble(image.Width) / Convert.ToDouble(image.Height);
-                        image = ImageTools.ResizeImage(image, resize, Convert.ToInt32(resize / aspect));
-                        scale = Convert.ToDouble(imageWidth) / Convert.ToDouble(resize);
-                    }
-                }
-
-                return (image, scale);
-
+                return result;
             }
             catch
             {

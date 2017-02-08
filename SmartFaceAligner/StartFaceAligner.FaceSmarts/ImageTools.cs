@@ -24,6 +24,34 @@ namespace StartFaceAligner.FaceSmarts
             return (Image)b;
         }
 
+        public static (Image, double) ResizeImage(Image image, int resize)
+        {
+            double scale = 1;
+
+            if (image.Width > resize || image.Height > resize)
+            {
+                var imageHeight = image.Height;
+                var imageWidth = image.Width;
+
+                if (image.Height > image.Width)
+                {
+                    var aspect = Convert.ToDouble(image.Height) / Convert.ToDouble(image.Width);
+
+                    image = ResizeImage(image, Convert.ToInt32(resize / aspect), resize);
+                    scale = Convert.ToDouble(imageHeight) / Convert.ToDouble(resize);
+                }
+                else
+                {
+                    var aspect = Convert.ToDouble(image.Width) / Convert.ToDouble(image.Height);
+                    image = ResizeImage(image, resize, Convert.ToInt32(resize / aspect));
+                    scale = Convert.ToDouble(imageWidth) / Convert.ToDouble(resize);
+                }
+            }
+
+
+            return (image, scale);
+        }
+
         /// <summary>
         /// Rotate the given bitmap according to Exif Orientation data
         /// </summary>
