@@ -11,5 +11,7 @@ namespace SmartFaceAligner.View.Face
     {
         public double X { get; set; }
         public double Y { get; set; }
+
+        public bool DoAnimation { get; set; }
     }
 }

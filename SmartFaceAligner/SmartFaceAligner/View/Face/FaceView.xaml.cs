@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,15 @@ namespace SmartFaceAligner.View.Face
         {
             InitializeComponent();
             this.DataContextChanged += FaceView_DataContextChanged;
+            this.SizeChanged += FaceView_SizeChanged;
+        }
+
+        private void FaceView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (DataContext is FaceItemViewModel vm)
+            {
+                vm.UpdateDots(false);
+            }
         }
 
         private void FaceView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -43,7 +53,7 @@ namespace SmartFaceAligner.View.Face
         }
 
 
-        public UIScaleHelper CalculateImageScale(double imageHeight, double imageWidth)
+        public UIScaleHelper CalculateImageScale(double imageWidth, double imageHeight)
         {
             var uiWidth = MainGrid.ActualWidth;
             var uiHeight = MainGrid.ActualHeight;

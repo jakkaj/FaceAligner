@@ -20,6 +20,7 @@ namespace StartFaceAligner.FaceSmarts
                 g.DrawImage(img, 0, 0, width, height);
             }
 
+            
             return (Image)b;
         }
 

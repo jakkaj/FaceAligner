@@ -6,14 +6,14 @@
              xmlns:local="clr-namespace:SmartFaceAligner.View.Face"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid x:Name="MainGrid" Background="Red">
+    <Grid x:Name="MainGrid">
         <Image Source="{Binding BitmapSource}" VerticalAlignment="Stretch" Stretch="Uniform"/>
         
             <ItemsControl ItemsSource="{Binding FaceDots}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                    <local:FaceDotView/>
-                </DataTemplate>
+                        <local:FaceDotView/>
+                    </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -27,6 +27,6 @@
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
-        
+        <Button Command="{Binding DoFaceAnimation}" Content="&#xEB68;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource ButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Background="White" Padding="20" ></Button>
     </Grid>
 </UserControl>

@@ -19,6 +19,8 @@ namespace SmartFaceAligner.Processor.Services
         private readonly IFileRepo _fileRepo;
         private readonly IFileCacheService _cacheService;
 
+        private const int resize = 1280;
+
         public ImageService(IFileRepo fileRepo, IFileCacheService cacheService)
         {
             _fileRepo = fileRepo;
@@ -27,7 +29,7 @@ namespace SmartFaceAligner.Processor.Services
 
         public byte[] GetImageFileBytes(string fileName)
         {
-            var image = GetImageFile(fileName);
+            var image = GetImageFile(fileName).Item1;
 
             if (image == null)
             {
@@ -41,7 +43,7 @@ namespace SmartFaceAligner.Processor.Services
             }
         }
 
-        public Image GetImageFile(string fileName)
+        public (Image, double) GetImageFile(string fileName)
         {
             try
             {
@@ -54,14 +56,29 @@ namespace SmartFaceAligner.Processor.Services
                     image.RotateFlip(flipper);
                 }
 
-                if (image.Width > 1280)
+                double scale = 1;
+
+                if (image.Width > resize || image.Height > resize)
                 {
-                    image = ImageTools.ResizeImage(image, 1280, 1024);
+                    var imageHeight = image.Height;
+                    var imageWidth = image.Width;
+
+                    if (image.Height > image.Width)
+                    {
+                        var aspect = Convert.ToDouble(image.Height) / Convert.ToDouble(image.Width);
+
+                        image = ImageTools.ResizeImage(image, Convert.ToInt32(resize / aspect), resize);
+                        scale = Convert.ToDouble(imageHeight) / Convert.ToDouble(resize) ;
+                    }
+                    else
+                    {
+                        var aspect = Convert.ToDouble(image.Width) / Convert.ToDouble(image.Height);
+                        image = ImageTools.ResizeImage(image, resize, Convert.ToInt32(resize / aspect));
+                        scale = Convert.ToDouble(imageWidth) / Convert.ToDouble(resize);
+                    }
                 }
 
-                return image;
-
-
+                return (image, scale);
 
             }
             catch
@@ -69,7 +86,7 @@ namespace SmartFaceAligner.Processor.Services
 
             }
 
-            return null;
+            return (null, 1);
         }
 
         public async Task<string> GetThumbFile(string fileName)

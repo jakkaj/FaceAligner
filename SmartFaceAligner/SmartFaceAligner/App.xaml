@@ -8,6 +8,35 @@
             <Setter Property="FontSize"
             Value="16" />
         </Style>
-        
+        <Style x:Key="ButtonStyle" TargetType="Button">
+
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="Foreground" Value="DodgerBlue" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="Margin" Value="5" />
+
+        </Style>
+
+        <Style x:Key="ButtonStyleSmall" BasedOn="{StaticResource ButtonStyle}" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+
+        <Style x:Key="TextStyle" TargetType="TextBlock">
+
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Foreground" Value="DodgerBlue" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="Margin" Value="5" />
+
+        </Style>
+
+        <Style x:Key="TextStyleSmall" TargetType="TextBlock" BasedOn="{StaticResource TextStyle}">
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
     </Application.Resources>
 </Application>

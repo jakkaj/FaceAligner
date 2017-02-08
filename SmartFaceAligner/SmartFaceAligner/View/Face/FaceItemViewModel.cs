@@ -15,6 +15,7 @@ using XCoreLite.View;
 using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
 using Autofac;
+using System.Windows.Input;
 
 namespace SmartFaceAligner.View.Face
 {
@@ -33,62 +34,93 @@ namespace SmartFaceAligner.View.Face
 
         public ObservableCollection<FaceDotViewModel> FaceDots { get; private set; }
 
+        public ICommand DoFaceAnimation => Command(() => UpdateDots(true));
+
+        private bool _hasDoneAnimation = false;
+
+        private BitmapImage _cacheBm;
+
+        static object _lock = new object();
+
         public BitmapImage BitmapSource
         {
             get { return _getBitmap(); }
         }
+
+        private (System.Drawing.Image, double) _image;
 
 
         public FaceItemViewModel(IImageService imageService)
         {
             _imageService = imageService;
             FaceDots = new ObservableCollection<FaceDotViewModel>();
+            
           
         }
 
         BitmapImage _getBitmap()
         {
-            if (FaceData?.FileName == null)
+            lock (_lock)
             {
-                return null;
-            }
 
-            var img = _imageService.GetImageFile(FaceData.FileName);
-            if (img == null)
-            {
-                return null;
-            }
-
-            if (CalculateUIScale != null)
-            {
-                _scaleHelper = CalculateUIScale(img.Width, img.Height);
-                _updateDots();
-            }
-
-            using (var msOuter = new MemoryStream())
-            {
-                img.Save(msOuter, ImageFormat.Jpeg);
-
-                using (var ms = new MemoryStream(msOuter.ToArray()))
+                if (FaceData?.FileName == null)
                 {
-                    var bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.StreamSource = ms;
-                    bitmap.EndInit();
-                    return bitmap;
+                    return null;
+                }
+
+                if (_cacheBm != null)
+                {
+                    return _cacheBm;
+                }
+
+                var img = _imageService.GetImageFile(FaceData.FileName);
+                if (img.Item1 == null)
+                {
+                    return null;
+                }
+
+                if (CalculateUIScale != null)
+                {
+                    _image = img;
+
+                    UpdateDots(false);
+                }
+
+                using (var msOuter = new MemoryStream())
+                {
+                    img.Item1.Save(msOuter, ImageFormat.Jpeg);
+
+                    using (var ms = new MemoryStream(msOuter.ToArray()))
+                    {
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = ms;
+                        bitmap.EndInit();
+                        _cacheBm = bitmap;
+                        return bitmap;
+                    }
                 }
             }
         }
 
-        void _updateDots()
+        public async void UpdateDots(bool doAnimation)
         {
-            FaceDots.Clear();
-
-            if (_scaleHelper == null)
+            if (!_hasDoneAnimation && !doAnimation)
             {
                 return;
             }
+
+            FaceDots.Clear();
+
+            if (CalculateUIScale == null || _image.Item1 == null)
+            {
+                return;
+            }
+
+            
+
+            _scaleHelper = CalculateUIScale(_image.Item1.Width, _image.Item1.Height);
 
             if (FaceData?.ParsedFaces == null || FaceData.ParsedFaces.Length == 0)
             {
@@ -97,26 +129,29 @@ namespace SmartFaceAligner.View.Face
 
             foreach (var faceData in FaceData.ParsedFaces)
             {
-                var detail = faceData.Face.FaceLandmarks;
-
                 var points = FaceHomography.GetPoints(new ImageAligner.ProcessFaceData{ParsedFace = faceData.Face});
-
-              
 
                 foreach (var p in points.ToList())
                 {
-                    var x = _scaleHelper.Left + (p.X * _scaleHelper.ScaleX);
-                    var y = _scaleHelper.Top + (p.Y * _scaleHelper.ScaleY);
+                    var x = _scaleHelper.Left + (((p.X / _image.Item2) *2)  * _scaleHelper.ScaleX);
+                    var y = _scaleHelper.Top + (((p.Y / _image.Item2) * 2) * _scaleHelper.ScaleY);
 
                     var pointVm = Scope.Resolve<FaceDotViewModel>();
+                    pointVm.DoAnimation = doAnimation;
                     pointVm.X = x;
                     pointVm.Y = y;
-                    FaceDots.Add(pointVm);
 
+                    if (!_hasDoneAnimation)
+                    {
+                        await Task.Delay(30);
+                    }
+
+                    FaceDots.Add(pointVm);
                 }
 
-                
             }
+
+            _hasDoneAnimation = true;
         }
 
         public string Thumbnail
