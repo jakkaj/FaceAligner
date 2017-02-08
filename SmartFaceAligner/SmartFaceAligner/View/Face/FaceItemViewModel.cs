@@ -133,8 +133,8 @@ namespace SmartFaceAligner.View.Face
 
                 foreach (var p in points.ToList())
                 {
-                    var x = _scaleHelper.Left + (((p.X / _image.Item2) *2)  * _scaleHelper.ScaleX);
-                    var y = _scaleHelper.Top + (((p.Y / _image.Item2) * 2) * _scaleHelper.ScaleY);
+                    var x = _scaleHelper.Left + (((p.X / _image.Item2))  * _scaleHelper.ScaleX);
+                    var y = _scaleHelper.Top + (((p.Y / _image.Item2)) * _scaleHelper.ScaleY);
 
                     var pointVm = Scope.Resolve<FaceDotViewModel>();
                     pointVm.DoAnimation = doAnimation;

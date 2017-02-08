@@ -43,11 +43,16 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
         public async Task PrepAlign(Project p)
         {
-            await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.RecPerson);
+            await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.Aligned);
         }
 
         public async Task Align(Project p, FaceData faceData1, FaceData faceData2, Face face1, Face face2)
         {
+
+            var folderSave = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Aligned);
+
+           
+
             if (face1 == null || face2 == null)
             {
                 return;
@@ -63,6 +68,13 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             var img1 = await _fileRepo.ReadBytes(faceData1.FileName);
             var img2 = await _fileRepo.ReadBytes(faceData2.FileName);
 
+            var fSource = await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData1.FileName));
+
+            if (!await _fileRepo.FileExists(fSource))
+            {
+                await _fileRepo.Write(fSource, img1);
+            }
+
             var result = await a.AlignImages(img1, img2, face1, face2);
 
             if (result == null)
@@ -70,7 +82,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 return;
             }
 
-            var folderSave = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Aligned);
+            
 
             await _fileRepo.Write(
                 await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData2.FileName)), result);
@@ -84,7 +96,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 using (var img = Image.FromFile(face.FileName))
                 {
 
-                    var imgResizeData = ImageTools.ResizeImage(img, img.Width > 1440 ? 1440 : img.Width);
+                    var imgResizeData = ImageTools.ResizeImage(img, img.Width > 1280 ? 1280 : img.Width);
                     var imgResized = imgResizeData.Item1;
 
                     var f = new FileInfo(Path.GetTempFileName());
@@ -113,11 +125,33 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
                         if (fResult != null)
                         {
+
                             face.ParsedFaces = fResult.ToArray();
-                            
+                            _adjustImageLandmarks(face.ParsedFaces, imgResizeData.Item2);
                         }
+
                         face.HasBeenScanned = true;
                     }
+
+                    //if (face.ParsedFaces != null)
+                    //{
+                    //    using (var stream = await _fileRepo.ReadStream(face.FileName))
+                    //    {
+                    //        var fResult = await _cognitiveFaceService.ParseFace(p, stream);
+
+                    //        if (fResult != null)
+                    //        {
+
+                    //            //face.ParsedFaces = fResult.ToArray();
+                    //            //_adjustImageLandmarks(face.ParsedFaces, imgResizeData.Item2);
+                    //        }
+
+                    //        face.HasBeenScanned = true;
+                    //    }
+                    //}
+
+                  
+
                     f.Delete();
 
                     await _faceDataService.SetFaceData(face);
@@ -150,6 +184,15 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 //thank goodness for OSS (https://github.com/Microsoft/ProjectOxford-ClientSDK/blob/master/Face/Windows/ClientLibrary/Contract/FaceLandmarks.cs)
 
                 var l = f.Face.FaceLandmarks;
+
+                f.Face.FaceRectangle = new FaceRectangle
+                {
+                    Height = Convert.ToInt32(Convert.ToDouble(f.Face.FaceRectangle.Height) * aspect),
+                    Width = Convert.ToInt32(Convert.ToDouble(f.Face.FaceRectangle.Width) * aspect),
+                    Top = Convert.ToInt32(Convert.ToDouble(f.Face.FaceRectangle.Top) * aspect),
+                    Left = Convert.ToInt32(Convert.ToDouble(f.Face.FaceRectangle.Left) * aspect),
+                };
+
                 _fixFeatureCoordinate(l.PupilLeft, aspect);
                 _fixFeatureCoordinate(l.PupilRight, aspect);
                 _fixFeatureCoordinate(l.NoseTip, aspect);

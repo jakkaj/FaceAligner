@@ -102,6 +102,8 @@ namespace SmartFaceAligner.Processor.Services
 
             if (existing != null)
             {
+                existing.Project = p;
+                existing.FileName = fileName;
                 return existing;
             }
 
