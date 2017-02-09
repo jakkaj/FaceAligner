@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,13 +23,16 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         private readonly FaceServiceClient _faceServiceClient;
         private readonly ILogService _logService;
         private readonly IFileRepo _fileRepo;
+        private readonly IImageService _imageService;
 
         public CognitiveServicesFaceService(FaceServiceClient faceServiceClient,
-            ILogService logService, IFileRepo fileRepo)
+            ILogService logService, IFileRepo fileRepo, 
+            IImageService imageService)
         {
             _faceServiceClient = faceServiceClient;
             _logService = logService;
             _fileRepo = fileRepo;
+            _imageService = imageService;
         }
 
         public async Task<List<ParsedFace>> ParseFace(Project p, Stream image, Face[] parsedFacesExisting)
@@ -162,25 +166,40 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
                 async Task AddFace(FaceData face)
                 {
-                    using (var stream = await _fileRepo.ReadStream(face.FileName))
+                    try
                     {
+                        var image = _imageService.GetImageFileBytes(face.FileName, true);
 
-                        _logService.Log($"Adding face: {face.FileName}");
-                        try
+                        using (var stream = new MemoryStream(image))
                         {
-                            var result = await _faceServiceClient.AddPersonFaceAsync(groupId, personId, stream);
 
-                            _logService.Log($"Added face: {face.FileName}");
+                            _logService.Log($"Adding face: {face.FileName}");
+                            try
+                            {
+                                var result = await _faceServiceClient.AddPersonFaceAsync(groupId, personId, stream);
 
-                            face.PersistedFaceId = result.PersistedFaceId;
+                                _logService.Log($"Added face: {face.FileName}");
+
+                                face.PersistedFaceId = result.PersistedFaceId;
+
+                            }
+                            catch (FaceAPIException ex)
+                            {
+                                _logService.Log(ex.ErrorMessage);
+                                _logService.LogException(ex);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logService.LogException(ex);
+                            }
 
                         }
-                        catch (Exception ex)
-                        {
-                            _logService.Log(ex.ToString());
-                        }
-
                     }
+                    catch (Exception ex)
+                    {
+                        _logService.Log(ex.ToString());
+                    }
+                    
                 }
 
                 await person.Faces.WhenAllList(AddFace);

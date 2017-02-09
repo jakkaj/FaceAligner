@@ -188,7 +188,6 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
                     var len = new FileInfo(fUse).Length;
 
-
                     Face[] parsedFaces = null;
 
                     if (face.ParsedFaces != null)

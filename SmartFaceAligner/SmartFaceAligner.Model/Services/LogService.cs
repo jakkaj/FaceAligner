@@ -14,11 +14,25 @@ namespace SmartFaceAligner.Processor.Services
     {
         public Action<string> Callback { get; set; }
 
-        public event EventHandler<TextEventArgs> Logged; 
+        public event EventHandler<TextEventArgs> Logged;
 
-        public void Log(string text)
+        public void LogException(Exception ex)
         {
+            var text = $"{ex.Message}  {ex.InnerException?.Message}";
+
             Debug.WriteLine(text);
+
+            Callback?.Invoke(text);
+
+            Logged?.Invoke(this, new TextEventArgs(text));
+        }
+
+        public void Log(string text, bool debug = true)
+        {
+            if (debug)
+            {
+                Debug.WriteLine(text);
+            }
 
             Callback?.Invoke(text);
 

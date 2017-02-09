@@ -499,7 +499,7 @@ namespace SmartFaceAligner.View.Project
             }
             _logService.Log($"Processing {tasks.Count} items");
             count = tasks.Count;
-            await tasks.Parallel(20);
+            await tasks.Parallel(12);
 
             await Load();
 
@@ -541,12 +541,14 @@ namespace SmartFaceAligner.View.Project
             return base.NavigatingAway(isBack);
         }
 
-        private void _logService_Logged(object sender, TextEventArgs e)
+        private async void _logService_Logged(object sender, TextEventArgs e)
         {
-            if (e.Text.StartsWith("Cognitive Progress:"))
+            if (e.Text.StartsWith("Cognitive Progress:") || e.Text.StartsWith("Reading:"))
             {
                 CurrentLog = e.Text;
             }
+
+            await Task.Yield();
         }
 
         public async Task Load()
