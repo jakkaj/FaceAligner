@@ -460,6 +460,14 @@ namespace SmartFaceAligner.View.Project
 
         private async void _detectFaces()
         {
+
+            if (_alignCancel != null)
+            {
+                _alignCancel.Cancel();
+                _alignCancel = null;
+                return;
+            }
+
             _totalBytesSent = 0;
             _sentToServer = 0;
             _notSentToServer = 0;
@@ -499,9 +507,24 @@ namespace SmartFaceAligner.View.Project
             }
             _logService.Log($"Processing {tasks.Count} items");
             count = tasks.Count;
-            await tasks.Parallel(12);
+            try
+            {
+                _alignCancel = new CancellationTokenSource();
+                await tasks.Parallel(12, _alignCancel.Token);
 
-            await Load();
+                await Load();
+            }
+            catch (OperationCanceledException ex)
+            {
+                System.Windows.MessageBox.Show("Face detection cancelled", "Processing", MessageBoxButton.OK);
+                return;
+            }
+            catch (Exception ex)
+            {
+                _logService.LogException(ex);
+                System.Windows.MessageBox.Show($"Face detection exception :( {ex.ToString()}", "Processing", MessageBoxButton.OK);
+            }
+           
 
             System.Windows.MessageBox.Show("Face detection complete", "Processing",  MessageBoxButton.OK);
 
