@@ -48,10 +48,13 @@ namespace SmartFaceAligner.View.Project
         public ICommand AddNewIdentityGroupCommand => Command(_addNewIdentityGroup);
         public ICommand TrainCommand => Command(_train);
 
-        public ICommand FilterFacesCommand => Command(_filterFaces);
+       
 
         public ICommand FilterMalesCommand => Command(_filterMales);
         public ICommand FilterFemalesCommand => Command(_filterFemales);
+        public ICommand FilterFacesCommand => Command(_filterByFaces);
+        public ICommand FilterSmilesCommand => Command(_filterBySmiles);
+        public ICommand FilterByNotSmilesCommand => Command(_filterByNotSmiles);
 
         public ICommand DetectFacesCommand => Command(_detectFaces);
         public ICommand RunFilterCommand => Command(_runFilter);
@@ -59,11 +62,13 @@ namespace SmartFaceAligner.View.Project
         public ICommand SortByAgeCommand => Command(_sortByAge);
         public ICommand AlignCommand => Command(_align);
 
+        public ICommand SaveFilteredItemsCommand => Command(_saveCurrentImages);
+
         private CancellationTokenSource _alignCancel;
 
         string _currentLog;
 
-        private RecognisePersonConfigViewModel _currentIdentity;
+        
         
 
         public FaceItemViewModel SelectedFace
@@ -72,16 +77,6 @@ namespace SmartFaceAligner.View.Project
             set
             {
                 _selectedFace = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public RecognisePersonConfigViewModel CurrentIdentity
-        {
-            get { return _currentIdentity; }
-            set
-            {
-                _currentIdentity = value;
                 OnPropertyChanged();
             }
         }
@@ -121,20 +116,34 @@ namespace SmartFaceAligner.View.Project
                 return;
             }
 
-            if (_currentIdentity == null)
+            var selectedPeople = _selectedPeople();
+
+            if (selectedPeople.Count == 0 || selectedPeople.Count > 1)
             {
                 return;
             }
 
+            var currentIdentity = selectedPeople.FirstOrDefault();
+
             foreach (var f in SelectedItems)
             {
                 var faceData = f.FaceData;
-                await _projectService.AddImageToPerson(_currentIdentity.IdentityPerson, faceData);
+                await _projectService.AddImageToPerson(currentIdentity, faceData);
             }
 
 
             _loadIdentities();
 
+        }
+
+        List<IdentityPerson> _selectedPeople()
+        {
+            if (IdentityPeople == null)
+            {
+                return new List<IdentityPerson>();
+            }
+            var lResult = IdentityPeople.Where(_ => _.IsChecked).Select(_ => _.IdentityPerson).ToList();
+            return lResult;
         }
 
         void _onViewPortUpdatedMessage(object message)
@@ -186,8 +195,11 @@ namespace SmartFaceAligner.View.Project
             }
 
             _alignCancel = new CancellationTokenSource();
+            var selectedPeople = _selectedPeople();
 
-            if (_currentIdentity == null || SelectedFace?.FaceData == null)
+            var currentIdentity = selectedPeople.FirstOrDefault();
+
+            if (currentIdentity == null || SelectedFace?.FaceData == null)
             {
                 return;
             }
@@ -234,11 +246,6 @@ namespace SmartFaceAligner.View.Project
 
         private void _sortByAge()
         {
-            if (_currentIdentity == null)
-            {
-                return;
-            }
-
             var fTemp =
                 FaceItems.OrderBy(
                     _ =>
@@ -253,39 +260,50 @@ namespace SmartFaceAligner.View.Project
 
         bool _filterParsedFaceByIdentity(ParsedFace face)
         {
-            if (_currentIdentity == null)
-            {
-                return true;
-            }
+            var selectedPeople = _selectedPeople();
 
-            return face.IdentityPerson != null && face.IdentityPerson.PersonId == _currentIdentity.IdentityPerson.PersonId;
+            var selectedId = selectedPeople.Select(_ => _.PersonId).ToArray();
+           
+            return face.IdentityPerson != null && selectedId.Contains(face.IdentityPerson.PersonId);
         }
 
         bool _filterFaceItemVmByIdentity(FaceItemViewModel vm)
         {
-            if (_currentIdentity == null)
-            {
-                return true;
-            }
 
             if (vm.FaceData == null || vm.FaceData.ParsedFaces == null)
             {
                 return false;
             }
 
-            var any = vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson != null && _.IdentityPerson.PersonId == _currentIdentity.IdentityPerson.PersonId);
+            var selectedPeople = _selectedPeople();
 
-            if (any)
+            var selectedId = selectedPeople.Select(_ => _.PersonId).ToArray();
+
+            bool containsAll = true;
+
+            foreach (var id in selectedId)
             {
-                Debug.WriteLine("found");
+                var any = vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson != null && _.IdentityPerson.PersonId == id);
+                if (!any)
+                {
+                    containsAll = false;
+                    break;
+                }
             }
 
-            return any;
+            return containsAll;
         }
 
         async void _clearFilter()
         {
-            CurrentIdentity = null;
+            if (IdentityPeople != null)
+            {
+                foreach (var person in IdentityPeople)
+                {
+                    person.IsChecked = false;
+                }
+            }
+
             await Load();
         }
 
@@ -347,7 +365,7 @@ namespace SmartFaceAligner.View.Project
 
             var filtered = fTemp.Where(
                 _=> _.FaceData.ParsedFaces != null && 
-                _.FaceData.ParsedFaces.Any(
+                _.FaceData.ParsedFaces.All(
                     _2=>_2.Face.FaceAttributes.Gender == gender)
                 ).ToList();
 
@@ -366,6 +384,48 @@ namespace SmartFaceAligner.View.Project
             _filterByGender(Constants.Filters.Female);
         }
 
+        void _filterBySmiles()
+        {
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(
+                _ => _.FaceData.ParsedFaces != null &&
+                _.FaceData.ParsedFaces.Any(
+                    _2 => _2.Face.FaceAttributes.Smile > .7)
+                ).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
+        void _filterByNotSmiles()
+        {
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(
+                _ => _.FaceData.ParsedFaces != null &&
+                _.FaceData.ParsedFaces.Any(
+                    _2 => _2.Face.FaceAttributes.Smile < .2)
+                ).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
+        void _filterByFaces()
+        {
+            var fTemp = FaceItems.ToList();
+
+            var filtered = fTemp.Where(
+                _ => _.FaceData.ParsedFaces != null).ToList();
+
+            FaceItems.Clear();
+
+            filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
 
 
         private async void _runFilter()
@@ -378,6 +438,20 @@ namespace SmartFaceAligner.View.Project
             FaceItems.Clear();
 
             filtered.ForEach(_ => FaceItems.Add(_));
+        }
+
+        async void _saveCurrentImages()
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+
+            var result = dialog.ShowDialog();
+
+            if (result != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            await _fileManagementService.SaveFaces(FaceItems.Select(_=>_.FaceData).ToList(), dialog.SelectedPath);
         }
 
         private long _totalBytesSent = 0;
@@ -481,26 +555,26 @@ namespace SmartFaceAligner.View.Project
             FaceItems.Clear();
 
             var faceItems = await _faceDataService.GetFaceData(Project);
-           
+
             foreach (var fd in faceItems)
             {
                 var vm = Scope.Resolve<FaceItemViewModel>();
                 vm.FaceData = fd;
                 FaceItems.Add(vm);
             }
-            
+
+
             _loadIdentities();
 
             CurrentLog = $"Loaded {faceItems.Count} images";
         }
 
          void _loadIdentities()
-        {
-            var selId = _currentIdentity?.IdentityPerson?.PersonName;
+         {
+             var selId = _selectedPeople().Select(_ => _.PersonId).ToArray();
 
             IdentityPeople.Clear();
-           
-            CurrentIdentity = null;
+            
             foreach (var id in Project.IdentityPeople)
             {
                 var vm = Scope.Resolve<RecognisePersonConfigViewModel>();
@@ -511,7 +585,11 @@ namespace SmartFaceAligner.View.Project
 
             if (selId != null)
             {
-                CurrentIdentity = IdentityPeople.FirstOrDefault(_ => _.IdentityPerson.PersonName == selId);
+                var lSeelctedReset = IdentityPeople.Where(_ => selId.Contains(_.IdentityPerson.PersonId)).ToList();
+                foreach (var selectedPerson in lSeelctedReset)
+                {
+                    selectedPerson.IsChecked = true;
+                }
             }
         }
 

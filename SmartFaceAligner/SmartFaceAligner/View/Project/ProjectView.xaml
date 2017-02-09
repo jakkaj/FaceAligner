@@ -45,6 +45,20 @@
                 <StackPanel HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Faces" Command="{Binding FilterFacesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Smiles" Command="{Binding FilterSmilesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <Button Content="Not Smiling" Command="{Binding FilterByNotSmilesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                    </StackPanel>
+
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
                         <Button Content="Females" Command="{Binding FilterFemalesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
                     </StackPanel>
 
@@ -84,11 +98,14 @@
                 <Button Content="Sort by age" Command="{Binding SortByAgeCommand}" Style="{StaticResource ButtonStyle}"></Button>
                 </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="&#xE8CB;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Text="&#xED53;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
                 <Button Content="Align" Command="{Binding AlignCommand}" Style="{StaticResource ButtonStyle}"></Button>
                 </StackPanel>
 
-
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE78C;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyle}" VerticalAlignment="Center"></TextBlock>
+                <Button Content="Save Filtered" Command="{Binding SaveFilteredItemsCommand}" Style="{StaticResource ButtonStyle}"></Button>
+            </StackPanel>
 
         </StackPanel>
         
@@ -108,16 +125,16 @@
                 <Button Command="{Binding AddNewIdentityGroupCommand}" Content="&#xE8FA;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource ButtonStyle}"/>
             </StackPanel>
 
-            <ListView ItemsSource="{Binding IdentityPeople}" 
-                      SelectedItem="{Binding CurrentIdentity, Mode=TwoWay}" 
+            <ItemsControl ItemsSource="{Binding IdentityPeople}" 
+                       
                       Grid.Row="1" 
                       BorderBrush="Transparent" Background="Transparent" Margin="15,0,5,0">
-                <ListView.ItemTemplate>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <face:RecognisePersonConfigView/>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
 
         <ListView x:Name="ImageList" ItemsSource="{Binding FaceItems}"

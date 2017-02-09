@@ -7,14 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <StackPanel>
-            <TextBlock Text="{Binding GroupName}" FontFamily="Segoe UI Light" FontSize="20"></TextBlock>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Count}"></TextBlock>
-                <TextBlock Text=" images"></TextBlock>
-            </StackPanel>
-           
+                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,5,10,0"></CheckBox>
+                <TextBlock Text="{Binding GroupName}" FontFamily="Segoe UI Light" FontSize="20"></TextBlock>
         </StackPanel>
-       
     </Grid>
 </UserControl>

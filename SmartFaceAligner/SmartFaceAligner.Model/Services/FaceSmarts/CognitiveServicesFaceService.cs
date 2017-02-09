@@ -31,44 +31,47 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             _fileRepo = fileRepo;
         }
 
-        public async Task<List<ParsedFace>> ParseFace(Project p, Stream image)
+        public async Task<List<ParsedFace>> ParseFace(Project p, Stream image, Face[] parsedFacesExisting)
         {
-            Face[] parsedFace = null;
+            Face[] parsedFace = parsedFacesExisting;
 
             var _isThrottled = false;
 
-            try
+            if (parsedFace == null)
             {
-                parsedFace = await _faceServiceClient.DetectAsync(image, true, true,
-                    new FaceAttributeType[]
-                    {
-                        FaceAttributeType.Gender,
-                        FaceAttributeType.Age,
-                        FaceAttributeType.Smile,
-                        FaceAttributeType.Glasses,
-                        FaceAttributeType.HeadPose,
-                        FaceAttributeType.FacialHair,
-                    });
-            }
-            catch (FaceAPIException ex)
-            {
-                if (ex.ErrorCode == Constants.Errors.RateLimitExceeded)
+                try
                 {
-                    _logService.Log("Face API is throttling");
-                    _isThrottled = true;
-                    new ThrottlingMessage().Send();
+                    parsedFace = await _faceServiceClient.DetectAsync(image, true, true,
+                        new FaceAttributeType[]
+                        {
+                            FaceAttributeType.Gender,
+                            FaceAttributeType.Age,
+                            FaceAttributeType.Smile,
+                            FaceAttributeType.Glasses,
+                            FaceAttributeType.HeadPose,
+                            FaceAttributeType.FacialHair,
+                        });
                 }
-            }
-            catch (Exception ex)
-            {
-                _logService.Log(ex.ToString());
-                
+                catch (FaceAPIException ex)
+                {
+                    if (ex.ErrorCode == Constants.Errors.RateLimitExceeded)
+                    {
+                        _logService.Log("Face API is throttling");
+                        _isThrottled = true;
+                        new ThrottlingMessage().Send();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logService.Log(ex.ToString());
+
+                }
             }
 
             if (_isThrottled)
             {
                 await Task.Delay(1000);
-                return await ParseFace(p, image);
+                return await ParseFace(p, image, parsedFacesExisting);
             }
 
             var listResults = new List<ParsedFace>();
@@ -100,7 +103,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 if (_isThrottled)
                 {
                     await Task.Delay(1000);
-                    return await ParseFace(p, image);
+                    return await ParseFace(p, image, parsedFacesExisting);
                 }
 
                 if (result != null && result.Length > 0)

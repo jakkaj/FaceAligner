@@ -18,6 +18,14 @@ namespace SmartFaceAligner.Processor.Services
             _fileRepo = fileRepo;
         }
 
+        public async Task SaveFaces(List<FaceData> data, string folder)
+        {
+            foreach (var f in data)
+            {
+                await _fileRepo.CopyFile(f.FileName, folder);
+            }
+        }
+
 
         public async Task<ProjectFolder> GetFolder(Project p, ProjectFolderTypes folderType)
         {

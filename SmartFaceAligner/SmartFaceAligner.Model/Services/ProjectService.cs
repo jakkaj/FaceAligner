@@ -44,10 +44,19 @@ namespace SmartFaceAligner.Processor.Services
             foreach (var d in allData)
             {
                 d.HasBeenScanned = false;
-                d.ParsedFaces = null;
-                d.PersistedFaceId = null;
-                await _faceDataService.SetFaceData(d);
+
+                if (d.ParsedFaces != null)
+                {
+                    foreach (var parsedFace in d.ParsedFaces)
+                    {
+                        parsedFace.IdentityPerson = null;
+                    }
+                }
+                
+                await _faceDataService.SetFaceData(d, false);
             }
+
+            await _faceDataService.Save(p);
         }
 
         public async Task AddImageToPerson(IdentityPerson personGroup, FaceData f)

@@ -51,7 +51,7 @@ namespace SmartFaceAligner.Processor.Services
             return _faceData[p.Id];
         }
 
-        async Task _save(Project p)
+        public async Task Save(Project p)
         {
             if (_faceData.ContainsKey(p.Id))
             {
@@ -65,7 +65,7 @@ namespace SmartFaceAligner.Processor.Services
 
        
 
-        public async Task SetFaceData(FaceData f)
+        public async Task SetFaceData(FaceData f, bool save = true)
         {
             await _semaphore.WaitAsync();
             var list = await _init(f.Project);
@@ -77,7 +77,11 @@ namespace SmartFaceAligner.Processor.Services
             }
 
             list.Add(f);
-            await _save(f.Project);
+            if (save)
+            {
+                await Save(f.Project);
+            }
+            
             _semaphore.Release();
         }
 
@@ -109,7 +113,7 @@ namespace SmartFaceAligner.Processor.Services
 
             var returnList = result.OrderBy(_ => _.DateTaken).ToList();
 
-            await _save(p);
+            await Save(p);
 
             return returnList;
         }

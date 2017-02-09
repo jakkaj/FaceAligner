@@ -26,5 +26,6 @@ namespace Contracts.Interfaces
         Task<string> GetSubFolder(Project p, ProjectFolderTypes folderType, params string[] subFolder);
         Task<string> GetSubFile(Project p, ProjectFolderTypes folderType, params string[] subFolder);
         Task<List<string>> GetSourceFiles(Project p);
+        Task SaveFaces(List<FaceData> data, string folder);
     }
 }

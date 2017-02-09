@@ -188,22 +188,44 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
                     var len = new FileInfo(fUse).Length;
 
-                    var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
-                    if (!resultLocalCheck)
+
+                    Face[] parsedFaces = null;
+
+                    if (face.ParsedFaces != null)
                     {
-                        face.HasBeenScanned = true;
-                        await _faceDataService.SetFaceData(face);
-                        _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
-                        return (false, 0);
+                        parsedFaces = face.ParsedFaces.Select(_ => _.Face).ToArray();
                     }
 
-                    _logService.Log($"Uploading: {len} bytes");
 
+                    if (parsedFaces == null)
+                    {
+                        var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
+                        if (!resultLocalCheck)
+                        {
+                            face.HasBeenScanned = true;
+                            await _faceDataService.SetFaceData(face);
+                            _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
+                            return (false, 0);
+                        }
+                    }
+                  
 
+                    if (parsedFaces == null)
+                    {
+                        _logService.Log($"Uploading: {len} bytes");
+                    }
+                    else
+                    {
+                        _logService.Log($"No need to reupload: {face.FileName}");
+                    }
+
+                   
 
                     using (var stream = await _fileRepo.ReadStream(fUse))
                     {
-                        var fResult = await _cognitiveFaceService.ParseFace(p, stream);
+                        
+
+                        var fResult = await _cognitiveFaceService.ParseFace(p, stream, parsedFaces);
 
                         if (fResult != null)
                         {

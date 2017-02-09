@@ -19,6 +19,8 @@ namespace SmartFaceAligner.View.Face
         public Contracts.Entity.Project Project { get; set; }
         public IdentityPerson IdentityPerson { get; set; }
 
+        private bool _isChecked;
+
         public RecognisePersonConfigViewModel(IFileManagementService fileManagementService)
         {
             _fileManagementService = fileManagementService;
@@ -28,7 +30,16 @@ namespace SmartFaceAligner.View.Face
         {
             //copy the face in to the new folder
             await _fileManagementService.CopyTo(face.FileName, Project, ProjectFolderTypes.RecPerson, GroupName);
+        }
 
+        public bool IsChecked
+        {
+            get { return _isChecked; }
+            set
+            {
+                _isChecked = value;
+                OnPropertyChanged();
+            }
         }
     }
 }
