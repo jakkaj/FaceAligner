@@ -13,12 +13,12 @@ namespace SmartFaceAligner.Processor.Services
     {
         private readonly IFileRepo _fileRepo;
 
-        private readonly SemaphoreSlim _semaphore;
-
+        static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1,1);
+       
         public FileCacheService(IFileRepo fileRepo)
         {
             _fileRepo = fileRepo;
-             _semaphore = new SemaphoreSlim(1, 1);
+            
         }
 
         async Task<string> _getFileName(string originalFile, string type)

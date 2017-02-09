@@ -30,5 +30,6 @@ namespace Contracts.Interfaces
         Task DeleteDirectory(string path);
         Task DeleteFile(string path);
         Task<bool> FolderExists(string folderPath);
+        Task<bool> MoveFile(string source, string target);
     }
 }

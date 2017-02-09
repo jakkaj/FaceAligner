@@ -21,5 +21,7 @@ namespace Contracts.Interfaces
         /// <param name="faces"></param>
         /// <returns></returns>
         Task<bool> TrainPersonGroups(Project p);
+
+        Task PostAlign(Project p);
     }
 }

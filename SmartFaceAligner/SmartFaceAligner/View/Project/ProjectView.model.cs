@@ -19,7 +19,9 @@ using SmartFaceAligner.Util;
 using XamlingCore.Portable.Messages.XamlingMessenger;
 using XamlingCore.Portable.Util.TaskUtils;
 using System.Diagnostics;
+using System.Threading;
 using Microsoft.ProjectOxford.Face.Contract;
+using SmartFaceAligner.Processor;
 using SmartFaceAligner.Processor.Entity;
 
 namespace SmartFaceAligner.View.Project
@@ -57,6 +59,7 @@ namespace SmartFaceAligner.View.Project
         public ICommand SortByAgeCommand => Command(_sortByAge);
         public ICommand AlignCommand => Command(_align);
 
+        private CancellationTokenSource _alignCancel;
 
         string _currentLog;
 
@@ -146,7 +149,10 @@ namespace SmartFaceAligner.View.Project
                 {
                     selIndex = FaceItems.Count - 1;
                 }
-
+                if (selIndex < 0)
+                {
+                    return;
+                }
                 SelectedFace = FaceItems[selIndex];
 
             }
@@ -171,7 +177,15 @@ namespace SmartFaceAligner.View.Project
 
         private async void _align()
         {
-            
+            if (_alignCancel != null)
+            {
+                _alignCancel.Cancel();
+                _alignCancel = null;
+                System.Windows.MessageBox.Show($"Alignment Cancelled", "Aligner", System.Windows.MessageBoxButton.OK);
+                return;
+            }
+
+            _alignCancel = new CancellationTokenSource();
 
             if (_currentIdentity == null || SelectedFace?.FaceData == null)
             {
@@ -204,8 +218,18 @@ namespace SmartFaceAligner.View.Project
             {
                 tasks.Enqueue(() => FilterLocal(f.FaceData));
             }
-
-            await tasks.Parallel(1);
+            try
+            {
+                await tasks.Parallel(4, _alignCancel.Token);
+                _alignCancel = null;
+                await _faceService.PostAlign(Project);
+                System.Windows.MessageBox.Show($"Alignment Completed", "Aligner", System.Windows.MessageBoxButton.OK);
+            }
+            catch(Exception ex)
+            {
+                _logService.Log(ex.ToString());
+            }
+          
         }
 
         private void _sortByAge()
@@ -401,7 +425,7 @@ namespace SmartFaceAligner.View.Project
             }
             _logService.Log($"Processing {tasks.Count} items");
             count = tasks.Count;
-            await tasks.Parallel(10);
+            await tasks.Parallel(20);
 
             await Load();
 
@@ -453,21 +477,21 @@ namespace SmartFaceAligner.View.Project
 
         public async Task Load()
         {
-               var files = await _fileManagementService.GetSourceFiles(Project);
+               //var files = await _fileManagementService.GetSourceFiles(Project);
             FaceItems.Clear();
 
-            async Task Wrap(string f)
+            var faceItems = await _faceDataService.GetFaceData(Project);
+           
+            foreach (var fd in faceItems)
             {
                 var vm = Scope.Resolve<FaceItemViewModel>();
-                vm.FaceData = await _faceDataService.GetFaceData(Project, f);
+                vm.FaceData = fd;
                 FaceItems.Add(vm);
             }
-
-            await files.WhenAllList(_=>Wrap(_));
-
+            
             _loadIdentities();
 
-            CurrentLog = $"Loaded {files.Count} images";
+            CurrentLog = $"Loaded {faceItems.Count} images";
         }
 
          void _loadIdentities()

@@ -14,12 +14,14 @@ using StartFaceAligner.FaceSmarts;
 using XCoreLite.View;
 using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
+using System.Threading;
 using Autofac;
 using System.Windows.Input;
+using SmartFaceAligner.Util;
 
 namespace SmartFaceAligner.View.Face
 {
-    public class FaceItemViewModel : ViewModel
+    public class FaceItemViewModel : ViewModel, IDisposable
     {
         private readonly IImageService _imageService;
         private bool? _hasFace = null;
@@ -39,6 +41,9 @@ namespace SmartFaceAligner.View.Face
         private bool _hasDoneAnimation = false;
 
         private BitmapImage _cacheBm;
+
+        private CancellationTokenSource _thumbToken;
+        private CancellationTokenSource _bitmapToken;
 
         static object _lock = new object();
 
@@ -73,7 +78,9 @@ namespace SmartFaceAligner.View.Face
                     return _cacheBm;
                 }
 
-                var img = _imageService.GetImageFile(FaceData.FileName);
+                _bitmapToken = new CancellationTokenSource();
+                var img = _imageService.GetImageFile(FaceData.FileName,true, _bitmapToken.Token);
+                
                 if (img.Item1 == null)
                 {
                     return null;
@@ -98,10 +105,27 @@ namespace SmartFaceAligner.View.Face
                         bitmap.StreamSource = ms;
                         bitmap.EndInit();
                         _cacheBm = bitmap;
+                        _bitmapToken = null;
                         return bitmap;
                     }
                 }
             }
+        }
+
+        async void _getThumbnail()
+        {
+            await Task.Yield();
+            var thumb = "";
+
+            _thumbToken = new CancellationTokenSource();
+
+            await Task.Run(async () =>
+            {
+                thumb = await _imageService.GetThumbFile(FaceData.FileName, _thumbToken.Token);
+                _thumbToken = null;
+            }).ConfigureAwait(true);
+
+            Thumbnail = thumb;
         }
 
         public async void UpdateDots(bool doAnimation)
@@ -118,8 +142,6 @@ namespace SmartFaceAligner.View.Face
                 return;
             }
 
-            
-
             _scaleHelper = CalculateUIScale(_image.Item1.Width, _image.Item1.Height);
 
             if (FaceData?.ParsedFaces == null || FaceData.ParsedFaces.Length == 0)
@@ -129,7 +151,7 @@ namespace SmartFaceAligner.View.Face
 
             foreach (var faceData in FaceData.ParsedFaces)
             {
-                var points = FaceHomography.GetPoints(new ImageAligner.ProcessFaceData{ParsedFace = faceData.Face});
+                var points = FaceHomography.GetPointsFeatures(new ImageAligner.ProcessFaceData{ParsedFace = faceData.Face});
 
                 foreach (var p in points.ToList())
                 {
@@ -154,13 +176,43 @@ namespace SmartFaceAligner.View.Face
             _hasDoneAnimation = true;
         }
 
+      
+       
+
+        public async Task CheckHasFace()
+        {
+            if (_hasFace.HasValue)
+            {
+                return;
+            }
+
+            var result = false;
+
+            await Task.Run(() =>
+            {
+                result = LocalFaceDetector.HasFace(FaceData.FileName);
+            }).ConfigureAwait(true);
+
+            HasFace = result;
+        }
+
+        public override void Dispose()
+        {
+            _thumbToken?.Cancel();
+            _bitmapToken?.Cancel();
+            _image.Item1?.Dispose();
+            _image.Item1 = null;
+            base.Dispose();
+        }
+
+
         public string Thumbnail
         {
             get
             {
                 if (_thumbnail == null && FaceData.FileName != null)
                 {
-                    _loadImage();
+                    _getThumbnail();
                     return null;
                 }
                 return _thumbnail;
@@ -183,36 +235,5 @@ namespace SmartFaceAligner.View.Face
             }
         }
 
-        async void _loadImage()
-        {
-            
-
-            await Task.Yield();
-            var thumb = "";
-
-            await Task.Run(async () =>
-            {
-                thumb = await _imageService.GetThumbFile(FaceData.FileName);
-            }).ConfigureAwait(true);
-
-            Thumbnail = thumb;
-        }
-
-        public async Task CheckHasFace()
-        {
-            if (_hasFace.HasValue)
-            {
-                return;
-            }
-
-            var result = false;
-
-            await Task.Run(() =>
-            {
-                result = LocalFaceDetector.HasFace(FaceData.FileName);
-            }).ConfigureAwait(true);
-
-            HasFace = result;
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Entity;
 using Contracts.Interfaces;
+using ExifLib;
 using Newtonsoft.Json;
 using SmartFaceAligner.Processor.Entity;
 using XamlingCore.NET.Implementations;
@@ -21,13 +23,12 @@ namespace SmartFaceAligner.Processor.Services
 
         private IFileRepo _fileRepo { get; }
 
-        private SemaphoreSlim _semaphore;
+        static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public FaceDataService(IFileRepo fileRepo, IFileManagementService fileManagementService)
         {
             _fileManagementService = fileManagementService;
             _fileRepo = fileRepo;
-            _semaphore = new SemaphoreSlim(1,1);
         }
 
         async Task<List<FaceData>> _init(Project p)
@@ -83,13 +84,34 @@ namespace SmartFaceAligner.Processor.Services
         public async Task<List<FaceData>> GetFaceData(Project p )
         {
             var files = await _fileManagementService.GetSourceFiles(p);
-            var result = new List<FaceData>();
-            foreach (var f in files)
+            var result = new BlockingCollection<FaceData>();
+
+            async Task LoaderOptimization(string f)
             {
-                result.Add(await GetFaceData(p, f));
+                var data = await GetFaceData(p, f);
+                if (data == null)
+                {
+                    return;
+                }
+
+                result.Add(data);
             }
 
-            return result;
+            var tasks = new Queue<Func<Task>>();
+
+            foreach (var f in files)
+            {
+                var fClose = f;
+                tasks.Enqueue(()=>LoaderOptimization(fClose));
+            }
+
+            await tasks.Parallel(20);
+
+            var returnList = result.OrderBy(_ => _.DateTaken).ToList();
+
+            await _save(p);
+
+            return returnList;
         }
 
         public async Task<FaceData> GetFaceData(Project p, string fileName)
@@ -102,12 +124,46 @@ namespace SmartFaceAligner.Processor.Services
 
             if (existing != null)
             {
+                if (existing.DateTaken == DateTime.MinValue)
+                {
+                    existing.DateTaken = _getExifDateTime(fileName);
+                }
+                
                 existing.Project = p;
                 existing.FileName = fileName;
                 return existing;
             }
 
-            return new FaceData { FileName = fileName, Project = p, Hash= hash };
+            var faceData = new FaceData
+            {
+                FileName = fileName,
+                Project = p,
+                Hash = hash,
+                DateTaken = _getExifDateTime(fileName)
+            };
+
+
+            return faceData;
+        }
+
+        DateTime _getExifDateTime(string fileName)
+        {
+            try
+            {
+                var exif = new ExifReader(fileName);
+                DateTime datePictureTaken;
+                if (exif.GetTagValue<DateTime>(ExifTags.DateTimeDigitized,
+                    out datePictureTaken))
+                {
+                    return datePictureTaken;
+                }
+            }
+            catch
+            {
+            }
+
+
+            return DateTime.MaxValue;
         }
 
         async Task<string> _getKey(string fileName)

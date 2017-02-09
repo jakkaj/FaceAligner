@@ -100,6 +100,7 @@
     <Compile Include="MainWindowView.model.cs" />
     <Compile Include="Messages\ViewItemMessage.cs" />
     <Compile Include="Util\Bool2Vis.cs" />
+    <Compile Include="Util\IDisplayUpdates.cs" />
     <Compile Include="Util\RotationFlipper.cs" />
     <Compile Include="Util\XDispatcher.cs" />
     <Compile Include="View\Face\FaceDotView.model.cs" />
@@ -113,6 +114,9 @@
     <Compile Include="View\Face\RecognisePersonConfigView.model.cs" />
     <Compile Include="View\Face\RecognisePersonConfigView.xaml.cs">
       <DependentUpon>RecognisePersonConfigView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Face\ThumbView.xaml.cs">
+      <DependentUpon>ThumbView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\HomeView.model.cs" />
     <Compile Include="View\HomeView.xaml.cs">
@@ -168,6 +172,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Face\RecognisePersonConfigView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Face\ThumbView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

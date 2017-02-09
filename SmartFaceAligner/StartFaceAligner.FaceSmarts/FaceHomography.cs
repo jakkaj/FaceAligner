@@ -24,19 +24,9 @@ namespace StartFaceAligner.FaceSmarts
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.PupilRight.X,
                 (float)face.ParsedFace.FaceLandmarks.PupilRight.Y));
 
-            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseTip.X,
-                (float)face.ParsedFace.FaceLandmarks.NoseTip.Y));
-
-            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left,
-                (float)face.ParsedFace.FaceRectangle.Top));
-
-            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left + face.ParsedFace.FaceRectangle.Width,
-                (float)face.ParsedFace.FaceRectangle.Top + face.ParsedFace.FaceRectangle.Height));
-
-
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeLeftBottom.X,
-                (float)face.ParsedFace.FaceLandmarks.EyeLeftBottom.Y));
+              (float)face.ParsedFace.FaceLandmarks.EyeLeftBottom.Y));
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightBottom.X,
                 (float)face.ParsedFace.FaceLandmarks.EyeRightBottom.Y));
@@ -74,6 +64,39 @@ namespace StartFaceAligner.FaceSmarts
                 (float)face.ParsedFace.FaceLandmarks.EyebrowRightOuter.Y));
 
 
+            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipTop.X,
+            //  (float)face.ParsedFace.FaceLandmarks.UnderLipTop.Y));
+
+            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipBottom.X,
+            //    (float)face.ParsedFace.FaceLandmarks.UnderLipBottom.Y));
+
+            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UpperLipBottom.X,
+            //    (float)face.ParsedFace.FaceLandmarks.UpperLipBottom.Y));
+
+            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UpperLipTop.X,
+            //    (float)face.ParsedFace.FaceLandmarks.UpperLipTop.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.MouthRight.X,
+                (float)face.ParsedFace.FaceLandmarks.MouthRight.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.MouthLeft.X,
+                (float)face.ParsedFace.FaceLandmarks.MouthLeft.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left,
+                (float)face.ParsedFace.FaceRectangle.Top));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left + face.ParsedFace.FaceRectangle.Width,
+                (float)face.ParsedFace.FaceRectangle.Top + face.ParsedFace.FaceRectangle.Height));
+
+
+
+
+            return points;
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseTip.X,
+                 (float)face.ParsedFace.FaceLandmarks.NoseTip.Y));
+
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseLeftAlarTop.X,
                 (float)face.ParsedFace.FaceLandmarks.NoseLeftAlarTop.Y));
@@ -95,8 +118,62 @@ namespace StartFaceAligner.FaceSmarts
                 (float)face.ParsedFace.FaceLandmarks.NoseRootRight.Y));
 
 
+
+            return points;
+        }
+
+        public static List<PointF> GetPointsFeatures(ImageAligner.ProcessFaceData face)
+        {
+            List<PointF> points = new List<PointF>();
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.PupilLeft.X,
+                (float)face.ParsedFace.FaceLandmarks.PupilLeft.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.PupilRight.X,
+                (float)face.ParsedFace.FaceLandmarks.PupilRight.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeLeftBottom.X,
+              (float)face.ParsedFace.FaceLandmarks.EyeLeftBottom.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightBottom.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeRightBottom.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightOuter.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeRightOuter.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeLeftOuter.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeLeftOuter.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeLeftInner.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeLeftInner.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeLeftTop.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeLeftTop.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightTop.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeRightTop.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyeRightInner.X,
+                (float)face.ParsedFace.FaceLandmarks.EyeRightInner.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyebrowLeftInner.X,
+                (float)face.ParsedFace.FaceLandmarks.EyebrowLeftInner.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyebrowLeftOuter.X,
+                (float)face.ParsedFace.FaceLandmarks.EyebrowLeftOuter.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyebrowRightInner.X,
+                (float)face.ParsedFace.FaceLandmarks.EyebrowRightInner.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.EyebrowRightOuter.X,
+                (float)face.ParsedFace.FaceLandmarks.EyebrowRightOuter.Y));
+
+
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipTop.X,
-                (float)face.ParsedFace.FaceLandmarks.UnderLipTop.Y));
+              (float)face.ParsedFace.FaceLandmarks.UnderLipTop.Y));
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipBottom.X,
                 (float)face.ParsedFace.FaceLandmarks.UnderLipBottom.Y));
@@ -112,6 +189,45 @@ namespace StartFaceAligner.FaceSmarts
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.MouthLeft.X,
                 (float)face.ParsedFace.FaceLandmarks.MouthLeft.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left,
+                (float)face.ParsedFace.FaceRectangle.Top));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left + face.ParsedFace.FaceRectangle.Width,
+                (float)face.ParsedFace.FaceRectangle.Top + face.ParsedFace.FaceRectangle.Height));
+
+
+            return points;
+
+
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseTip.X,
+                 (float)face.ParsedFace.FaceLandmarks.NoseTip.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseLeftAlarTop.X,
+                (float)face.ParsedFace.FaceLandmarks.NoseLeftAlarTop.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRightAlarTop.X,
+                (float)face.ParsedFace.FaceLandmarks.NoseRightAlarTop.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseLeftAlarOutTip.X,
+                (float)face.ParsedFace.FaceLandmarks.NoseLeftAlarOutTip.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRightAlarOutTip.X,
+               (float)face.ParsedFace.FaceLandmarks.NoseRightAlarOutTip.Y));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRootLeft.X,
+                (float)face.ParsedFace.FaceLandmarks.NoseRootLeft.Y));
+
+
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseRootRight.X,
+                (float)face.ParsedFace.FaceLandmarks.NoseRootRight.Y));
+
+
+          
 
 
             return points;

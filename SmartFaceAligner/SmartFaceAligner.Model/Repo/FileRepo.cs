@@ -65,7 +65,16 @@ namespace SmartFaceAligner.Processor.Repo
         public async Task<bool> Write(string file, byte[] data)
         {
             var f = _getFile(file);
-            File.WriteAllBytes(f.FullName, data);
+            try
+            {
+                File.WriteAllBytes(f.FullName, data);
+
+            }
+            catch (Exception ex)
+            {
+                //erm... ignore?
+                return false;
+            }
             return true;
         }
 
@@ -181,11 +190,25 @@ namespace SmartFaceAligner.Processor.Repo
             return d.Exists;
         }
 
+        public async Task<bool> MoveFile(string source, string target)
+        {
+            var fSource = new FileInfo(source);
+
+            if (!fSource.Exists)
+            {
+                return false;
+            }
+
+            fSource.MoveTo(target);
+
+            return true;
+        }
+
         public async Task<bool> CopyFile(string source, string targetDirectory)
         {
             var fSource = new FileInfo(source);
             var fTarget = new DirectoryInfo(targetDirectory);
-
+            
             if (!fSource.Exists)
             {
                 return false;

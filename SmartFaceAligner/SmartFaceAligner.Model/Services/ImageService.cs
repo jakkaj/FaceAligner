@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Interfaces;
 using ImageMagick;
@@ -21,15 +22,18 @@ namespace SmartFaceAligner.Processor.Services
 
         private const int resize = 1280;
 
+        static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10, 10);
+        static readonly SemaphoreSlim _bigImageSemaphore = new SemaphoreSlim(1, 1);
+
         public ImageService(IFileRepo fileRepo, IFileCacheService cacheService)
         {
             _fileRepo = fileRepo;
             _cacheService = cacheService;
         }
 
-        public byte[] GetImageFileBytes(string fileName)
+        public byte[] GetImageFileBytes(string fileName, bool doResize, CancellationToken token = default(CancellationToken))
         {
-            var image = GetImageFile(fileName).Item1;
+            var image = GetImageFile(fileName, doResize, token).Item1;
 
             if (image == null)
             {
@@ -43,10 +47,25 @@ namespace SmartFaceAligner.Processor.Services
             }
         }
 
-        public (Image, double) GetImageFile(string fileName)
+        public (Image, double) GetImageFile(string fileName, bool doResize, CancellationToken token = default(CancellationToken))
         {
             try
             {
+                try
+                {
+                    _bigImageSemaphore.Wait(token);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    _bigImageSemaphore.Release();
+                    return default(ValueTuple<Image, double>);
+                }
+
+                if (token.IsCancellationRequested)
+                {
+                    return default(ValueTuple<Image, double>);
+                }
+
                 var image = Image.FromFile(fileName);
 
                 var flipper = ImageTools.GetExifOrientationData(image);
@@ -55,20 +74,28 @@ namespace SmartFaceAligner.Processor.Services
                 {
                     image.RotateFlip(flipper);
                 }
+                if (!doResize)
+                {
+                    return (image, 1);
+                }
 
                 var result = ImageTools.ResizeImage(image, resize);
 
                 return result;
             }
-            catch
+            catch(Exception ex)
             {
-
+                
+            }
+            finally
+            {
+                _bigImageSemaphore.Release();
             }
 
             return (null, 1);
         }
 
-        public async Task<string> GetThumbFile(string fileName)
+        public async Task<string> GetThumbFile(string fileName, CancellationToken token)
         {
             if (!await _fileRepo.FileExists(fileName))
             {
@@ -84,34 +111,56 @@ namespace SmartFaceAligner.Processor.Services
 
             try
             {
+                await _semaphore.WaitAsync(token);
+            }
+            catch (OperationCanceledException ex)
+            {
+                _semaphore.Release();
+                return null;
+            }
 
-                var image = Image.FromFile(fileName);
+            if (token.IsCancellationRequested)
+            {
+                return null;
+            }
 
-                var flipper = ImageTools.GetExifOrientationData(image);
+            try
+            {
 
-                var thum = image.GetThumbnailImage(100, 100, () => false, IntPtr.Zero);
-
-
-                if (flipper != RotateFlipType.RotateNoneFlipNone)
+                using (var image = Image.FromFile(fileName))
                 {
-                    thum.RotateFlip(flipper);
-                    //image.RotateFlip(flipper);
-                    //image.RemovePropertyItem(0x0112);
-                    //image.Save(fileName +"_flipped_.jpg");
-                }
+                    var flipper = ImageTools.GetExifOrientationData(image);
+
+                    using (var thum = image.GetThumbnailImage(100, 100, () => false, IntPtr.Zero))
+                    {
+                        if (flipper != RotateFlipType.RotateNoneFlipNone)
+                        {
+                            thum.RotateFlip(flipper);
+                        }
+
+                        using (var ms = new MemoryStream())
+                        {
+                            thum.Save(ms, ImageFormat.Jpeg);
+                            var b = ms.ToArray();
+                            if (token.IsCancellationRequested)
+                            {
+                                return null;
+                            }
+                            return await _cacheService.SaveCache(fileName, Constants.Cache.Thumbnail, b);
+                        }
+                    }
 
 
-                using (var ms = new MemoryStream())
-                {
-                    thum.Save(ms, ImageFormat.Jpeg);
-                    var b = ms.ToArray();
-                    
-                    return await _cacheService.SaveCache(fileName, Constants.Cache.Thumbnail, b);
+                     
                 }
             }
             catch
             {
-                
+
+            }
+            finally
+            {
+                _semaphore.Release();
             }
 
             return "";

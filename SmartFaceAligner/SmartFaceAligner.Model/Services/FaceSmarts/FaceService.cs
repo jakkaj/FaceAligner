@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Contracts.Entity;
 using Contracts.Interfaces;
@@ -23,6 +24,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
         private readonly ICognitiveServicesFaceService _cognitiveFaceService;
         private readonly IFileRepo _fileRepo;
         private readonly ILogService _logService;
+        private readonly IImageService _imageService;
 
         public FaceService(FaceServiceClient faceServiceClient,
             IFaceDataService faceDataService,
@@ -30,7 +32,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             IProjectService projectService,
             ICognitiveServicesFaceService cognitiveFaceService,
             IFileRepo fileRepo,
-            ILogService logService)
+            ILogService logService, IImageService imageService)
         {
             _faceServiceClient = faceServiceClient;
             _faceDataService = faceDataService;
@@ -39,19 +41,44 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             _cognitiveFaceService = cognitiveFaceService;
             _fileRepo = fileRepo;
             _logService = logService;
+            _imageService = imageService;
         }
+
+        private int _counter = 0;
 
         public async Task PrepAlign(Project p)
         {
+            _counter = 0;
             await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.Aligned);
+        }
+
+        public async Task PostAlign(Project p)
+        {
+            var c = 0;
+            var folder = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Aligned);
+
+            var files = await _fileRepo.GetFiles(folder.FolderPath);
+
+            foreach (var f in files)
+            {
+                await _fileRepo.MoveFile(f, await _fileRepo.GetParentFolder(f) + _fileRepo.GetPathSeparator() + $"img{c.ToString("D3")}.jpg");
+                c++;
+            }
         }
 
         public async Task Align(Project p, FaceData faceData1, FaceData faceData2, Face face1, Face face2)
         {
-
             var folderSave = await _fileManagementService.GetFolder(p, ProjectFolderTypes.Aligned);
 
-
+            if (faceData1.FileName == faceData2.FileName)
+            {
+                Interlocked.Increment(ref _counter);
+                var imgOriginal=  _imageService.GetImageFileBytes(faceData1.FileName, false);
+                await _fileRepo.Write(
+                await _fileRepo.GetOffsetFile(folderSave.FolderPath, $"temp{_counter.ToString("D3")}.jpg"), _crop(imgOriginal, face1));
+                return;
+            }
+            
 
             if (face1 == null || face2 == null)
             {
@@ -67,13 +94,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
             var img1 = await _fileRepo.ReadBytes(faceData1.FileName);
             var img2 = await _fileRepo.ReadBytes(faceData2.FileName);
-
-            var fSource = await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData1.FileName));
-
-            if (!await _fileRepo.FileExists(fSource))
-            {
-                await _fileRepo.Write(fSource, _crop(img1, face1));
-            }
+           
 
             var result = await a.AlignImages(img1, img2, face1, face2);
 
@@ -82,8 +103,10 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                 return;
             }
 
+            Interlocked.Increment(ref _counter);
+
             await _fileRepo.Write(
-                await _fileRepo.GetOffsetFile(folderSave.FolderPath, Path.GetFileName(faceData2.FileName)), _crop(result, face1));
+                await _fileRepo.GetOffsetFile(folderSave.FolderPath, $"temp{_counter.ToString("D3")}.jpg"), _crop(result, face1));
         }
 
         byte[] _crop(byte[] img, Face face)
@@ -99,6 +122,18 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     Y = face.FaceRectangle.Top - 75
 
                 };
+
+                //FFMPEG doesnt like non-even dimensions
+                if (cropRect.Height % 2 != 0)
+                {
+                    cropRect.Height = cropRect.Height + 1;
+                }
+
+
+                if (cropRect.Width % 2 != 0)
+                {
+                    cropRect.Width = cropRect.Width + 1;
+                }
 
 
                 Bitmap src = Image.FromStream(ms) as Bitmap;

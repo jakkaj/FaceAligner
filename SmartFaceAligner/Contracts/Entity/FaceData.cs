@@ -11,7 +11,8 @@ namespace Contracts.Entity
         public bool HasBeenScanned { get; set; }
         public Guid? PersistedFaceId { get; set; }
         public ParsedFace[] ParsedFaces { get; set; }
-        
+        public DateTime DateTaken { get; set; }
+
         [JsonIgnore]
         public Project Project { get; set; }
     }

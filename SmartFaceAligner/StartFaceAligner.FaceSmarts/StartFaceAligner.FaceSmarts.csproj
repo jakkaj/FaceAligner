@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exif\ExifReader.cs" />
+    <Compile Include="Exif\ExifTags.cs" />
     <Compile Include="FaceHomography.cs" />
     <Compile Include="HomographyMatrix.cs" />
     <Compile Include="ImageAligner.cs" />
