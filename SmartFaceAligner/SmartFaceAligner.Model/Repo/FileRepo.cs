@@ -13,7 +13,7 @@ using XamlingCore.Portable.Contract.Entities;
 namespace SmartFaceAligner.Processor.Repo
 {
     public class FileRepo : IFileRepo
-    {  
+    {
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
         private static object _writeLock = new object();
@@ -30,10 +30,14 @@ namespace SmartFaceAligner.Processor.Repo
             var hashSource = f.Length.ToString() + f.Name;
 
             var hMade = _createSHA1(Encoding.UTF8.GetBytes(hashSource));
-           
+
             return hMade;
         }
 
+        public string GetHash(byte[] bytes)
+        {
+            return _createSHA1(bytes);
+        }
 
         string _createSHA1(byte[] bytes)
         {
@@ -85,7 +89,7 @@ namespace SmartFaceAligner.Processor.Repo
             {
                 File.WriteAllText(f.FullName, text);
             }
-            
+
             return true;
         }
 
@@ -208,7 +212,7 @@ namespace SmartFaceAligner.Processor.Repo
         {
             var fSource = new FileInfo(source);
             var fTarget = new DirectoryInfo(targetDirectory);
-            
+
             if (!fSource.Exists)
             {
                 return false;

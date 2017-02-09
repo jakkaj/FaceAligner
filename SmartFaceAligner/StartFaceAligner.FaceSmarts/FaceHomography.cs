@@ -64,17 +64,17 @@ namespace StartFaceAligner.FaceSmarts
                 (float)face.ParsedFace.FaceLandmarks.EyebrowRightOuter.Y));
 
 
-            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipTop.X,
-            //  (float)face.ParsedFace.FaceLandmarks.UnderLipTop.Y));
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipTop.X,
+              (float)face.ParsedFace.FaceLandmarks.UnderLipTop.Y));
 
-            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipBottom.X,
-            //    (float)face.ParsedFace.FaceLandmarks.UnderLipBottom.Y));
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UnderLipBottom.X,
+                (float)face.ParsedFace.FaceLandmarks.UnderLipBottom.Y));
 
-            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UpperLipBottom.X,
-            //    (float)face.ParsedFace.FaceLandmarks.UpperLipBottom.Y));
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UpperLipBottom.X,
+                (float)face.ParsedFace.FaceLandmarks.UpperLipBottom.Y));
 
-            //points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UpperLipTop.X,
-            //    (float)face.ParsedFace.FaceLandmarks.UpperLipTop.Y));
+            points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.UpperLipTop.X,
+                (float)face.ParsedFace.FaceLandmarks.UpperLipTop.Y));
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.MouthRight.X,
                 (float)face.ParsedFace.FaceLandmarks.MouthRight.Y));
@@ -92,7 +92,7 @@ namespace StartFaceAligner.FaceSmarts
 
 
 
-            return points;
+            
 
             points.Add(new PointF((float)face.ParsedFace.FaceLandmarks.NoseTip.X,
                  (float)face.ParsedFace.FaceLandmarks.NoseTip.Y));
@@ -198,7 +198,7 @@ namespace StartFaceAligner.FaceSmarts
                 (float)face.ParsedFace.FaceRectangle.Top + face.ParsedFace.FaceRectangle.Height));
 
 
-            return points;
+            
 
 
 

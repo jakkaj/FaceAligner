@@ -12,6 +12,7 @@ using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
 using SmartFaceAligner.Processor.Entity;
 using StartFaceAligner.FaceSmarts;
+using XamlingCore.NET.Implementations;
 
 namespace SmartFaceAligner.Processor.Services.FaceSmarts
 {
@@ -46,8 +47,11 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
         private int _counter = 0;
 
+        private List<string> _hashCache = new List<string>();
+
         public async Task PrepAlign(Project p)
         {
+            _hashCache.Clear();
             _counter = 0;
             await _fileManagementService.DeleteFiles(p, ProjectFolderTypes.Aligned);
         }
@@ -94,7 +98,16 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
             var img1 = await _fileRepo.ReadBytes(faceData1.FileName);
             var img2 = await _fileRepo.ReadBytes(faceData2.FileName);
-           
+
+
+            var hash = _fileRepo.GetHash(img2);
+
+            if (_hashCache.Contains(hash))
+            {
+                return;
+            }
+
+            _hashCache.Add(hash);
 
             var result = await a.AlignImages(img1, img2, face1, face2);
 
@@ -185,6 +198,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     }
 
                     _logService.Log($"Uploading: {len} bytes");
+
 
 
                     using (var stream = await _fileRepo.ReadStream(fUse))

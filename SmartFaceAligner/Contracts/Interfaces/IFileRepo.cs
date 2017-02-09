@@ -31,5 +31,6 @@ namespace Contracts.Interfaces
         Task DeleteFile(string path);
         Task<bool> FolderExists(string folderPath);
         Task<bool> MoveFile(string source, string target);
+        string GetHash(byte[] bytes);
     }
 }
