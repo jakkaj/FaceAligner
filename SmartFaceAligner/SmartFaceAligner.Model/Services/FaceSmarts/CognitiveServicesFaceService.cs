@@ -35,7 +35,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             _imageService = imageService;
         }
 
-        public async Task<List<ParsedFace>> ParseFace(Project p, Stream image, Face[] parsedFacesExisting)
+        public async Task<List<ParsedFace>> ParseFace(Project p, byte[] image, Face[] parsedFacesExisting)
         {
             Face[] parsedFace = parsedFacesExisting;
 
@@ -45,7 +45,9 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             {
                 try
                 {
-                    parsedFace = await _faceServiceClient.DetectAsync(image, true, true,
+                    using (var ms = new MemoryStream(image))
+                    {
+                        parsedFace = await _faceServiceClient.DetectAsync(ms, true, true,
                         new FaceAttributeType[]
                         {
                             FaceAttributeType.Gender,
@@ -55,6 +57,8 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                             FaceAttributeType.HeadPose,
                             FaceAttributeType.FacialHair,
                         });
+                    }
+                    
                 }
                 catch (FaceAPIException ex)
                 {

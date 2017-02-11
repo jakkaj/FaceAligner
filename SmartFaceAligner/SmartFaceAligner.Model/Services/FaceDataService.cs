@@ -30,7 +30,9 @@ namespace SmartFaceAligner.Processor.Services
 
         private IFileRepo _fileRepo { get; }
 
-        static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+      //  static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+            static readonly ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
 
         public FaceDataService(IFileRepo fileRepo, IFileManagementService fileManagementService, ILogService logService)
         {
@@ -43,6 +45,7 @@ namespace SmartFaceAligner.Processor.Services
         {
             if (!_faceData.ContainsKey(p.Id))
             {
+                _locker.EnterReadLock();
                 var file = await _fileManagementService.GetSubFile(p, ProjectFolderTypes.Data, Constants.Cache.FaceData);
 
                 if (await _fileRepo.FileExists(file))
@@ -54,6 +57,7 @@ namespace SmartFaceAligner.Processor.Services
                 {
                     _faceData[p.Id] = new List<FaceData>();
                 }
+                _locker.ExitReadLock();
             }
 
             return _faceData[p.Id];
@@ -75,7 +79,8 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task SetFaceData(FaceData f, bool save = true)
         {
-            await _semaphore.WaitAsync();
+            _locker.EnterWriteLock();
+            
             var list = await _init(f.Project);
 
             var current = list.FirstOrDefault(_ => _.Hash == f.Hash);
@@ -90,7 +95,7 @@ namespace SmartFaceAligner.Processor.Services
                 await Save(f.Project);
             }
 
-            _semaphore.Release();
+            _locker.ExitWriteLock();
         }
 
         bool _hasFileHash(Project p, string hash)
@@ -158,19 +163,20 @@ namespace SmartFaceAligner.Processor.Services
             {
                 return null;
             }
-            await _semaphore.WaitAsync();
+            _locker.EnterReadLock();
             var existing = list.FirstOrDefault(_ => _.Hash == hash);
-            _semaphore.Release();
+           _locker.ExitReadLock();
             if (existing != null)
             {
                 if (existing.DateTaken == DateTime.MinValue)
                 {
                     existing.DateTaken = _getExifDateTime(fileName);
+                    await SetFaceData(existing, false);
                 }
 
                 existing.Project = p;
                 existing.FileName = fileName;
-                await SetFaceData(existing, false);
+               
                 return existing;
             }
 

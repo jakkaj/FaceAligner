@@ -77,12 +77,12 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             if (faceData1.FileName == faceData2.FileName)
             {
                 Interlocked.Increment(ref _counter);
-                var imgOriginal=  _imageService.GetImageFileBytes(faceData1.FileName, false);
+                var imgOriginal = _imageService.GetImageFileBytes(faceData1.FileName, false);
                 await _fileRepo.Write(
                 await _fileRepo.GetOffsetFile(folderSave.FolderPath, $"temp{_counter.ToString("D3")}.jpg"), _crop(imgOriginal, face1));
                 return;
             }
-            
+
 
             if (face1 == null || face2 == null)
             {
@@ -207,7 +207,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                             return (false, 0);
                         }
                     }
-                  
+
 
                     if (parsedFaces == null)
                     {
@@ -218,23 +218,19 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                         _logService.Log($"No need to reupload: {face.FileName}");
                     }
 
-                   
+                    var bytes = await _fileRepo.ReadBytes(fUse);
 
-                    using (var stream = await _fileRepo.ReadStream(fUse))
+                    var fResult = await _cognitiveFaceService.ParseFace(p, bytes, parsedFaces);
+
+                    if (fResult != null)
                     {
-                        
 
-                        var fResult = await _cognitiveFaceService.ParseFace(p, stream, parsedFaces);
-
-                        if (fResult != null)
-                        {
-
-                            face.ParsedFaces = fResult.ToArray();
-                            _adjustImageLandmarks(face.ParsedFaces, imgResizeData.Item2);
-                        }
-
-                        face.HasBeenScanned = true;
+                        face.ParsedFaces = fResult.ToArray();
+                        _adjustImageLandmarks(face.ParsedFaces, imgResizeData.Item2);
                     }
+
+                    face.HasBeenScanned = true;
+
 
                     //if (face.ParsedFaces != null)
                     //{

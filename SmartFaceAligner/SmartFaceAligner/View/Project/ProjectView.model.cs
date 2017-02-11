@@ -510,7 +510,7 @@ namespace SmartFaceAligner.View.Project
             try
             {
                 _alignCancel = new CancellationTokenSource();
-                await tasks.Parallel(12, _alignCancel.Token);
+                await tasks.Parallel(8, _alignCancel.Token);
 
                 await Load();
             }
