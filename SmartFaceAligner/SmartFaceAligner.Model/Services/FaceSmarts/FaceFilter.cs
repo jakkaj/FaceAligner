@@ -24,7 +24,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             return ((ageCompare < maxAgeGap && ageCompare > 0) || (ageCompare2 < maxAgeGap && ageCompare2 > 0)) && currentFace.FaceAttributes.Gender == sex;
         }
 
-        private static int angleLimit = 30;
+        private static int angleLimit = 35;
 
         static bool _isGood(double compare, double item)
         {
