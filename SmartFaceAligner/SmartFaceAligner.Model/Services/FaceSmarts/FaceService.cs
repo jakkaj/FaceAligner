@@ -198,14 +198,14 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
                     if (parsedFaces == null)
                     {
-                        var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
-                        if (!resultLocalCheck)
-                        {
-                            face.HasBeenScanned = true;
-                            await _faceDataService.SetFaceData(face);
-                            _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
-                            return (false, 0);
-                        }
+                        //var resultLocalCheck = LocalFaceDetector.HasFace(fUse);
+                        //if (!resultLocalCheck)
+                        //{
+                        //    face.HasBeenScanned = true;
+                        //    await _faceDataService.SetFaceData(face);
+                        //    _logService.Log($"Skipping becasue no face detected local: {face.FileName}");
+                        //    return (false, 0);
+                        //}
                     }
 
 

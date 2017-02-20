@@ -168,14 +168,14 @@ namespace SmartFaceAligner.Processor.Services
            _locker.ExitReadLock();
             if (existing != null)
             {
+                existing.Project = p;
+                existing.FileName = fileName;
+
                 if (existing.DateTaken == DateTime.MinValue)
                 {
                     existing.DateTaken = _getExifDateTime(fileName);
                     await SetFaceData(existing, false);
                 }
-
-                existing.Project = p;
-                existing.FileName = fileName;
                
                 return existing;
             }

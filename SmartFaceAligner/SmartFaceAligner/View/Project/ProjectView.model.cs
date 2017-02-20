@@ -194,7 +194,7 @@ namespace SmartFaceAligner.View.Project
                 return;
             }
 
-            _alignCancel = new CancellationTokenSource();
+           
             var selectedPeople = _selectedPeople();
 
             var currentIdentity = selectedPeople.FirstOrDefault();
@@ -214,7 +214,9 @@ namespace SmartFaceAligner.View.Project
                 return;
             }
 
-             async Task FilterLocal(FaceData faceData)
+            _alignCancel = new CancellationTokenSource();
+
+            async Task FilterLocal(FaceData faceData)
             {
                 var thisAlignFace = faceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity)?.Face;
                 if (thisAlignFace == null)
