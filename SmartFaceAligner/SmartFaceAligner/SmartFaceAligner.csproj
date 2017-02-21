@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="MainWindowView.model.cs" />
     <Compile Include="Messages\ViewItemMessage.cs" />
+    <Compile Include="UtilVm\FaceFilterViewModel.cs" />
     <Compile Include="Util\Bool2Vis.cs" />
     <Compile Include="Util\IDisplayUpdates.cs" />
     <Compile Include="Util\RotationFlipper.cs" />

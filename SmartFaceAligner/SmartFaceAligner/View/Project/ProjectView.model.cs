@@ -23,6 +23,7 @@ using System.Threading;
 using Microsoft.ProjectOxford.Face.Contract;
 using SmartFaceAligner.Processor;
 using SmartFaceAligner.Processor.Entity;
+using SmartFaceAligner.UtilVm;
 
 namespace SmartFaceAligner.View.Project
 {
@@ -48,13 +49,7 @@ namespace SmartFaceAligner.View.Project
         public ICommand AddNewIdentityGroupCommand => Command(_addNewIdentityGroup);
         public ICommand TrainCommand => Command(_train);
 
-       
-
-        public ICommand FilterMalesCommand => Command(_filterMales);
-        public ICommand FilterFemalesCommand => Command(_filterFemales);
-        public ICommand FilterFacesCommand => Command(_filterByFaces);
-        public ICommand FilterSmilesCommand => Command(_filterBySmiles);
-        public ICommand FilterByNotSmilesCommand => Command(_filterByNotSmiles);
+        public FaceFilterViewModel Filter { get; set; }
 
         public ICommand DetectFacesCommand => Command(_detectFaces);
         public ICommand RunFilterCommand => Command(_runFilter);
@@ -67,9 +62,6 @@ namespace SmartFaceAligner.View.Project
         private CancellationTokenSource _alignCancel;
 
         string _currentLog;
-
-        
-        
 
         public FaceItemViewModel SelectedFace
         {
@@ -206,8 +198,8 @@ namespace SmartFaceAligner.View.Project
 
             await _faceService.PrepAlign(Project);
 
-
             var alignFace = SelectedFace.FaceData.ParsedFaces.FirstOrDefault(_filterParsedFaceByIdentity);
+
             var a2 = alignFace;
             if (a2 == null)
             {
@@ -228,7 +220,7 @@ namespace SmartFaceAligner.View.Project
 
             var tasks = new Queue<Func<Task>>();
 
-            foreach (var f in FaceItems.Where(_filterFaceItemVmByIdentity))
+            foreach (var f in FaceItems.Where(_filterRunner))
             {
                 tasks.Enqueue(() => FilterLocal(f.FaceData));
             }
@@ -269,9 +261,8 @@ namespace SmartFaceAligner.View.Project
             return face.IdentityPerson != null && selectedId.Contains(face.IdentityPerson.PersonId);
         }
 
-        bool _filterFaceItemVmByIdentity(FaceItemViewModel vm)
+        bool _filterRunner(FaceItemViewModel vm)
         {
-
             if (vm.FaceData == null || vm.FaceData.ParsedFaces == null)
             {
                 return false;
@@ -279,21 +270,125 @@ namespace SmartFaceAligner.View.Project
 
             var selectedPeople = _selectedPeople();
 
-            var selectedId = selectedPeople.Select(_ => _.PersonId).ToArray();
-
-            bool containsAll = true;
-
-            foreach (var id in selectedId)
+            if (selectedPeople.Count != 0)
             {
-                var any = vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson != null && _.IdentityPerson.PersonId == id);
-                if (!any)
+                var selectedId = selectedPeople.Select(_ => _.PersonId).ToArray();
+
+                bool containsAll = true;
+
+                foreach (var id in selectedId)
                 {
-                    containsAll = false;
-                    break;
+                    var any = vm.FaceData.ParsedFaces.Any(_ => _.IdentityPerson != null && _.IdentityPerson.PersonId == id);
+                    if (!any)
+                    {
+                        containsAll = false;
+                        break;
+                    }
+                }
+
+                if (!containsAll)
+                {
+                    return false;
                 }
             }
 
-            return containsAll;
+            //this contains all people or there were none selected. 
+
+            var filterBase = vm.FaceData;
+
+            if (Filter.Faces)
+            {
+                if (filterBase.ParsedFaces == null)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.Females)
+            {
+                var filtered = filterBase.ParsedFaces.Any(_ => _.Face.FaceAttributes.Gender == Constants.Filters.Female);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.Males)
+            {
+                var filtered = filterBase.ParsedFaces.Any(_ => _.Face.FaceAttributes.Gender == Constants.Filters.Male);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.Goggles)
+            {
+                var filtered = filterBase.ParsedFaces.Any
+                    (_ => _.Face.FaceAttributes.Glasses == 
+                    Glasses.SwimmingGoggles);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.NoGlasses)
+            {
+                var filtered = filterBase.ParsedFaces.Any
+                    (_ => _.Face.FaceAttributes.Glasses ==
+                    Glasses.NoGlasses);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.ReadingGlasses)
+            {
+                var filtered = filterBase.ParsedFaces.Any
+                    (_ => _.Face.FaceAttributes.Glasses ==
+                    Glasses.ReadingGlasses);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.Sunglasses)
+            {
+                var filtered = filterBase.ParsedFaces.Any
+                    (_ => _.Face.FaceAttributes.Glasses ==
+                    Glasses.Sunglasses);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.NotSmiling)
+            {
+                var filtered = filterBase.ParsedFaces.Any
+                    (_ => _.Face.FaceAttributes.Smile <= .3);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+            if (Filter.Smiling)
+            {
+                var filtered = filterBase.ParsedFaces.Any
+                    (_ => _.Face.FaceAttributes.Smile >= .7);
+                if (!filtered)
+                {
+                    return false;
+                }
+            }
+
+
+            return true;
+
         }
 
         async void _clearFilter()
@@ -309,10 +404,7 @@ namespace SmartFaceAligner.View.Project
             await Load();
         }
 
-        public ICommand FilterByReadingGlassesCommand => Command(_filterByReadingGlasses);
-        public ICommand FilterBySunGlassesCommand => Command(_filterBySunGlasses);
-        public ICommand FilterByNoGlassesCommand => Command(_filterByNoGlasses);
-        public ICommand FilterByGogglesCommand => Command(_filterBySwimmingGoggles);
+       
 
         public string CurrentLog
         {
@@ -428,14 +520,12 @@ namespace SmartFaceAligner.View.Project
             filtered.ForEach(_ => FaceItems.Add(_));
         }
 
-
-
         private async void _runFilter()
         {
             await Load();
             var fTemp = FaceItems.ToList();
 
-            var filtered = fTemp.Where(_filterFaceItemVmByIdentity).ToList();
+            var filtered = fTemp.Where(_filterRunner).ToList();
 
             FaceItems.Clear();
 
@@ -555,9 +645,17 @@ namespace SmartFaceAligner.View.Project
 
         public override Task NavigatedTo(bool isBack)
         {
+            Filter.PropertyChanged -= Filter_PropertyChanged;
+            Filter.PropertyChanged += Filter_PropertyChanged;
+            
             Load();
             _logService.Logged += _logService_Logged;
             return base.NavigatedTo(isBack);
+        }
+
+        private void Filter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            _runFilter();   
         }
 
         public override Task NavigatingAway(bool isBack)

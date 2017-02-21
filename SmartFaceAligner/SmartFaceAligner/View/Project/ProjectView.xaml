@@ -45,46 +45,56 @@
                 <StackPanel HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Faces" Command="{Binding FilterFacesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.Faces, Mode=TwoWay}"/>
+                        <TextBlock Text="Faces" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Smiles" Command="{Binding FilterSmilesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.Smiling, Mode=TwoWay}"/>
+                        <TextBlock Text="Smiles" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
+                        
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Not Smiling" Command="{Binding FilterByNotSmilesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.NotSmiling, Mode=TwoWay}"/>
+                        <TextBlock Text="Not Smiling" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Females" Command="{Binding FilterFemalesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.Females, Mode=TwoWay}"/>
+                        <TextBlock Text="Females" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Males" Command="{Binding FilterMalesCommand}"  Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.Males, Mode=TwoWay}"/>
+                        <TextBlock Text="Males" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Reading Glasses" Command="{Binding FilterByReadingGlassesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.ReadingGlasses, Mode=TwoWay}"/>
+                        <TextBlock Text="Reading Glasses" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
 
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Sun Glasses" Command="{Binding FilterBySunGlassesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="No Glasses" Command="{Binding FilterByNoGlassesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.Sunglasses, Mode=TwoWay}"/>
+                        <TextBlock Text="Sunglasses" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
-                        <Button Content="Goggles" Command="{Binding FilterByGogglesCommand}" Style="{StaticResource ButtonStyleSmall}" Foreground="White"/>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.NoGlasses, Mode=TwoWay}"/>
+                        <TextBlock Text="No Glasses" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B8;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource TextStyleSmall}" VerticalAlignment="Center"></TextBlock>
+                        <CheckBox VerticalAlignment="Center" IsChecked="{Binding Filter.Goggles, Mode=TwoWay}"/>
+                        <TextBlock Text="Goggles" Style="{StaticResource TextStyleExSmall}" VerticalAlignment="Center"/>
                     </StackPanel>
 
 
