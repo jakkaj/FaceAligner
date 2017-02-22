@@ -79,23 +79,33 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task SetFaceData(FaceData f, bool save = true)
         {
-            _locker.EnterWriteLock();
+            
             
             var list = await _init(f.Project);
 
-            var current = list.FirstOrDefault(_ => _.Hash == f.Hash);
-            if (current != null)
+            if (!list.Contains(f))
             {
-                list.Remove(current);
-            }
+                var current = list.FirstOrDefault(_ => _.Hash == f.Hash);
+                if (current != null)
+                {
+                    _locker.EnterWriteLock();
+                    list.Remove(current);
+                    _locker.ExitWriteLock();
+                }
 
-            list.Add(f);
+                _locker.EnterWriteLock();
+                list.Add(f);
+                _locker.ExitWriteLock();
+            }
+            
             if (save)
             {
+                _locker.EnterWriteLock();
                 await Save(f.Project);
+                _locker.ExitWriteLock();
             }
 
-            _locker.ExitWriteLock();
+           
         }
 
         bool _hasFileHash(Project p, string hash)
@@ -159,10 +169,10 @@ namespace SmartFaceAligner.Processor.Services
 
             var hash = await _fileRepo.GetHash(fileName);
 
-            if (_hasFileHash(p, fileName))
-            {
-                return null;
-            }
+            //if (_hasFileHash(p, fileName))
+            //{
+            //    return null;
+            //}
             _locker.EnterReadLock();
             var existing = list.FirstOrDefault(_ => _.Hash == hash);
            _locker.ExitReadLock();

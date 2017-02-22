@@ -220,7 +220,7 @@ namespace SmartFaceAligner.View.Project
 
             var tasks = new Queue<Func<Task>>();
 
-            foreach (var f in FaceItems.Where(_filterRunner))
+            foreach (var f in FaceItems.Where(_filterRunnerAnySelected))
             {
                 tasks.Enqueue(() => FilterLocal(f.FaceData));
             }
@@ -261,6 +261,38 @@ namespace SmartFaceAligner.View.Project
             return face.IdentityPerson != null && selectedId.Contains(face.IdentityPerson.PersonId);
         }
 
+        bool _filterRunnerAnySelected(FaceItemViewModel vm)
+        {
+            if (vm.FaceData == null || vm.FaceData.ParsedFaces == null)
+            {
+                return false;
+            }
+
+            var selectedPeople = _selectedPeople();
+
+            if (selectedPeople.Count != 0)
+            {
+                var selectedId = selectedPeople.Select(_ => _.PersonId).ToArray();
+
+                var faceAny = false;
+                foreach (var item in vm.FaceData.ParsedFaces)
+                {
+                    if (item.IdentityPerson != null && selectedId.Contains(item.IdentityPerson.PersonId))
+                    {
+                        faceAny = true;
+                        break;
+                    }
+                }
+
+                if (!faceAny)
+                {
+                    return false;
+                }
+            }
+
+            return _faceFilterProperties(vm);
+        }
+
         bool _filterRunner(FaceItemViewModel vm)
         {
             if (vm.FaceData == null || vm.FaceData.ParsedFaces == null)
@@ -294,6 +326,12 @@ namespace SmartFaceAligner.View.Project
 
             //this contains all people or there were none selected. 
 
+
+            return _faceFilterProperties(vm);
+        }
+
+        bool _faceFilterProperties(FaceItemViewModel vm)
+        {
             var filterBase = vm.FaceData;
 
             if (Filter.Faces)
@@ -325,7 +363,7 @@ namespace SmartFaceAligner.View.Project
             if (Filter.Goggles)
             {
                 var filtered = filterBase.ParsedFaces.Any
-                    (_ => _.Face.FaceAttributes.Glasses == 
+                    (_ => _.Face.FaceAttributes.Glasses ==
                     Glasses.SwimmingGoggles);
                 if (!filtered)
                 {
@@ -388,7 +426,6 @@ namespace SmartFaceAligner.View.Project
 
 
             return true;
-
         }
 
         async void _clearFilter()

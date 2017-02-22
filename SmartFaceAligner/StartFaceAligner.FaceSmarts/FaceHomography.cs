@@ -202,7 +202,11 @@ namespace StartFaceAligner.FaceSmarts
                 (float)face.ParsedFace.FaceRectangle.Top + face.ParsedFace.FaceRectangle.Height));
 
 
-            
+            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left,
+               (float)face.ParsedFace.FaceRectangle.Top + face.ParsedFace.FaceRectangle.Height));
+
+            points.Add(new PointF((float)face.ParsedFace.FaceRectangle.Left + face.ParsedFace.FaceRectangle.Width,
+                (float)face.ParsedFace.FaceRectangle.Top));
 
 
 

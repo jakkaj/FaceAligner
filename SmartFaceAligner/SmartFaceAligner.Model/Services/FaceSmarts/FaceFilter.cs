@@ -7,6 +7,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
 
         public static bool SimpleCheck(Face originalFace, Face currentFace, double maxAgeGap = 3)
         {
+            return true;
             var post = currentFace.FaceAttributes.HeadPose;
             var orig = originalFace.FaceAttributes.HeadPose;
 
@@ -24,10 +25,11 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
             return ((ageCompare < maxAgeGap && ageCompare > 0) || (ageCompare2 < maxAgeGap && ageCompare2 > 0)) && currentFace.FaceAttributes.Gender == sex;
         }
 
-        private static int angleLimit = 35;
+        private static int angleLimit = 100;
 
         static bool _isGood(double compare, double item)
         {
+            return true;
             if (compare > item && compare > item + angleLimit)
             {
                 return false;

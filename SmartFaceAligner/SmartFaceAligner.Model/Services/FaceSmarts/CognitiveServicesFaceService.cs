@@ -173,7 +173,7 @@ namespace SmartFaceAligner.Processor.Services.FaceSmarts
                     try
                     {
                         var image = _imageService.GetImageFileBytes(face.FileName, true);
-
+                        File.WriteAllBytes("c:\\temp\\test.jpg", image);
                         using (var stream = new MemoryStream(image))
                         {
 

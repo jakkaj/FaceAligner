@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SmartFaceAligner.View.Face"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Width="100">
-        <Image Width="100" Height="100" Source="{Binding Thumbnail}"></Image>
+    <Grid Width="125">
+        <Image Width="125" Height="100" Source="{Binding Thumbnail}" Stretch="UniformToFill"></Image>
     </Grid>
 </UserControl>

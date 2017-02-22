@@ -73,6 +73,7 @@ namespace SmartFaceAligner.Processor.Services
                 if (flipper != RotateFlipType.RotateNoneFlipNone)
                 {
                     image.RotateFlip(flipper);
+                    image.RemovePropertyItem(0x0112);
                 }
                 if (!doResize)
                 {
