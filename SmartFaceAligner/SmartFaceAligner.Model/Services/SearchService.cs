@@ -27,7 +27,7 @@ namespace SmartFaceAligner.Processor.Services
 
         public async Task<BingSearchResult> SearchImages(string image, int count, int offset = 0)
         {
-            var result = await _bingSearch.SearchWithHttpMessagesAsync(image, count, offset, null, "Strict", "Share",
+            var result = await _bingSearch.SearchWithHttpMessagesAsync(image, count, offset, null, "Strict", null,
                 _configService.BingSearchSubscriptionKey,
                 _configService.BingSearchSubscriptionKey, null,
                 default(CancellationToken));

@@ -34,7 +34,8 @@ namespace SmartFaceAligner.Processor
             {
                 token.ThrowIfCancellationRequested();
                 var q = queue.Dequeue();
-                await Task.Run(()=>q());
+                //await q();
+                await Task.Run(() => q(), token);
             }
         }
     }

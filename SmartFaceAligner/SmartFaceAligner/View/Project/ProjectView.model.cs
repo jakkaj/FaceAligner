@@ -37,8 +37,17 @@ namespace SmartFaceAligner.View.Project
 
         public Contracts.Entity.Project Project { get; set; }
 
-        public ObservableCollection<FaceItemViewModel> FaceItems { get; private set; }
-        public ObservableCollection<RecognisePersonConfigViewModel> IdentityPeople {get;private set;}
+        public ObservableCollection<FaceItemViewModel> FaceItems
+        {
+            get { return _faceItems; }
+            set
+            {
+                _faceItems = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<RecognisePersonConfigViewModel> IdentityPeople { get; private set; }
         public IList<FaceItemViewModel> SelectedItems { get; set; }
 
         private FaceItemViewModel _selectedItem;
@@ -63,6 +72,12 @@ namespace SmartFaceAligner.View.Project
 
         string _currentLog;
 
+        private long _totalBytesSent = 0;
+        private int _sentToServer = 0;
+        private int _notSentToServer = 0;
+
+        private ObservableCollection<FaceItemViewModel> _faceItems;
+
         public FaceItemViewModel SelectedFace
         {
             get { return _selectedFace; }
@@ -85,7 +100,7 @@ namespace SmartFaceAligner.View.Project
 
         public ProjectViewModel(IFileManagementService fileManagementService,
             IProjectService projectService,
-            IFaceDataService faceDataService, 
+            IFaceDataService faceDataService,
             IFaceService faceService,
             ILogService logService)
         {
@@ -94,13 +109,13 @@ namespace SmartFaceAligner.View.Project
             _faceDataService = faceDataService;
             _faceService = faceService;
             _logService = logService;
-            FaceItems = new ObservableCollection<FaceItemViewModel>();
+            _faceItems = new ObservableCollection<FaceItemViewModel>();
             IdentityPeople = new ObservableCollection<RecognisePersonConfigViewModel>();
 
             this.Register<ViewItemMessage>(_onViewPortUpdatedMessage);
         }
 
-        
+
         public async void SelectFilterPersonCommand()
         {
             if (SelectedItems == null)
@@ -161,7 +176,7 @@ namespace SmartFaceAligner.View.Project
 
         async void _addNewIdentityGroup()
         {
-            await NavigateTo<NewIdentityViewModel>(_=>_.Project = Project);
+            await NavigateTo<NewIdentityViewModel>(_ => _.Project = Project);
         }
 
         private async void _train()
@@ -186,7 +201,7 @@ namespace SmartFaceAligner.View.Project
                 return;
             }
 
-           
+
             var selectedPeople = _selectedPeople();
 
             var currentIdentity = selectedPeople.FirstOrDefault();
@@ -215,7 +230,7 @@ namespace SmartFaceAligner.View.Project
                 {
                     return;
                 }
-                await _faceService.Align(Project,SelectedFace.FaceData,faceData, alignFace.Face, thisAlignFace);
+                await _faceService.Align(Project, SelectedFace.FaceData, faceData, alignFace.Face, thisAlignFace);
             }
 
             var tasks = new Queue<Func<Task>>();
@@ -226,16 +241,21 @@ namespace SmartFaceAligner.View.Project
             }
             try
             {
-                await tasks.Parallel(4, _alignCancel.Token);
+                await tasks.Parallel(8, _alignCancel.Token);
                 _alignCancel = null;
                 await _faceService.PostAlign(Project);
+
+                var alignedFolder = await _fileManagementService.GetFolder(Project, ProjectFolderTypes.Aligned);
+
+                Process.Start("explorer.exe", alignedFolder.FolderPath);
+
                 System.Windows.MessageBox.Show($"Alignment Completed", "Aligner", System.Windows.MessageBoxButton.OK);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logService.Log(ex.ToString());
             }
-          
+
         }
 
         private void _sortByAge()
@@ -257,7 +277,7 @@ namespace SmartFaceAligner.View.Project
             var selectedPeople = _selectedPeople();
 
             var selectedId = selectedPeople.Select(_ => _.PersonId).ToArray();
-           
+
             return face.IdentityPerson != null && selectedId.Contains(face.IdentityPerson.PersonId);
         }
 
@@ -295,7 +315,7 @@ namespace SmartFaceAligner.View.Project
 
         bool _filterRunner(FaceItemViewModel vm)
         {
-            if (vm.FaceData == null || vm.FaceData.ParsedFaces == null)
+            if (vm.FaceData?.ParsedFaces == null)
             {
                 return false;
             }
@@ -441,14 +461,14 @@ namespace SmartFaceAligner.View.Project
             await Load();
         }
 
-       
+
 
         public string CurrentLog
         {
             get { return _currentLog; }
             set
             {
-                _currentLog = value; 
+                _currentLog = value;
                 OnPropertyChanged();
             }
         }
@@ -495,9 +515,9 @@ namespace SmartFaceAligner.View.Project
             var fTemp = FaceItems.ToList();
 
             var filtered = fTemp.Where(
-                _=> _.FaceData.ParsedFaces != null && 
+                _ => _.FaceData.ParsedFaces != null &&
                 _.FaceData.ParsedFaces.All(
-                    _2=>_2.Face.FaceAttributes.Gender == gender)
+                    _2 => _2.Face.FaceAttributes.Gender == gender)
                 ).ToList();
 
             FaceItems.Clear();
@@ -559,14 +579,16 @@ namespace SmartFaceAligner.View.Project
 
         private async void _runFilter()
         {
-            await Load();
+            await Load(false);
             var fTemp = FaceItems.ToList();
 
-            var filtered = fTemp.Where(_filterRunner).ToList();
+            var filtered = fTemp.Where(_filterRunner).OrderBy(_ => _.FaceData.DateTaken).ToList();
 
-            FaceItems.Clear();
+            var l = new ObservableCollection<FaceItemViewModel>();
 
-            filtered.ForEach(_ => FaceItems.Add(_));
+            filtered.ForEach(_ => l.Add(_));
+
+            FaceItems = l;
         }
 
         async void _saveCurrentImages()
@@ -580,12 +602,8 @@ namespace SmartFaceAligner.View.Project
                 return;
             }
 
-            await _fileManagementService.SaveFaces(FaceItems.Select(_=>_.FaceData).ToList(), dialog.SelectedPath);
+            await _fileManagementService.SaveFaces(FaceItems.Select(_ => _.FaceData).ToList(), dialog.SelectedPath);
         }
-
-        private long _totalBytesSent = 0;
-        private int _sentToServer = 0;
-        private int _notSentToServer = 0;
 
         private async void _detectFaces()
         {
@@ -607,7 +625,7 @@ namespace SmartFaceAligner.View.Project
 
             async Task FilterLocal(FaceData faceData)
             {
-              (bool sent, long bytes) = await _faceService.CognitiveDetectFace(Project, faceData);
+                (bool sent, long bytes) = await _faceService.CognitiveDetectFace(Project, faceData);
                 if (sent)
                 {
                     _sentToServer += 1;
@@ -617,7 +635,7 @@ namespace SmartFaceAligner.View.Project
                 {
                     _notSentToServer += 1;
                 }
-                _logService.Log($"Cognitive Progress: {_totalBytesSent/1024/1024} mb / {_sentToServer} files sent. {_notSentToServer} ignored. {tasks.Count} remaining of {count} total.");
+                _logService.Log($"Cognitive Progress: {_totalBytesSent / 1024 / 1024} mb / {_sentToServer} files sent. {_notSentToServer} ignored. {tasks.Count} remaining of {count} total.");
             }
 
             foreach (var f in FaceItems)
@@ -639,7 +657,7 @@ namespace SmartFaceAligner.View.Project
             try
             {
                 _alignCancel = new CancellationTokenSource();
-                await tasks.Parallel(8, _alignCancel.Token);
+                await tasks.Parallel(18, _alignCancel.Token);
 
                 await Load();
             }
@@ -653,11 +671,12 @@ namespace SmartFaceAligner.View.Project
                 _logService.LogException(ex);
                 System.Windows.MessageBox.Show($"Face detection exception :( {ex.ToString()}", "Processing", MessageBoxButton.OK);
             }
-           
 
-            System.Windows.MessageBox.Show("Face detection complete", "Processing",  MessageBoxButton.OK);
 
-;        }
+            System.Windows.MessageBox.Show("Face detection complete", "Processing", MessageBoxButton.OK);
+
+            ;
+        }
 
         /// <summary>
         /// this does a local filter using EMGU face detection. Can be useful to pre-clean, but may not work as well as other systems. 
@@ -677,14 +696,14 @@ namespace SmartFaceAligner.View.Project
 
             FaceItems.Clear();
 
-            filtered.ForEach(_=>FaceItems.Add(_));
+            filtered.ForEach(_ => FaceItems.Add(_));
         }
 
         public override Task NavigatedTo(bool isBack)
         {
             Filter.PropertyChanged -= Filter_PropertyChanged;
             Filter.PropertyChanged += Filter_PropertyChanged;
-            
+
             Load();
             _logService.Logged += _logService_Logged;
             return base.NavigatedTo(isBack);
@@ -692,7 +711,7 @@ namespace SmartFaceAligner.View.Project
 
         private void Filter_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            _runFilter();   
+            _runFilter();
         }
 
         public override Task NavigatingAway(bool isBack)
@@ -711,18 +730,26 @@ namespace SmartFaceAligner.View.Project
             await Task.Yield();
         }
 
-        public async Task Load()
+        public async Task Load(bool updateProperty = true)
         {
-               //var files = await _fileManagementService.GetSourceFiles(Project);
-            FaceItems.Clear();
-
             var faceItems = await _faceDataService.GetFaceData(Project);
+
+            var l = new ObservableCollection<FaceItemViewModel>();
 
             foreach (var fd in faceItems)
             {
                 var vm = Scope.Resolve<FaceItemViewModel>();
                 vm.FaceData = fd;
-                FaceItems.Add(vm);
+                l.Add(vm);
+            }
+
+            if (updateProperty)
+            {
+                FaceItems = l;
+            }
+            else
+            {
+                _faceItems = l;
             }
 
 
@@ -731,12 +758,12 @@ namespace SmartFaceAligner.View.Project
             CurrentLog = $"Loaded {faceItems.Count} images";
         }
 
-         void _loadIdentities()
-         {
-             var selId = _selectedPeople().Select(_ => _.PersonId).ToArray();
+        void _loadIdentities()
+        {
+            var selId = _selectedPeople().Select(_ => _.PersonId).ToArray();
 
             IdentityPeople.Clear();
-            
+
             foreach (var id in Project.IdentityPeople)
             {
                 var vm = Scope.Resolve<RecognisePersonConfigViewModel>();
