@@ -45,7 +45,7 @@ namespace SmartFaceAligner.Processor.Services
         {
             if (!_faceData.ContainsKey(p.Id))
             {
-                _locker.EnterReadLock();
+                _locker.EnterWriteLock();
                 var file = await _fileManagementService.GetSubFile(p, ProjectFolderTypes.Data, Constants.Cache.FaceData);
 
                 if (await _fileRepo.FileExists(file))
@@ -57,7 +57,7 @@ namespace SmartFaceAligner.Processor.Services
                 {
                     _faceData[p.Id] = new List<FaceData>();
                 }
-                _locker.ExitReadLock();
+                _locker.ExitWriteLock();
             }
 
             return _faceData[p.Id];
@@ -85,15 +85,14 @@ namespace SmartFaceAligner.Processor.Services
 
             if (!list.Contains(f))
             {
+                _locker.EnterWriteLock();
                 var current = list.FirstOrDefault(_ => _.Hash == f.Hash);
+
                 if (current != null)
                 {
-                    _locker.EnterWriteLock();
                     list.Remove(current);
-                    _locker.ExitWriteLock();
                 }
-
-                _locker.EnterWriteLock();
+               
                 list.Add(f);
                 _locker.ExitWriteLock();
             }
