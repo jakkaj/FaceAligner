@@ -16,6 +16,10 @@ namespace SmartFaceAligner.View.Setup
 
         public ICommand BingCogLinkCommand => Command(_navToCogServicesBing);
 
+        public ICommand FfmpegLinkCommand => Command(_navToFfmpegPage);
+
+        
+
         public SetupViewModel(IConfigurationService confService)
         {
             _confService = confService;
@@ -42,12 +46,28 @@ namespace SmartFaceAligner.View.Setup
         }
 
 
+        private void _navToFfmpegPage()
+        {
+            System.Diagnostics.Process.Start("https://ffmpeg.org/download.html#build-windows");
+            
+        }
+
         public string Key
         {
             get { return _confService.FaceApiSubscriptionKey; }
             set
             {
                 _confService.FaceApiSubscriptionKey = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string FfmpegPath
+        {
+            get { return _confService.FfmpegPath; }
+            set
+            {
+                _confService.FfmpegPath = value;
                 OnPropertyChanged();
             }
         }

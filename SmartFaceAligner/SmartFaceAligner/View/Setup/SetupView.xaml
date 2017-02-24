@@ -17,6 +17,10 @@
             <TextBlock Text="Please enter your Bing API subscription key" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
             <TextBox Text="{Binding BingKey, Mode=TwoWay}" Margin="0,10,0,0"></TextBox>
 
+            <TextBlock Text="Enter path to FFMPEG (Optional)" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+            <TextBox Text="{Binding FfmpegPath, Mode=TwoWay}" Margin="0,10,0,0"></TextBox>
+
+
             <Button Content="Save" Command="{Binding BackCommand}" Margin="0,10,0,0"></Button>
 
             <TextBlock Text="No key? No Problem!" Margin="0,10,0,0"/>
@@ -25,6 +29,7 @@
 
             <Button Command="{Binding BingAzureLinkCommand}" Content="Bing Search - Sign up on Azure" Margin="0,10,0,0"/>
             <Button Command="{Binding BingCogLinkCommand}" Content="Bing Search - Get a free account" Margin="0,10,0,0"/>
+            <Button Command="{Binding FfmpegLinkCommand}" Content="Download Ffmpeg" Margin="0,10,0,0"/>
 
         </StackPanel>
         

@@ -10,5 +10,6 @@ namespace Contracts.Interfaces
         string FaceApiSubscriptionKey { get; set; }
         string BingSearchSubscriptionKey { get; set; }
         string LastProject { get; set; }
+        string FfmpegPath { get; set; }
     }
 }

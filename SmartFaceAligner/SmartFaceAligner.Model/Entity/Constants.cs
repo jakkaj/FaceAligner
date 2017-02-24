@@ -42,6 +42,7 @@ namespace SmartFaceAligner.Processor.Entity
             public const string SubsKeys = "SubsKeys";
             public const string BingKeys = "BingKeys";
             public const string LastProject = "LastProject";
+            public const string Ffmpeg = "Ffmpeg";
         }
     }
 }

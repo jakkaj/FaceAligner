@@ -34,6 +34,7 @@ namespace SmartFaceAligner.View.Project
         private readonly IFaceDataService _faceDataService;
         private readonly IFaceService _faceService;
         private readonly ILogService _logService;
+        private readonly IVideoService _videoService;
 
         public Contracts.Entity.Project Project { get; set; }
 
@@ -76,6 +77,9 @@ namespace SmartFaceAligner.View.Project
         private int _sentToServer = 0;
         private int _notSentToServer = 0;
 
+        private int _progressValue = 0;
+        private int _progressMaximum = 0;
+
         private ObservableCollection<FaceItemViewModel> _faceItems;
 
         public FaceItemViewModel SelectedFace
@@ -102,19 +106,39 @@ namespace SmartFaceAligner.View.Project
             IProjectService projectService,
             IFaceDataService faceDataService,
             IFaceService faceService,
-            ILogService logService)
+            ILogService logService,
+            IVideoService videoService)
         {
             _fileManagementService = fileManagementService;
             _projectService = projectService;
             _faceDataService = faceDataService;
             _faceService = faceService;
             _logService = logService;
+            _videoService = videoService;
             _faceItems = new ObservableCollection<FaceItemViewModel>();
             IdentityPeople = new ObservableCollection<RecognisePersonConfigViewModel>();
 
             this.Register<ViewItemMessage>(_onViewPortUpdatedMessage);
+            this.Register<TaskProgressMessage>(_onQueueMessage);
         }
 
+        void _onQueueMessage(object m)
+        {
+            if (m is TaskProgressMessage v)
+            {
+                _updateProgress(v.Count, v.Total);
+            }
+        }
+
+        void _updateProgress(int count, int total)
+        {
+            if (ProgressMaximum != total)
+            {
+                ProgressMaximum = total;
+            }
+
+            ProgressValue = total - count;
+        }
 
         public async void SelectFilterPersonCommand()
         {
@@ -246,6 +270,13 @@ namespace SmartFaceAligner.View.Project
                 await _faceService.PostAlign(Project);
 
                 var alignedFolder = await _fileManagementService.GetFolder(Project, ProjectFolderTypes.Aligned);
+
+                var result = await _videoService.Produce(Project, ProjectFolderTypes.Aligned, new VideoProductionSettings{FrameRate=10});
+
+                if (!result)
+                {
+                    System.Windows.MessageBox.Show($"Could not create video, check FFMPEG settings", "Aligner", System.Windows.MessageBoxButton.OK);
+                }
 
                 Process.Start("explorer.exe", alignedFolder.FolderPath);
 
@@ -469,6 +500,27 @@ namespace SmartFaceAligner.View.Project
             set
             {
                 _currentLog = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ProgressValue
+        {
+            get { return _progressValue; }
+            set
+            {
+                _progressValue = value;
+                OnPropertyChanged();
+            }
+
+        }
+
+        public int ProgressMaximum
+        {
+            get { return _progressMaximum; }
+            set
+            {
+                _progressMaximum = value;
                 OnPropertyChanged();
             }
         }

@@ -165,5 +165,6 @@
             </ListView.ItemsPanel>
         </ListView>
         <TextBox Text="{Binding CurrentLog}"  Grid.ColumnSpan="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="25"></TextBox>
+        <ProgressBar Value="{Binding ProgressValue}" Maximum="{Binding ProgressMaximum}" Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="25"></ProgressBar>
     </Grid>
 </Page>

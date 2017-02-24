@@ -3,9 +3,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using XamlingCore.Portable.Messages.XamlingMessenger;
 
 namespace SmartFaceAligner.Processor
 {
+    public class TaskProgressMessage : XMessage
+    {
+        public int Total { get; }
+
+        public int Count { get; }
+
+        public TaskProgressMessage(int count, int total)
+        {
+            Total = total;
+            Count = count;
+        }
+    }
+
     public static class TaskHelper
     {
         public static async Task Parallel(this Queue<Func<Task>> queue, int parallelCount, CancellationToken token = default(CancellationToken))
@@ -14,7 +28,7 @@ namespace SmartFaceAligner.Processor
 
             for(var i = 0; i < parallelCount; i++)
             {
-                processors.Add(_process(queue, token));
+                processors.Add(_process(queue, queue.Count, token));
             }
 
             try
@@ -28,7 +42,7 @@ namespace SmartFaceAligner.Processor
            
         }
 
-        static async Task _process(Queue<Func<Task>> queue, CancellationToken token)
+        static async Task _process(Queue<Func<Task>> queue, int queueLength, CancellationToken token)
         {
             while (queue.Count > 0)
             {
@@ -36,6 +50,7 @@ namespace SmartFaceAligner.Processor
                 var q = queue.Dequeue();
                 //await q();
                 await Task.Run(() => q(), token);
+                new TaskProgressMessage(queue.Count, queueLength).Send();
             }
         }
     }

@@ -42,6 +42,7 @@
     <Compile Include="Entity\Project.cs" />
     <Compile Include="Entity\ProjectFolder.cs" />
     <Compile Include="Entity\TextEventArgs.cs" />
+    <Compile Include="Entity\VideoProductionSettings.cs" />
     <Compile Include="Interfaces\ICognitiveServicesFaceService.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
     <Compile Include="Interfaces\IFaceDataService.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Interfaces\IPersonGroupService.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />
     <Compile Include="Interfaces\ISearchService.cs" />
+    <Compile Include="Interfaces\IVideoService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

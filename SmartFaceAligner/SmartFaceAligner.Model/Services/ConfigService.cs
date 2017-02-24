@@ -20,6 +20,19 @@ namespace SmartFaceAligner.Processor.Services
         }
 
         public bool NeedsConfig => GetSavedSetting(Constants.Settings.SubsKeys) == null;
+
+        public string FfmpegPath
+        {
+            get
+            {
+                return GetSavedSetting(Constants.Settings.Ffmpeg);
+            }
+            set
+            {
+                SaveSetting(Constants.Settings.Ffmpeg, value);
+            }
+        }
+
         public string FaceApiSubscriptionKey 
         {
             get
